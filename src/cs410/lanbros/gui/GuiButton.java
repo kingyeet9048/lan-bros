@@ -7,6 +7,10 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 
+/**
+ * 
+ * @author Ashton Schultz
+ */
 public abstract class GuiButton extends JButton implements MouseListener
 {
 	private static final long serialVersionUID = 0;
