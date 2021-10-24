@@ -5,6 +5,8 @@ package cs410.lanbros.network;
 
 import java.util.List;
 
+import cs410.lanbros.network.packets.Packet;
+
 /**
  * @CreatedBy Sulaiman Bada
  *

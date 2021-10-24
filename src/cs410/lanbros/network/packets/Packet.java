@@ -1,4 +1,4 @@
-package cs410.lanbros.network;
+package cs410.lanbros.network.packets;
 
 /**
  * @CreatedBy Sulaiman Bada
@@ -8,5 +8,5 @@ interface Packet<E> {
 
 	 E getData();
 	 PacketType getPacketType();
-	 void isServerPacket();
+	 boolean isServerPacket();
 }

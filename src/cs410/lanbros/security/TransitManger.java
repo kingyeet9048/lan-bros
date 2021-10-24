@@ -4,12 +4,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Objects;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 /**
@@ -31,9 +35,11 @@ public class TransitManger {
 	public TransitManger(String encrptionType) {
 		try {
 			secretKey = KeyGenerator.getInstance(encrptionType).generateKey();
+			encrMethod = Cipher.getInstance(encrptionType);
+			decryMethod = Cipher.getInstance(encrptionType);
 			encrMethod.init(Cipher.ENCRYPT_MODE, secretKey);
 			decryMethod.init(Cipher.DECRYPT_MODE, secretKey);
-		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
+		} catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -47,6 +53,26 @@ public class TransitManger {
 	public CipherInputStream wrapInputStream(InputStream receive) {
 		CipherInputStream inputStream = new CipherInputStream(receive, decryMethod);
 		return inputStream;
+	}
+	
+	public String encryptData(String input) {
+		try {
+			return Base64.getEncoder().encodeToString(encrMethod.doFinal(input.getBytes()));
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+		}
+		return null;
+	}
+	
+	public String decryptData(String input) {
+		try {
+			return new String(decryMethod.doFinal(Base64.getDecoder().decode(input)));
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+		}
+		return null;
 	}
 	@Override
 	public int hashCode() {
@@ -63,5 +89,11 @@ public class TransitManger {
 		TransitManger other = (TransitManger) obj;
 		return Objects.equals(decryMethod, other.decryMethod) && Objects.equals(encrMethod, other.encrMethod)
 				&& Objects.equals(secretKey, other.secretKey);
+	}
+	
+	public static void main(String args[]) {
+		TransitManger transitManger = new TransitManger("AES");
+		System.out.println(transitManger.encryptData("hello world!"));
+		System.out.println(transitManger.decryptData(transitManger.encryptData("hello world!")));
 	}
 }

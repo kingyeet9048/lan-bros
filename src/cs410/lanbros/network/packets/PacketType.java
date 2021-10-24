@@ -1,4 +1,4 @@
-package cs410.lanbros.network;
+package cs410.lanbros.network.packets;
 
 /**
  * @CreatedBy Sulaiman Bada
