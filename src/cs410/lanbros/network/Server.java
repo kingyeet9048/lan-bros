@@ -27,6 +27,7 @@ public class Server implements Runnable {
 	private TransitManger transitManger;
 	private SocketAddress group;
 	private String ipAddress;
+	private NetworkInterface networkInterface;
 	private String machineIP = null;
 	private int port;
 	
@@ -70,7 +71,7 @@ public class Server implements Runnable {
 				machineIP = getIpAddress();
 			}
 			InetAddress macInetAddress = InetAddress.getByName(machineIP);
-			NetworkInterface networkInterface = NetworkInterface.getByInetAddress(macInetAddress);
+			networkInterface = NetworkInterface.getByInetAddress(macInetAddress);
 			socket.joinGroup(group, networkInterface);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
