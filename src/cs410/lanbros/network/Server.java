@@ -1,6 +1,14 @@
 package cs410.lanbros.network;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
@@ -11,7 +19,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import cs410.lanbros.network.packets.Packet;
+import javax.crypto.SealedObject;
+
+import cs410.lanbros.network.packets.InputTypes;
+import cs410.lanbros.network.packets.PacketType;
+import cs410.lanbros.network.packets.PlayerInputPacket;
+import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManger;
 
 /**
@@ -22,9 +35,10 @@ public class Server implements Runnable {
 	
 	// instace variables
 	private List<Client> clients;
-	private Level level;
-	private List<Packet> packets; 
+//	private Level level;
+	private List<Serializable> packets; 
 	private MulticastSocket socket;
+	private DatagramSocket sendSocket;
 	private TransitManger transitManger;
 	private SocketAddress group;
 	private String ipAddress;
@@ -41,6 +55,7 @@ public class Server implements Runnable {
 			socket = new MulticastSocket(port);
 			InetAddress inet = InetAddress.getByName(ipAddress);
 			group = new InetSocketAddress(inet, port);
+			sendSocket = new DatagramSocket();
 			this.transitManger = transitManger;
 		} catch (IOException e) {
 			// TODO: handle exception
@@ -83,21 +98,109 @@ public class Server implements Runnable {
 		//TODO
 	}
 	
-	public void sendPacketToClient(Packet packet) {
+	private byte[] getByteFromObject(Serializable object) {
+		// https://stackoverflow.com/questions/2836646/java-serializable-object-to-byte-array
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream out = null;
+		byte[] yourBytes = null;
+		try {
+		  out = new ObjectOutputStream(bos);   
+		  out.writeObject(object);
+		  out.flush();
+		  yourBytes = bos.toByteArray();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+		} finally {
+		  try {
+		    bos.close();
+		  } catch (IOException ex) {
+		    // ignore close exception
+		  }
+		}
+		return yourBytes;
+	}
+	
+	private Serializable getObjectFromByte(byte[] yourBytes) {
+		// https://stackoverflow.com/questions/2836646/java-serializable-object-to-byte-array
+		ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
+		ObjectInput in = null;
+		Serializable o = null;
+		try {
+		  in = new ObjectInputStream(bis);
+		  o = (Serializable) in.readObject(); 
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+		  try {
+		    if (in != null) {
+		      in.close();
+		    }
+		  } catch (IOException ex) {
+		    // ignore close exception
+		  }
+		}
+		return o;
+	}
+	
+	public void sendPacketToClient(Serializable packet, PacketType packetType) {
 		//TODO
+		WrappedPacket wrappedPacket = new WrappedPacket(packet, packetType);
+		SealedObject object = transitManger.encryptPacket(wrappedPacket);
+		byte[] sendingBytes = getByteFromObject(object);
+		DatagramPacket datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		
+		try {
+			sendSocket.send(datagramPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+		}
+	}
+	
+	public void closeServerDown() {
+		try {
+			socket.leaveGroup(group, networkInterface);
+			sendSocket.close();
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		byte[] data = new byte[1000];
+		DatagramPacket packet = new DatagramPacket(data, data.length);
+		try {
+			socket.receive(packet);
+			WrappedPacket wrappedPacket = (WrappedPacket) transitManger.decryptPacket((SealedObject) getObjectFromByte(packet.getData()));
+			System.out.println(wrappedPacket.getPacketType());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	// example
+	// example - successful send and received of encrypted Packet through datagram
 	public static void main(String args[]) {
-		Server server = new Server(4321, "224.2.2", null);
+		//Creating a new transit manager
+		TransitManger transitManger = new TransitManger("AES");
+		// new server controlling the transit manager
+		Server server = new Server(4321, "224.2.2", transitManger);
+		// joining the multicast group
 		server.joinServerGroup();
-		System.out.println(server);
+		// making a new packet to send
+		PlayerInputPacket inputPacket = new PlayerInputPacket();
+		inputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
+		// sending the packet to all clients
+		server.sendPacketToClient(inputPacket, PacketType.PLAYER_INPUT);
+		// receiving the sent packet. 
+		server.run();
+		
 	}
 
 }

@@ -4,7 +4,7 @@ package cs410.lanbros.network.packets;
  * @CreatedBy Sulaiman Bada
  *
  */
-enum PacketType {
+public enum PacketType {
 	PLAYER_INPUT,
 	PLAYER_DISCONNECTED,
 	PLAYER_CONNECTED,

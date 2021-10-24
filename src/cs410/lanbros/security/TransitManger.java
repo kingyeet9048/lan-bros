@@ -1,7 +1,10 @@
 package cs410.lanbros.security;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
+import java.net.DatagramPacket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -14,7 +17,13 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
+
+import cs410.lanbros.network.packets.InputTypes;
+import cs410.lanbros.network.packets.PacketType;
+import cs410.lanbros.network.packets.PlayerInputPacket;
+import cs410.lanbros.network.packets.WrappedPacket;
 
 /**
  * Manages all connections transits. Encrypts and Decrpts
@@ -55,20 +64,20 @@ public class TransitManger {
 		return inputStream;
 	}
 	
-	public String encryptData(String input) {
+	public SealedObject encryptPacket(Serializable inputPacket) {
 		try {
-			return Base64.getEncoder().encodeToString(encrMethod.doFinal(input.getBytes()));
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			return new SealedObject(inputPacket, encrMethod);
+		} catch (IllegalBlockSizeException | IOException e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
 		}
 		return null;
 	}
 	
-	public String decryptData(String input) {
+	public Serializable decryptPacket(SealedObject sealedObject) {
 		try {
-			return new String(decryMethod.doFinal(Base64.getDecoder().decode(input)));
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			return (Serializable) sealedObject.getObject(decryMethod);
+		} catch (IllegalBlockSizeException | BadPaddingException | ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
 		}
@@ -91,9 +100,14 @@ public class TransitManger {
 				&& Objects.equals(secretKey, other.secretKey);
 	}
 	
+	//example
 	public static void main(String args[]) {
 		TransitManger transitManger = new TransitManger("AES");
-		System.out.println(transitManger.encryptData("hello world!"));
-		System.out.println(transitManger.decryptData(transitManger.encryptData("hello world!")));
+		PlayerInputPacket inputPacket = new PlayerInputPacket();
+		inputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
+		WrappedPacket wrappedPacket = new WrappedPacket(inputPacket, PacketType.PLAYER_INPUT);
+		System.out.println(transitManger.encryptPacket(wrappedPacket));
+		WrappedPacket returnedPacket = ((WrappedPacket) transitManger.decryptPacket(transitManger.encryptPacket(wrappedPacket)));
+		
 	}
 }

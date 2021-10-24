@@ -7,6 +7,5 @@ package cs410.lanbros.network.packets;
 interface Packet<E> {
 
 	 E getData();
-	 PacketType getPacketType();
 	 boolean isServerPacket();
 }
