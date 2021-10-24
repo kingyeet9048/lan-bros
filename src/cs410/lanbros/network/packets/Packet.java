@@ -5,7 +5,10 @@ package cs410.lanbros.network.packets;
  *
  */
 interface Packet<E> {
-
-	 E getData();
-	 boolean isServerPacket();
+	E getData();
+	boolean isServerPacket();
+	void setPacketReceiver(String packetReceiver);
+	String getPacketReceiver();
+	void setPacketSender(String packetSender);
+	String getPacketSender();
 }

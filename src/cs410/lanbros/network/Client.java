@@ -20,6 +20,7 @@ public class Client {
 	Level level;
 	Score score;
 	List<Packet> packets;
+	private String clientName;
 
 	public Client() {
 		// TODO Auto-generated constructor stub

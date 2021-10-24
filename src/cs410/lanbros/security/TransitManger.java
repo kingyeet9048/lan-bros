@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.DatagramPacket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
@@ -65,6 +63,7 @@ public class TransitManger {
 	}
 	
 	public SealedObject encryptPacket(Serializable inputPacket) {
+		// https://www.baeldung.com/java-aes-encryption-decryption
 		try {
 			return new SealedObject(inputPacket, encrMethod);
 		} catch (IllegalBlockSizeException | IOException e) {
@@ -75,6 +74,7 @@ public class TransitManger {
 	}
 	
 	public Serializable decryptPacket(SealedObject sealedObject) {
+		// https://www.baeldung.com/java-aes-encryption-decryption
 		try {
 			return (Serializable) sealedObject.getObject(decryMethod);
 		} catch (IllegalBlockSizeException | BadPaddingException | ClassNotFoundException | IOException e) {

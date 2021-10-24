@@ -17,6 +17,7 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.crypto.SealedObject;
@@ -45,8 +46,10 @@ public class Server implements Runnable {
 	private NetworkInterface networkInterface;
 	private String machineIP = null;
 	private int port;
+	public final String sendToAll = "ALL";
+	public String serverName;
 	
-	public Server(int port, String ipAddress, TransitManger transitManger) {
+	public Server(int port, String ipAddress, TransitManger transitManger, String serverName) {
 		// TODO Auto-generated constructor stub
 		try {
 			this.port = port;
@@ -57,8 +60,10 @@ public class Server implements Runnable {
 			group = new InetSocketAddress(inet, port);
 			sendSocket = new DatagramSocket();
 			this.transitManger = transitManger;
+			this.serverName = serverName;
 		} catch (IOException e) {
 			// TODO: handle exception
+			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 	
@@ -76,7 +81,7 @@ public class Server implements Runnable {
 	            }
 	        }
 	    } catch (SocketException ex) {
-	        ex.printStackTrace();
+			System.err.println("Server Error: " + ex.getMessage());
 	    }
 	    return ret;
 	}
@@ -90,7 +95,7 @@ public class Server implements Runnable {
 			networkInterface = NetworkInterface.getByInetAddress(macInetAddress);
 			socket.joinGroup(group, networkInterface);
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 	
@@ -109,13 +114,13 @@ public class Server implements Runnable {
 		  out.flush();
 		  yourBytes = bos.toByteArray();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.err.println(e.getMessage());
+			System.err.println("Server Error: " + e.getMessage());
 		} finally {
 		  try {
 		    bos.close();
 		  } catch (IOException ex) {
 		    // ignore close exception
+				System.err.println("Server Error: " + ex.getMessage());
 		  }
 		}
 		return yourBytes;
@@ -130,8 +135,7 @@ public class Server implements Runnable {
 		  in = new ObjectInputStream(bis);
 		  o = (Serializable) in.readObject(); 
 		} catch (IOException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Server Error: " + e.getMessage());
 		} finally {
 		  try {
 		    if (in != null) {
@@ -139,6 +143,7 @@ public class Server implements Runnable {
 		    }
 		  } catch (IOException ex) {
 		    // ignore close exception
+				System.err.println("Server Error: " + ex.getMessage());
 		  }
 		}
 		return o;
@@ -155,7 +160,7 @@ public class Server implements Runnable {
 			sendSocket.send(datagramPacket);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.err.println(e.getMessage());
+			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 	
@@ -166,7 +171,7 @@ public class Server implements Runnable {
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 
@@ -176,30 +181,45 @@ public class Server implements Runnable {
 		byte[] data = new byte[1000];
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		try {
-			socket.receive(packet);
-			WrappedPacket wrappedPacket = (WrappedPacket) transitManger.decryptPacket((SealedObject) getObjectFromByte(packet.getData()));
-			System.out.println(wrappedPacket.getPacketType());
+			// exmple of use. Will change
+			for (int i = 0; i < 2; i++) {
+				socket.receive(packet);
+				WrappedPacket wrappedPacket = (WrappedPacket) transitManger.decryptPacket((SealedObject) getObjectFromByte(packet.getData()));
+				if ((!((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender().equals(serverName)) && ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver().equals(sendToAll) ) {
+					System.out.println("CURRENT SERVER: " + serverName + " Type of Packet: " + wrappedPacket.getPacketType() + " Receiver: " + ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver() + " Sender: " + (((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender()));
+				}
+			}
+			closeServerDown();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 	
 	// example - successful send and received of encrypted Packet through datagram
+	// example also includes communiction between members of the same mulitcast group
 	public static void main(String args[]) {
 		//Creating a new transit manager
 		TransitManger transitManger = new TransitManger("AES");
 		// new server controlling the transit manager
-		Server server = new Server(4321, "224.2.2", transitManger);
-		// joining the multicast group
+		Server server = new Server(4321, "224.2.2", transitManger, "server 1");
+		Server server2 = new Server(4321, "224.2.2", transitManger, "server 2");
+		// joining the multicast group;
 		server.joinServerGroup();
+		server2.joinServerGroup();
 		// making a new packet to send
-		PlayerInputPacket inputPacket = new PlayerInputPacket();
+		PlayerInputPacket inputPacket = new PlayerInputPacket(server.sendToAll, server.serverName);
 		inputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
 		// sending the packet to all clients
 		server.sendPacketToClient(inputPacket, PacketType.PLAYER_INPUT);
+		
+		// making a new packet to send
+		PlayerInputPacket inputPacket2 = new PlayerInputPacket(server.sendToAll, server2.serverName);
+		inputPacket2.setInputTypes(InputTypes.LEFT_MOVEMENT);
+		server2.sendPacketToClient(inputPacket2, PacketType.PLAYER_PAUSE);
 		// receiving the sent packet. 
 		server.run();
+		server2.run();
 		
 	}
 
