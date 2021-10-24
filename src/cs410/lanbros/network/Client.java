@@ -5,6 +5,8 @@ package cs410.lanbros.network;
 
 import java.util.List;
 
+import cs410.lanbros.network.packets.Packet;
+
 /**
  * @CreatedBy Sulaiman Bada
  *
@@ -18,6 +20,7 @@ public class Client {
 	Level level;
 	Score score;
 	List<Packet> packets;
+	private String clientName;
 
 	public Client() {
 		// TODO Auto-generated constructor stub
