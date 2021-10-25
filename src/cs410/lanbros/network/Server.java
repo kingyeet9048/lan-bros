@@ -17,12 +17,10 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.crypto.SealedObject;
 
-import cs410.lanbros.network.packets.InputTypes;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
 import cs410.lanbros.network.packets.WrappedPacket;
@@ -46,7 +44,7 @@ public class Server implements Runnable {
 	private NetworkInterface networkInterface;
 	private String machineIP = null;
 	private int port;
-	public final String sendToAll = "ALL";
+	public final static String sendToAll = "ALL";
 	public String serverName;
 	
 	public Server(int port, String ipAddress, TransitManger transitManger, String serverName) {
@@ -67,7 +65,7 @@ public class Server implements Runnable {
 		}
 	}
 	
-	private String getIpAddress() {
+	public static String getIpAddress() {
 		// https://www.programcreek.com/java-api-examples/?api=java.net.NetworkInterface
 		String ret = "";
 	    try {
@@ -89,11 +87,18 @@ public class Server implements Runnable {
 	public void joinServerGroup() {
 		try {
 			if(machineIP == null) {
+				System.out.println("Getting IP Address of the current machine...");
 				machineIP = getIpAddress();
+				System.out.println("Obtained IP Adress: " + machineIP);
 			}
+			System.out.println("Getting Network of host IP Address...");
 			InetAddress macInetAddress = InetAddress.getByName(machineIP);
 			networkInterface = NetworkInterface.getByInetAddress(macInetAddress);
+			System.out.println("Found network information of host machine (" + machineIP
+					+ "): " + networkInterface.getName());
 			socket.joinGroup(group, networkInterface);
+			System.out.println("Joined and connected to the multicast group (" + ipAddress + "): "
+					+ socket.isBound());
 		} catch (IOException e) {
 			System.err.println("Server Error: " + e.getMessage());
 		}
@@ -103,7 +108,7 @@ public class Server implements Runnable {
 		//TODO
 	}
 	
-	private byte[] getByteFromObject(Serializable object) {
+	public static byte[] getByteFromObject(Serializable object) {
 		// https://stackoverflow.com/questions/2836646/java-serializable-object-to-byte-array
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutputStream out = null;
@@ -126,7 +131,7 @@ public class Server implements Runnable {
 		return yourBytes;
 	}
 	
-	private Serializable getObjectFromByte(byte[] yourBytes) {
+	public static Serializable getObjectFromByte(byte[] yourBytes) {
 		// https://stackoverflow.com/questions/2836646/java-serializable-object-to-byte-array
 		ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
 		ObjectInput in = null;
@@ -151,13 +156,16 @@ public class Server implements Runnable {
 	
 	public void sendPacketToClient(Serializable packet, PacketType packetType) {
 		//TODO
+		System.out.println("Sending Packet type (" + packetType + ") to receivers...");
 		WrappedPacket wrappedPacket = new WrappedPacket(packet, packetType);
 		SealedObject object = transitManger.encryptPacket(wrappedPacket);
+		System.out.println("Packaged and sealed/encrypted packet...");
 		byte[] sendingBytes = getByteFromObject(object);
 		DatagramPacket datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
 		
 		try {
 			sendSocket.send(datagramPacket);
+			System.out.println("Broadcast sucessfull!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.err.println("Server Error: " + e.getMessage());
@@ -169,10 +177,15 @@ public class Server implements Runnable {
 			socket.leaveGroup(group, networkInterface);
 			sendSocket.close();
 			socket.close();
+			System.out.println("Closed sockets down: " + socket.isClosed());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.err.println("Server Error: " + e.getMessage());
 		}
+	}
+	
+	public SocketAddress getGroup() {
+		return group;
 	}
 
 	@Override
@@ -182,45 +195,17 @@ public class Server implements Runnable {
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		try {
 			// exmple of use. Will change
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < 1; i++) {
 				socket.receive(packet);
 				WrappedPacket wrappedPacket = (WrappedPacket) transitManger.decryptPacket((SealedObject) getObjectFromByte(packet.getData()));
-				if ((!((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender().equals(serverName)) && ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver().equals(sendToAll) ) {
+				if ((!((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender().equals(serverName)) && ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver().equals("Server") ) {
 					System.out.println("CURRENT SERVER: " + serverName + " Type of Packet: " + wrappedPacket.getPacketType() + " Receiver: " + ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver() + " Sender: " + (((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender()));
 				}
 			}
-			closeServerDown();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.err.println("Server Error: " + e.getMessage());
 		}
-	}
-	
-	// example - successful send and received of encrypted Packet through datagram
-	// example also includes communiction between members of the same mulitcast group
-	public static void main(String args[]) {
-		//Creating a new transit manager
-		TransitManger transitManger = new TransitManger("AES");
-		// new server controlling the transit manager
-		Server server = new Server(4321, "224.2.2", transitManger, "server 1");
-		Server server2 = new Server(4321, "224.2.2", transitManger, "server 2");
-		// joining the multicast group;
-		server.joinServerGroup();
-		server2.joinServerGroup();
-		// making a new packet to send
-		PlayerInputPacket inputPacket = new PlayerInputPacket(server.sendToAll, server.serverName);
-		inputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
-		// sending the packet to all clients
-		server.sendPacketToClient(inputPacket, PacketType.PLAYER_INPUT);
-		
-		// making a new packet to send
-		PlayerInputPacket inputPacket2 = new PlayerInputPacket(server.sendToAll, server2.serverName);
-		inputPacket2.setInputTypes(InputTypes.LEFT_MOVEMENT);
-		server2.sendPacketToClient(inputPacket2, PacketType.PLAYER_PAUSE);
-		// receiving the sent packet. 
-		server.run();
-		server2.run();
-		
 	}
 
 }
