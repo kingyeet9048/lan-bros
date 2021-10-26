@@ -216,28 +216,28 @@ public class Client implements Runnable, Serializable{
 		String read = "";
 		while(true) {
 			read = scanner.nextLine();
-			if (read.toLowerCase().equals("Player 1 Move")) {
+			if (read.equals("Player 1 Move")) {
 				PlayerInputPacket playerInputPacket = new PlayerInputPacket("Server", client.clientName);
 				playerInputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
 				playerInputPacket.setPlayerMoving(client.clientName);
 				client.sendPacketToServer(playerInputPacket, PacketType.PLAYER_INPUT);
 				
 			}
-			else if (read.toLowerCase().equals("Player 2 Move")) {
+			else if (read.equals("Player 2 Move")) {
 				PlayerInputPacket playerInputPacket = new PlayerInputPacket("Server", client.clientName);
 				playerInputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
 				playerInputPacket.setPlayerMoving(client2.clientName);
 				client2.sendPacketToServer(playerInputPacket, PacketType.PLAYER_INPUT);
 				
 			}
-			else if (read.toLowerCase().equals("Server Move")) {
+			else if (read.equals("Server Move")) {
 				PlayerInputPacket playerInputPacket = new PlayerInputPacket(Server.sendToAll, server.serverName);
 				playerInputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
 				playerInputPacket.setPlayerMoving("Some other player");
 				server.sendPacketToClient(playerInputPacket, PacketType.PLAYER_INPUT);
 			}
 			
-			else if (read.toLowerCase().equals("Exit")) {
+			else if (read.equals("Exit")) {
 				break;
 			}
 		}
