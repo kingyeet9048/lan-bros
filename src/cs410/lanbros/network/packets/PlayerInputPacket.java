@@ -10,6 +10,7 @@ public class PlayerInputPacket implements Packet<InputTypes>, Serializable{
 	private InputTypes inputTypes;
 	private String packetReceiver;
 	private String packetSender;
+	private String playerMoving;
 	
 	public PlayerInputPacket(String packetReceiver, String packetSender) {
 		this.packetReceiver = packetReceiver;
@@ -58,6 +59,14 @@ public class PlayerInputPacket implements Packet<InputTypes>, Serializable{
 	public String getPacketSender() {
 		// TODO Auto-generated method stub
 		return packetSender;
+	}
+
+	public String getPlayerMoving() {
+		return playerMoving;
+	}
+
+	public void setPlayerMoving(String playerMoving) {
+		this.playerMoving = playerMoving;
 	}
 
 }

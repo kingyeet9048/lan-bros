@@ -28,7 +28,7 @@ import cs410.lanbros.network.packets.WrappedPacket;
  * @createdBy Sulaiman Bada
  *
  */
-public class TransitManger {
+public class TransitManager {
 
 	//instance variables
 	private Cipher encrMethod;
@@ -39,13 +39,14 @@ public class TransitManger {
 	 * AES/ECB/PKCS5Padding
 	 * @param encrptionType
 	 */
-	public TransitManger(String encrptionType) {
+	public TransitManager(String encrptionType) {
 		try {
 			secretKey = KeyGenerator.getInstance(encrptionType).generateKey();
 			encrMethod = Cipher.getInstance(encrptionType);
 			decryMethod = Cipher.getInstance(encrptionType);
 			encrMethod.init(Cipher.ENCRYPT_MODE, secretKey);
 			decryMethod.init(Cipher.DECRYPT_MODE, secretKey);
+			
 		} catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,19 +96,8 @@ public class TransitManger {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TransitManger other = (TransitManger) obj;
+		TransitManager other = (TransitManager) obj;
 		return Objects.equals(decryMethod, other.decryMethod) && Objects.equals(encrMethod, other.encrMethod)
 				&& Objects.equals(secretKey, other.secretKey);
-	}
-	
-	//example
-	public static void main(String args[]) {
-		TransitManger transitManger = new TransitManger("AES");
-		PlayerInputPacket inputPacket = new PlayerInputPacket();
-		inputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
-		WrappedPacket wrappedPacket = new WrappedPacket(inputPacket, PacketType.PLAYER_INPUT);
-		System.out.println(transitManger.encryptPacket(wrappedPacket));
-		WrappedPacket returnedPacket = ((WrappedPacket) transitManger.decryptPacket(transitManger.encryptPacket(wrappedPacket)));
-		
 	}
 }
