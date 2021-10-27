@@ -15,6 +15,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import javax.crypto.SealedObject;
 import cs410.lanbros.network.packets.ConnectionPacket;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
+import cs410.lanbros.network.packets.ServerConnectedPacket;
 import cs410.lanbros.network.packets.Worker;
 import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManager;
@@ -55,6 +57,7 @@ public class Server implements Runnable, Serializable{
 	public final static String sendToAll = "ALL";
 	public String serverName;
 	public final static String DEFAULTENCRYPTIONTYPE = "AES";
+	private List<String> clientNames;
 	
 	public Server(int port, String ipAddress, TransitManager transitManager, String serverName) {
 		// TODO Auto-generated constructor stub
@@ -69,22 +72,28 @@ public class Server implements Runnable, Serializable{
 			this.transitManager = transitManager;
 			this.serverName = serverName;
 			packets = new LinkedList<Serializable>();
+			clientNames = new ArrayList<String>();
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 	
-	public static String getIpAddress() {
+	public static String getIpAddress(String ipAddress, boolean findAuto) {
 		// https://www.programcreek.com/java-api-examples/?api=java.net.NetworkInterface
 		String ret = "";
+		
 	    try {
 	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 	            NetworkInterface intf = en.nextElement();
 	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 	                InetAddress inetAddress = enumIpAddr.nextElement();
-	                if (!inetAddress.isLoopbackAddress()) {
+	                if (findAuto && inetAddress.isLoopbackAddress()) {
 	                    ret = inetAddress.getHostAddress().toString();
+	                }
+	                else if (!findAuto && inetAddress.getHostAddress().toString().equals(ipAddress)) {
+	                    ret = inetAddress.getHostAddress().toString();
+	                    break;
 	                }
 	            }
 	        }
@@ -94,12 +103,11 @@ public class Server implements Runnable, Serializable{
 	    return ret;
 	}
 
-	public void joinServerGroup() {
+	public void joinServerGroup(String yourIP, boolean findAuto) {
 		try {
 			if(machineIP == null) {
-				System.out.println("Getting IP Address of the current machine...");
-				machineIP = getIpAddress();
-				System.out.println("Obtained IP Adress: " + machineIP);
+				System.out.println("Verifying IP Address");
+				machineIP = getIpAddress(yourIP, findAuto);
 			}
 			System.out.println("Getting Network of host IP Address...");
 			InetAddress macInetAddress = InetAddress.getByName(machineIP);
@@ -107,6 +115,7 @@ public class Server implements Runnable, Serializable{
 			System.out.println("Found network information of host machine (" + machineIP
 					+ "): " + networkInterface.getName());
 			socket.joinGroup(group, networkInterface);
+			sendPacketToClient(new ServerConnectedPacket(sendToAll, "Server"), PacketType.SERVER_CONNECT, false);
 			System.out.println("Joined and connected to the multicast group (" + ipAddress + "): "
 					+ socket.isBound());
 		} catch (IOException e) {
@@ -239,10 +248,21 @@ public class Server implements Runnable, Serializable{
 							ConnectionPacket newPlayer = (ConnectionPacket) currentPacket.getPacket();
 							if ((!newPlayer.getPacketSender().equals(serverName)) && newPlayer.getPacketReceiver().equals("Server")) {
 								System.out.println("Server says: Client connecting: " + newPlayer.getPlayerName());
-								newPlayer.setPacketReceiver(sendToAll);
-								newPlayer.setPacketSender(serverName);
-								newPlayer.setSecretKey(transitManager.getSecretKey());
-								sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_CONNECTED, false);
+								if (clientNames.contains(newPlayer.getPlayerName())) {
+									System.out.printf("%s: Player exists. Current Players: %s\n", serverName, clientNames.toString());
+
+									break;
+								}
+								else {
+									clientNames.add(newPlayer.getPlayerName());
+									System.out.printf("%s: Player Added. Current Players: %s\n", serverName, clientNames.toString());
+								}
+								for (String string : clientNames) {
+									ConnectionPacket connection = new ConnectionPacket(sendToAll, "Server");
+									connection.setSecretKey(transitManager.getSecretKey());
+									connection.setPlayerName(string);
+									sendPacketToClient(connection, PacketType.PLAYER_CONNECTED, false);
+								}
 							}
 							break;
 						case SERVER_DISCONNECT:
@@ -252,7 +272,7 @@ public class Server implements Runnable, Serializable{
 							}
 							break;
 						default:
-							System.out.println("Unrecognized Packet Type!");
+							System.out.println("Unsupported Packet Type!");
 							break;
 					}
 				}

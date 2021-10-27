@@ -25,14 +25,14 @@ public class Main
 		TransitManager transitManger = new TransitManager("AES");
 		
 		// new server controlling the transit manager
-		Server server = new Server(4321, "224.2.2", transitManger, "server 1");
-		Client client = new Client(4321, "224.2.2", "Client 1");
-		Client client2 = new Client(4321, "224.2.2", "Client 2");
+		Server server = new Server(4321, "224.0.0.7", transitManger, "server 1");
+		Client client = new Client(4321, "224.0.0.7", "Client 1");
+		Client client2 = new Client(4321, "224.0.0.7", "Client 2");
 
 		// joining the servetr group
-		client.joinServerGroup();
-		server.joinServerGroup();
-		client2.joinServerGroup();
+		client.joinServerGroup("192.168.1.89", false);
+		server.joinServerGroup("192.168.1.89", false);
+		client2.joinServerGroup("192.168.1.89", false);
 		// starting thread
 		Thread serverThread = new Thread(server);
 		Thread clientThread = new Thread(client);

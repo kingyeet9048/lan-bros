@@ -23,6 +23,7 @@ import cs410.lanbros.network.packets.ConnectionPacket;
 import cs410.lanbros.network.packets.InputTypes;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
+import cs410.lanbros.network.packets.ServerConnectedPacket;
 import cs410.lanbros.network.packets.Worker;
 import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManager;
@@ -68,11 +69,16 @@ public class Client implements Runnable, Serializable{
 		transitManager = new TransitManager(Server.DEFAULTENCRYPTIONTYPE);
 	}
 	
-	public void joinServerGroup() {
+	/**
+	 * Need to already be connected to the LAN where the server group is. 
+	 * For testing we can simply use 
+	 * @param yourIP
+	 */
+	public void joinServerGroup(String yourIP, boolean findAutomatically) {
 
 		try {
 			if(machineIP == null) {
-				machineIP = Server.getIpAddress();
+				machineIP = Server.getIpAddress(yourIP, findAutomatically);
 			}
 			InetAddress macInetAddress = InetAddress.getByName(machineIP);
 			networkInterface = NetworkInterface.getByInetAddress(macInetAddress);
@@ -189,6 +195,14 @@ public class Client implements Runnable, Serializable{
 								System.out.println("Game has ended Something would happen here");
 							}
 							break;
+						case SERVER_CONNECT:
+							ServerConnectedPacket serverConnectedPacket =  (ServerConnectedPacket) currentPacket.getPacket();
+							if ((!serverConnectedPacket.getPacketSender().equals(clientName)) && serverConnectedPacket.getPacketReceiver().equals(Server.sendToAll)) {
+								ConnectionPacket identify = new ConnectionPacket("Server", clientName);
+								identify.setPlayerName(clientName);
+								sendPacketToServer(identify, PacketType.PLAYER_CONNECTED, false);
+							}
+							break;
 						default:
 							System.out.println("Packet Type Not Supported Yet!");
 							break;
@@ -232,14 +246,14 @@ public class Client implements Runnable, Serializable{
 		TransitManager transitManger = new TransitManager("AES");
 		
 		// new server controlling the transit manager
-		Server server = new Server(4321, "224.2.2", transitManger, "server 1");
-		Client client = new Client(4321, "224.2.2", "Client 1");
-		Client client2 = new Client(4321, "224.2.2", "Client 2");
+		Server server = new Server(4321, "224.0.0.7", transitManger, "server 1");
+		Client client = new Client(4321, "224.0.0.7", "Client 1");
+		Client client2 = new Client(4321, "224.0.0.7", "Client 2");
 
 		// joining the servetr group
-		client.joinServerGroup();
-		server.joinServerGroup();
-		client2.joinServerGroup();
+		client.joinServerGroup("192.168.1.89", false);
+		server.joinServerGroup("192.168.1.89", false);
+		client2.joinServerGroup("192.168.1.89", false);
 		// starting thread
 		Thread serverThread = new Thread(server);
 		Thread clientThread = new Thread(client);
@@ -267,12 +281,12 @@ public class Client implements Runnable, Serializable{
 				client2.sendPacketToServer(playerInputPacket, PacketType.PLAYER_INPUT, true);
 				
 			}
-			else if (read.equals("Server Move")) {
-				PlayerInputPacket playerInputPacket = new PlayerInputPacket(Server.sendToAll, server.serverName);
-				playerInputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
-				playerInputPacket.setPlayerMoving("Some other player");
-				server.sendPacketToClient(playerInputPacket, PacketType.PLAYER_INPUT, true);
-			}
+//			else if (read.equals("Server Move")) {
+//				PlayerInputPacket playerInputPacket = new PlayerInputPacket(Server.sendToAll, server.serverName);
+//				playerInputPacket.setInputTypes(InputTypes.LEFT_MOVEMENT);
+//				playerInputPacket.setPlayerMoving("Some other player");
+//				server.sendPacketToClient(playerInputPacket, PacketType.PLAYER_INPUT, true);
+//			}
 			
 			else if (read.equals("Exit")) {
 				break;
