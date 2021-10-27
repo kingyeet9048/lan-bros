@@ -68,7 +68,12 @@ public class Client implements Runnable, Serializable{
 		transitManager = new TransitManager(Server.DEFAULTENCRYPTIONTYPE);
 	}
 	
-	public void joinServerGroup() {
+	/**
+	 * Need to already be connected to the LAN where the server group is. 
+	 * For testing we can simply use 
+	 * @param yourIP
+	 */
+	public void joinServerGroup(String yourIP, boolean findAutomatically) {
 
 		try {
 			if(machineIP == null) {

@@ -15,6 +15,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -75,16 +76,21 @@ public class Server implements Runnable, Serializable{
 		}
 	}
 	
-	public static String getIpAddress() {
+	public static String getIpAddress(String ipAddress, boolean findAuto) {
 		// https://www.programcreek.com/java-api-examples/?api=java.net.NetworkInterface
 		String ret = "";
+		
 	    try {
 	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 	            NetworkInterface intf = en.nextElement();
 	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 	                InetAddress inetAddress = enumIpAddr.nextElement();
-	                if (!inetAddress.isLoopbackAddress()) {
+	                if (findAuto && inetAddress.isLoopbackAddress()) {
 	                    ret = inetAddress.getHostAddress().toString();
+	                }
+	                else if (!findAuto && inetAddress.getHostAddress().toString().equals(ipAddress)) {
+	                    ret = inetAddress.getHostAddress().toString();
+	                    break;
 	                }
 	            }
 	        }
@@ -94,12 +100,11 @@ public class Server implements Runnable, Serializable{
 	    return ret;
 	}
 
-	public void joinServerGroup() {
+	public void joinServerGroup(String yourIP, boolean findAuto) {
 		try {
 			if(machineIP == null) {
-				System.out.println("Getting IP Address of the current machine...");
-				machineIP = getIpAddress();
-				System.out.println("Obtained IP Adress: " + machineIP);
+				System.out.println("Verifying IP Address");
+				machineIP = getIpAddress(yourIP, findAuto);
 			}
 			System.out.println("Getting Network of host IP Address...");
 			InetAddress macInetAddress = InetAddress.getByName(machineIP);
@@ -107,6 +112,7 @@ public class Server implements Runnable, Serializable{
 			System.out.println("Found network information of host machine (" + machineIP
 					+ "): " + networkInterface.getName());
 			socket.joinGroup(group, networkInterface);
+			sendPacketToClient(new ServerConnectedPacket(sendToAll, "Server"), PacketType.SERVER_CONNECT, false);
 			System.out.println("Joined and connected to the multicast group (" + ipAddress + "): "
 					+ socket.isBound());
 		} catch (IOException e) {
