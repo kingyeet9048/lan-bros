@@ -17,28 +17,36 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import javax.crypto.SealedObject;
 
+import cs410.lanbros.network.packets.ConnectionPacket;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
+import cs410.lanbros.network.packets.Worker;
 import cs410.lanbros.network.packets.WrappedPacket;
-import cs410.lanbros.security.TransitManger;
+import cs410.lanbros.security.TransitManager;
 
 /**
  * @CreatedBy Sulaiman Bada
  *
  */
-public class Server implements Runnable {
+public class Server implements Runnable, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2980242180582204587L;
 	// instace variables
 	private List<Client> clients;
 //	private Level level;
-	private List<Serializable> packets; 
+	private Queue<Serializable> packets; 
 	private MulticastSocket socket;
 	private DatagramSocket sendSocket;
-	private TransitManger transitManger;
+	private TransitManager transitManager;
 	private SocketAddress group;
 	private String ipAddress;
 	private NetworkInterface networkInterface;
@@ -46,8 +54,9 @@ public class Server implements Runnable {
 	private int port;
 	public final static String sendToAll = "ALL";
 	public String serverName;
+	public final static String DEFAULTENCRYPTIONTYPE = "AES";
 	
-	public Server(int port, String ipAddress, TransitManger transitManger, String serverName) {
+	public Server(int port, String ipAddress, TransitManager transitManager, String serverName) {
 		// TODO Auto-generated constructor stub
 		try {
 			this.port = port;
@@ -57,8 +66,9 @@ public class Server implements Runnable {
 			InetAddress inet = InetAddress.getByName(ipAddress);
 			group = new InetSocketAddress(inet, port);
 			sendSocket = new DatagramSocket();
-			this.transitManger = transitManger;
+			this.transitManager = transitManager;
 			this.serverName = serverName;
+			packets = new LinkedList<Serializable>();
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.err.println("Server Error: " + e.getMessage());
@@ -154,14 +164,23 @@ public class Server implements Runnable {
 		return o;
 	}
 	
-	public void sendPacketToClient(Serializable packet, PacketType packetType) {
+	public void sendPacketToClient(Serializable packet, PacketType packetType, boolean isEncrypted) {
 		//TODO
 		System.out.println("Sending Packet type (" + packetType + ") to receivers...");
 		WrappedPacket wrappedPacket = new WrappedPacket(packet, packetType);
-		SealedObject object = transitManger.encryptPacket(wrappedPacket);
-		System.out.println("Packaged and sealed/encrypted packet...");
-		byte[] sendingBytes = getByteFromObject(object);
-		DatagramPacket datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		DatagramPacket datagramPacket;
+		byte[] sendingBytes;
+		if (isEncrypted) {
+			SealedObject object = transitManager.encryptPacket(wrappedPacket);
+			System.out.println("Packaged and sealed/encrypted packet...");
+			sendingBytes = getByteFromObject(object);
+			datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		}
+		else {
+			System.out.println("Packet is not going to be encrypted. Sending raw wrapped.");
+			sendingBytes = getByteFromObject(wrappedPacket);
+			datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		}
 		
 		try {
 			sendSocket.send(datagramPacket);
@@ -187,24 +206,62 @@ public class Server implements Runnable {
 	public SocketAddress getGroup() {
 		return group;
 	}
+	
+	public String getName() {
+		return serverName;
+	}
+	
+	public void appendPacket(Serializable packet) {
+		packets.add(packet);
+	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		byte[] data = new byte[1000];
-		DatagramPacket packet = new DatagramPacket(data, data.length);
-		try {
-			// exmple of use. Will change
-			for (int i = 0; i < 1; i++) {
-				socket.receive(packet);
-				WrappedPacket wrappedPacket = (WrappedPacket) transitManger.decryptPacket((SealedObject) getObjectFromByte(packet.getData()));
-				if ((!((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender().equals(serverName)) && ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver().equals("Server") ) {
-					System.out.println("CURRENT SERVER: " + serverName + " Type of Packet: " + wrappedPacket.getPacketType() + " Receiver: " + ((PlayerInputPacket) wrappedPacket.getPacket()).getPacketReceiver() + " Sender: " + (((PlayerInputPacket) wrappedPacket.getPacket()).getPacketSender()));
+		Worker serverWorker = new Worker(socket, transitManager, this, true);
+		Thread serverWorkerThread = new Thread(serverWorker);
+		serverWorkerThread.start();
+		while (!socket.isClosed()) {
+			try {
+				if (packets.size() >= 1) {
+					Serializable object = packets.remove();
+					WrappedPacket currentPacket = (WrappedPacket) object;
+					switch (currentPacket.getPacketType()) {
+						case PLAYER_INPUT: 
+							PlayerInputPacket playerInputPacket = (PlayerInputPacket) currentPacket.getPacket();
+							if ((!playerInputPacket.getPacketSender().equals(serverName)) && playerInputPacket.getPacketReceiver().equals("Server")) {
+								System.out.println("Server says: Client moving: " + playerInputPacket.getInputTypes());
+								playerInputPacket.setPacketSender(serverName);
+								playerInputPacket.setPacketReceiver(sendToAll);
+								sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_INPUT, true);
+							}
+							break;
+						case PLAYER_CONNECTED:
+							ConnectionPacket newPlayer = (ConnectionPacket) currentPacket.getPacket();
+							if ((!newPlayer.getPacketSender().equals(serverName)) && newPlayer.getPacketReceiver().equals("Server")) {
+								System.out.println("Server says: Client connecting: " + newPlayer.getPlayerName());
+								newPlayer.setPacketReceiver(sendToAll);
+								newPlayer.setPacketSender(serverName);
+								newPlayer.setSecretKey(transitManager.getSecretKey());
+								sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_CONNECTED, false);
+							}
+							break;
+						case SERVER_DISCONNECT:
+							ConnectionPacket connectionPacket = (ConnectionPacket) currentPacket.getPacket();
+							if ((!connectionPacket.getPacketSender().equals(serverName)) && connectionPacket.getPacketReceiver().equals("Server")) {
+								System.out.println("Game has ended Something would happen here");
+							}
+							break;
+						default:
+							System.out.println("Unrecognized Packet Type!");
+							break;
+					}
 				}
+			} catch (NullPointerException e) {
+				System.err.printf("%s Error: %s\n", serverName, e.getMessage());
+				ConnectionPacket newPlayer = new ConnectionPacket(sendToAll, serverName);
+				sendPacketToClient(newPlayer, PacketType.PLAYER_CONNECTED, false);
+				continue;
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Server Error: " + e.getMessage());
 		}
 	}
 
