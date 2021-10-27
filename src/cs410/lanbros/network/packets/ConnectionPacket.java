@@ -2,6 +2,8 @@ package cs410.lanbros.network.packets;
 
 import java.io.Serializable;
 
+import javax.crypto.SecretKey;
+
 public class ConnectionPacket implements Packet<Boolean>, Serializable{
 	
 	/**
@@ -12,6 +14,7 @@ public class ConnectionPacket implements Packet<Boolean>, Serializable{
 	private String packetSender;
 	private boolean isConnected;
 	private String playerName;
+	private SecretKey secretKey;
 	
 	public ConnectionPacket(String packetReceiver, String packetSender) {
 		// TODO Auto-generated constructor stub
@@ -69,6 +72,14 @@ public class ConnectionPacket implements Packet<Boolean>, Serializable{
 
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
+	}
+
+	public SecretKey getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(SecretKey secretKey) {
+		this.secretKey = secretKey;
 	}
 
 	

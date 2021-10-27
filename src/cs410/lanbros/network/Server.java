@@ -54,6 +54,7 @@ public class Server implements Runnable, Serializable{
 	private int port;
 	public final static String sendToAll = "ALL";
 	public String serverName;
+	public final static String DEFAULTENCRYPTIONTYPE = "AES";
 	
 	public Server(int port, String ipAddress, TransitManager transitManager, String serverName) {
 		// TODO Auto-generated constructor stub
@@ -163,14 +164,23 @@ public class Server implements Runnable, Serializable{
 		return o;
 	}
 	
-	public void sendPacketToClient(Serializable packet, PacketType packetType) {
+	public void sendPacketToClient(Serializable packet, PacketType packetType, boolean isEncrypted) {
 		//TODO
 		System.out.println("Sending Packet type (" + packetType + ") to receivers...");
 		WrappedPacket wrappedPacket = new WrappedPacket(packet, packetType);
-		SealedObject object = transitManager.encryptPacket(wrappedPacket);
-		System.out.println("Packaged and sealed/encrypted packet...");
-		byte[] sendingBytes = getByteFromObject(object);
-		DatagramPacket datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		DatagramPacket datagramPacket;
+		byte[] sendingBytes;
+		if (isEncrypted) {
+			SealedObject object = transitManager.encryptPacket(wrappedPacket);
+			System.out.println("Packaged and sealed/encrypted packet...");
+			sendingBytes = getByteFromObject(object);
+			datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		}
+		else {
+			System.out.println("Packet is not going to be encrypted. Sending raw wrapped.");
+			sendingBytes = getByteFromObject(wrappedPacket);
+			datagramPacket = new DatagramPacket(sendingBytes, 0, sendingBytes.length, group);
+		}
 		
 		try {
 			sendSocket.send(datagramPacket);
@@ -211,37 +221,46 @@ public class Server implements Runnable, Serializable{
 		Thread serverWorkerThread = new Thread(serverWorker);
 		serverWorkerThread.start();
 		while (!socket.isClosed()) {
-			if (packets.size() >= 1) {
-				WrappedPacket currentPacket = (WrappedPacket) packets.remove();
-				switch (currentPacket.getPacketType()) {
-					case PLAYER_INPUT: 
-						PlayerInputPacket playerInputPacket = (PlayerInputPacket) currentPacket.getPacket();
-						if ((!playerInputPacket.getPacketSender().equals(serverName)) && playerInputPacket.getPacketReceiver().equals("Server")) {
-							System.out.println("Server says: Client moving: " + playerInputPacket.getInputTypes());
-							playerInputPacket.setPacketSender(serverName);
-							playerInputPacket.setPacketReceiver(sendToAll);
-							sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_INPUT);
-						}
-						break;
-					case PLAYER_CONNECTED:
-						ConnectionPacket newPlayer = (ConnectionPacket) currentPacket.getPacket();
-						if ((!newPlayer.getPacketSender().equals(serverName)) && newPlayer.getPacketReceiver().equals("Server")) {
-							System.out.println("Server says: Client connecting: " + newPlayer.getPlayerName());
-							newPlayer.setPacketReceiver(sendToAll);
-							newPlayer.setPacketSender(serverName);
-							sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_CONNECTED);
-						}
-						break;
-					case SERVER_DISCONNECT:
-						ConnectionPacket connectionPacket = (ConnectionPacket) currentPacket.getPacket();
-						if ((!connectionPacket.getPacketSender().equals(serverName)) && connectionPacket.getPacketReceiver().equals("Server")) {
-							System.out.println("Game has ended Something would happen here");
-						}
-						break;
-					default:
-						System.out.println("Unrecognized Packet Type!");
-						break;
+			try {
+				if (packets.size() >= 1) {
+					Serializable object = packets.remove();
+					WrappedPacket currentPacket = (WrappedPacket) object;
+					switch (currentPacket.getPacketType()) {
+						case PLAYER_INPUT: 
+							PlayerInputPacket playerInputPacket = (PlayerInputPacket) currentPacket.getPacket();
+							if ((!playerInputPacket.getPacketSender().equals(serverName)) && playerInputPacket.getPacketReceiver().equals("Server")) {
+								System.out.println("Server says: Client moving: " + playerInputPacket.getInputTypes());
+								playerInputPacket.setPacketSender(serverName);
+								playerInputPacket.setPacketReceiver(sendToAll);
+								sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_INPUT, true);
+							}
+							break;
+						case PLAYER_CONNECTED:
+							ConnectionPacket newPlayer = (ConnectionPacket) currentPacket.getPacket();
+							if ((!newPlayer.getPacketSender().equals(serverName)) && newPlayer.getPacketReceiver().equals("Server")) {
+								System.out.println("Server says: Client connecting: " + newPlayer.getPlayerName());
+								newPlayer.setPacketReceiver(sendToAll);
+								newPlayer.setPacketSender(serverName);
+								newPlayer.setSecretKey(transitManager.getSecretKey());
+								sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_CONNECTED, false);
+							}
+							break;
+						case SERVER_DISCONNECT:
+							ConnectionPacket connectionPacket = (ConnectionPacket) currentPacket.getPacket();
+							if ((!connectionPacket.getPacketSender().equals(serverName)) && connectionPacket.getPacketReceiver().equals("Server")) {
+								System.out.println("Game has ended Something would happen here");
+							}
+							break;
+						default:
+							System.out.println("Unrecognized Packet Type!");
+							break;
+					}
 				}
+			} catch (NullPointerException e) {
+				System.err.printf("%s Error: %s\n", serverName, e.getMessage());
+				ConnectionPacket newPlayer = new ConnectionPacket(sendToAll, serverName);
+				sendPacketToClient(newPlayer, PacketType.PLAYER_CONNECTED, false);
+				continue;
 			}
 		}
 	}

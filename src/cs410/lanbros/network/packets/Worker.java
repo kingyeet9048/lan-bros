@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.util.concurrent.TimeUnit;
 
 import javax.crypto.SealedObject;
@@ -27,6 +28,10 @@ public class Worker implements Runnable{
 		this.isServer = isServer;
 	}
 
+	public void setTransitManager(TransitManager transitManager) {
+		this.transitManager = transitManager;
+	}
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -47,9 +52,23 @@ public class Worker implements Runnable{
 
 				}
 //				 System.out.println("Workter Thread Appended Message");
-			} catch (IOException | InterruptedException e) {
+			} catch (ClassCastException e) {
 				// TODO Auto-generated catch block
-//				System.err.println("Client received Nothing. Trying again in 1sec: " + e.getMessage());
+				if (isServer) {
+					 ((Server) master).appendPacket((WrappedPacket) Server.getObjectFromByte(packet.getData()));
+				}
+				else {
+					 ((Client) master).appendPacket((WrappedPacket) Server.getObjectFromByte(packet.getData()));
+
+				}
+				continue;
+			} catch (InterruptedException e) {
+				continue;
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				continue;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				continue;
 			}
 		}
