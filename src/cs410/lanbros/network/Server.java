@@ -27,7 +27,6 @@ import javax.crypto.SealedObject;
 import cs410.lanbros.network.packets.ConnectionPacket;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
-import cs410.lanbros.network.packets.ServerConnectedPacket;
 import cs410.lanbros.network.packets.Worker;
 import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManager;
@@ -57,7 +56,6 @@ public class Server implements Runnable, Serializable{
 	public final static String sendToAll = "ALL";
 	public String serverName;
 	public final static String DEFAULTENCRYPTIONTYPE = "AES";
-	private List<String> clientNames;
 	
 	public Server(int port, String ipAddress, TransitManager transitManager, String serverName) {
 		// TODO Auto-generated constructor stub
@@ -72,7 +70,6 @@ public class Server implements Runnable, Serializable{
 			this.transitManager = transitManager;
 			this.serverName = serverName;
 			packets = new LinkedList<Serializable>();
-			clientNames = new ArrayList<String>();
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.err.println("Server Error: " + e.getMessage());
@@ -248,21 +245,10 @@ public class Server implements Runnable, Serializable{
 							ConnectionPacket newPlayer = (ConnectionPacket) currentPacket.getPacket();
 							if ((!newPlayer.getPacketSender().equals(serverName)) && newPlayer.getPacketReceiver().equals("Server")) {
 								System.out.println("Server says: Client connecting: " + newPlayer.getPlayerName());
-								if (clientNames.contains(newPlayer.getPlayerName())) {
-									System.out.printf("%s: Player exists. Current Players: %s\n", serverName, clientNames.toString());
-
-									break;
-								}
-								else {
-									clientNames.add(newPlayer.getPlayerName());
-									System.out.printf("%s: Player Added. Current Players: %s\n", serverName, clientNames.toString());
-								}
-								for (String string : clientNames) {
-									ConnectionPacket connection = new ConnectionPacket(sendToAll, "Server");
-									connection.setSecretKey(transitManager.getSecretKey());
-									connection.setPlayerName(string);
-									sendPacketToClient(connection, PacketType.PLAYER_CONNECTED, false);
-								}
+								newPlayer.setPacketReceiver(sendToAll);
+								newPlayer.setPacketSender(serverName);
+								newPlayer.setSecretKey(transitManager.getSecretKey());
+								sendPacketToClient(currentPacket.getPacket(), PacketType.PLAYER_CONNECTED, false);
 							}
 							break;
 						case SERVER_DISCONNECT:
@@ -272,7 +258,7 @@ public class Server implements Runnable, Serializable{
 							}
 							break;
 						default:
-							System.out.println("Unsupported Packet Type!");
+							System.out.println("Unrecognized Packet Type!");
 							break;
 					}
 				}
