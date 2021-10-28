@@ -28,7 +28,6 @@ import cs410.lanbros.network.packets.ConnectionPacket;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
 import cs410.lanbros.network.packets.ServerConnectedPacket;
-import cs410.lanbros.network.packets.Worker;
 import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManager;
 
@@ -79,6 +78,12 @@ public class Server implements Runnable, Serializable{
 		}
 	}
 	
+	/**
+	 * If you specify an address, the method assumes you want to verify. If you dont, the method assumes you want to find. 
+	 * @param ipAddress
+	 * @param findAuto - Automatically finds your address
+	 * @return
+	 */
 	public static String getIpAddress(String ipAddress, boolean findAuto) {
 		// https://www.programcreek.com/java-api-examples/?api=java.net.NetworkInterface
 		String ret = "";
@@ -88,7 +93,7 @@ public class Server implements Runnable, Serializable{
 	            NetworkInterface intf = en.nextElement();
 	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 	                InetAddress inetAddress = enumIpAddr.nextElement();
-	                if (findAuto && inetAddress.isLoopbackAddress()) {
+	                if (findAuto && !inetAddress.isLoopbackAddress()) {
 	                    ret = inetAddress.getHostAddress().toString();
 	                }
 	                else if (!findAuto && inetAddress.getHostAddress().toString().equals(ipAddress)) {

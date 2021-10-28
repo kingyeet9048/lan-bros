@@ -24,7 +24,6 @@ import cs410.lanbros.network.packets.InputTypes;
 import cs410.lanbros.network.packets.PacketType;
 import cs410.lanbros.network.packets.PlayerInputPacket;
 import cs410.lanbros.network.packets.ServerConnectedPacket;
-import cs410.lanbros.network.packets.Worker;
 import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManager;
 
@@ -96,11 +95,10 @@ public class Client implements Runnable, Serializable{
 		}
 	}
 	
-//	public void renderClient(Graphic2D graphics) {
+//	public void renderClient(Graphics2D graphics) {
 //		// TODO Auto-generated method stub
 //
 //	}
-	
 	public void updateClient() {
 		//TODO
 	}
@@ -251,9 +249,9 @@ public class Client implements Runnable, Serializable{
 		Client client2 = new Client(4321, "224.0.0.7", "Client 2");
 
 		// joining the servetr group
-		client.joinServerGroup("192.168.1.89", false);
-		server.joinServerGroup("192.168.1.89", false);
-		client2.joinServerGroup("192.168.1.89", false);
+		client.joinServerGroup("192.168.1.89", true);
+		server.joinServerGroup("192.168.1.89", true);
+		client2.joinServerGroup("192.168.1.89", true);
 		// starting thread
 		Thread serverThread = new Thread(server);
 		Thread clientThread = new Thread(client);

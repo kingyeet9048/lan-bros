@@ -30,9 +30,9 @@ public class Main
 		Client client2 = new Client(4321, "224.0.0.7", "Client 2");
 
 		// joining the servetr group
-		client.joinServerGroup("192.168.1.89", false);
-		server.joinServerGroup("192.168.1.89", false);
-		client2.joinServerGroup("192.168.1.89", false);
+		client.joinServerGroup("192.168.1.89", true);
+		server.joinServerGroup("192.168.1.89", true);
+		client2.joinServerGroup("192.168.1.89", true);
 		// starting thread
 		Thread serverThread = new Thread(server);
 		Thread clientThread = new Thread(client);

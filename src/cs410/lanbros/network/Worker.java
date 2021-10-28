@@ -1,4 +1,4 @@
-package cs410.lanbros.network.packets;
+package cs410.lanbros.network;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -9,8 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.crypto.SealedObject;
 
-import cs410.lanbros.network.Client;
-import cs410.lanbros.network.Server;
+import cs410.lanbros.network.packets.WrappedPacket;
 import cs410.lanbros.security.TransitManager;
 
 public class Worker implements Runnable{
