@@ -10,6 +10,7 @@ public class ServerWorker implements Runnable {
 	private Socket connectionDetail;
 	private BufferedReader reader;
 	private Server server;
+	private boolean terminateThread = false;
 
 	public ServerWorker(Socket connectionDetail, Server server) {
 		// TODO Auto-generated constructor stub
@@ -22,14 +23,31 @@ public class ServerWorker implements Runnable {
 		}
 	}
 
+	public boolean isTerminateThread() {
+		return terminateThread;
+	}
+
+	public void setTerminateThread(boolean terminateThread) {
+		this.terminateThread = terminateThread;
+	}
+
 	@Override
 	public void run() {
+		System.out.println("New ServerWorker Started");
 		// TODO Auto-generated method stub
-		while ((!connectionDetail.isClosed()) && connectionDetail.isConnected()) {
+		while (!connectionDetail.isInputShutdown() && (!connectionDetail.isClosed())
+				&& connectionDetail.isConnected()) {
 			try {
 				String apiCall = reader.readLine();
+				if (apiCall == null) {
+					continue;
+				}
+				if (terminateThread) {
+					break;
+				}
 				Request request = new Request(connectionDetail, apiCall);
 				server.addToQueue(request);
+				// System.out.println("Added a request to the queue: " + apiCall);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.err.printf("ServerWorker Read Error: %s\n", e.getMessage());
@@ -41,9 +59,14 @@ public class ServerWorker implements Runnable {
 		// TODO: Fahad make routes
 		Request request = new Request(connectionDetail, "/api/that/will/disconnect/client/from/game");
 		server.addToQueue(request);
-		// reduce the number of connected sockets by 1
-		Listener list = server.getListener();
-		list.setNumberOfConnections(list.getNumberOfConnections() - 1);
+		try {
+			System.out.println("Connection with host IP terminated: "
+					+ connectionDetail.getInetAddress().getLocalHost().toString());
+			connectionDetail.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.err.printf("ServerWorker Read Error: %s\n", e.getMessage());
+		}
 	}
 
 }

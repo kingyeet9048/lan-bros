@@ -10,19 +10,10 @@ public class Listener implements Runnable {
 
     private ServerSocket listen;
     private Server server;
-    private int numberOfConnections = 0;
 
     public Listener(ServerSocket listen, Server server) {
         this.listen = listen;
         this.server = server;
-    }
-
-    public synchronized int getNumberOfConnections() {
-        return numberOfConnections;
-    }
-
-    public synchronized void setNumberOfConnections(int numberOfConnections) {
-        this.numberOfConnections = numberOfConnections;
     }
 
     @Override
@@ -31,7 +22,9 @@ public class Listener implements Runnable {
         while (!listen.isClosed()) {
             try {
                 Socket newConnection = listen.accept();
-                if (numberOfConnections == server.getWorkers().size()) {
+                System.out.println(
+                        "Received new Connection from: " + newConnection.getInetAddress().getLocalHost().toString());
+                if (server.getWorkers().size() >= server.getMAX_PLAYERS()) {
                     OutputStream stream = newConnection.getOutputStream();
                     if (newConnection.isConnected() && newConnection.isOutputShutdown()) {
                         stream.write("Full Lobby\n".getBytes());
@@ -39,16 +32,15 @@ public class Listener implements Runnable {
                     }
                     // newConnection.close();
                 } else {
-                    Map<Socket, ServerWorker> connections = server.getWorkers();
                     ServerWorker newWorker = new ServerWorker(newConnection, server);
                     Thread newServerThread = new Thread(newWorker);
                     newServerThread.start();
-                    connections.put(newConnection, newWorker);
-                    server.setWorkers(connections);
-                    numberOfConnections++;
+                    server.getWorkers().put(newConnection, newWorker);
+                    System.out.println("Connection Added to list");
                 }
             } catch (IOException e) {
                 System.err.printf("Listener Error: %s\n", e.getMessage());
+                break;
             }
         }
     }
