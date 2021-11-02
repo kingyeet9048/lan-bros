@@ -38,6 +38,9 @@ public class ServerWorker implements Runnable {
 		// TODO: Create new request to let all other players know that this connection
 		// has been disconnected.
 		server.getWorkers().remove(connectionDetail);
+		// TODO: Fahad make routes
+		Request request = new Request(connectionDetail, "/api/that/will/disconnect/client/from/game");
+		server.addToQueue(request);
 		// reduce the number of connected sockets by 1
 		Listener list = server.getListener();
 		list.setNumberOfConnections(list.getNumberOfConnections() - 1);

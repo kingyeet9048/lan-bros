@@ -27,13 +27,18 @@ public class Server implements Runnable {
 
 	private Listener listener;
 
+	private String hostName;
+
 	public Server(int port, int MAX_PLAYERS) {
 		try {
 			server = new ServerSocket(port);
 			workers = new HashMap<>();
 			server.getInetAddress();
-			ipAddress = InetAddress.getLocalHost().toString().split("/")[1];
+			String[] hostInfo = InetAddress.getLocalHost().toString().split("/");
+			ipAddress = hostInfo[1];
+			hostName = hostInfo[0];
 			requestQueue = new LinkedList<>();
+			System.out.println(hostName);
 			System.out.println(ipAddress);
 		} catch (IOException e) {
 			System.err.printf("Server Error: %s\n", e.getMessage());
