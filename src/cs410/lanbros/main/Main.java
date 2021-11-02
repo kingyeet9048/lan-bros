@@ -37,8 +37,8 @@ public class Main
 		Thread serverThread = new Thread(server);
 		Thread clientThread = new Thread(client);
 		Thread clientThread2 = new Thread(client2);
-		clientThread.start();
 		serverThread.start();
+		clientThread.start();
 		clientThread2.start();
 
 		GuiButton button = new GuiButton("Testing!") {

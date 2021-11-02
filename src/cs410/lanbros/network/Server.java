@@ -251,7 +251,7 @@ public class Server implements Runnable, Serializable{
 								if (clientNames.contains(newPlayer.getPlayerName())) {
 									System.out.printf("%s: Player exists. Current Players: %s\n", serverName, clientNames.toString());
 
-									break;
+//									break;
 								}
 								else {
 									clientNames.add(newPlayer.getPlayerName());
