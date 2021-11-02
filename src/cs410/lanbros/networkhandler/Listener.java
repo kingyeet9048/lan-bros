@@ -17,6 +17,14 @@ public class Listener implements Runnable {
         this.server = server;
     }
 
+    public synchronized int getNumberOfConnections() {
+        return numberOfConnections;
+    }
+
+    public synchronized void setNumberOfConnections(int numberOfConnections) {
+        this.numberOfConnections = numberOfConnections;
+    }
+
     @Override
     public void run() {
         // TODO Auto-generated method stub
@@ -25,12 +33,17 @@ public class Listener implements Runnable {
                 Socket newConnection = listen.accept();
                 if (numberOfConnections == server.getWorkers().size()) {
                     OutputStream stream = newConnection.getOutputStream();
-                    stream.write("Full Lobby\n".getBytes());
-                    stream.flush();
+                    if (newConnection.isConnected() && newConnection.isOutputShutdown()) {
+                        stream.write("Full Lobby\n".getBytes());
+                        stream.flush();
+                    }
                     // newConnection.close();
                 } else {
                     Map<Socket, ServerWorker> connections = server.getWorkers();
-                    connections.put(newConnection, null);
+                    ServerWorker newWorker = new ServerWorker(newConnection, server);
+                    Thread newServerThread = new Thread(newWorker);
+                    newServerThread.start();
+                    connections.put(newConnection, newWorker);
                     server.setWorkers(connections);
                     numberOfConnections++;
                 }
