@@ -53,7 +53,7 @@ public class Server implements Runnable {
 			hostName = hostInfo[0];
 			requestQueue = new LinkedList<>();
 			this.MAX_PLAYERS = MAX_PLAYERS;
-			router = new Router();
+			router = new Router(this);
 			System.out.println(hostName);
 			System.out.println(ipAddress);
 		} catch (IOException e) {
@@ -182,7 +182,7 @@ public class Server implements Runnable {
 					// make a new printwriter everytime because the connection socket could change
 					writer = new PrintWriter(request.getReceiver().getOutputStream());
 
-					boolean result = router.routeRequest(request.getApi());
+					boolean result = router.routeRequest(request);
 
 					System.out.printf("Route %s Processed: %s\n", request.getApi(), result);
 
