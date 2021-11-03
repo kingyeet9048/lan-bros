@@ -2,9 +2,9 @@ package cs410.lanbros.networkhandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,8 +47,7 @@ public class Server implements Runnable {
 		try {
 			server = new ServerSocket(port);
 			workers = new HashMap<>();
-			server.getInetAddress();
-			String[] hostInfo = InetAddress.getLocalHost().toString().split("/");
+			String[] hostInfo = server.getInetAddress().getLocalHost().toString().split("/");
 			ipAddress = hostInfo[1];
 			hostName = hostInfo[0];
 			requestQueue = new LinkedList<>();
@@ -187,20 +186,16 @@ public class Server implements Runnable {
 				// will output the payload and all we do is send the result of it.
 
 				try {
-					// make a new printwriter everytime because the connection socket could change
-					writer = new PrintWriter(request.getReceiver().getOutputStream());
-
 					boolean result = router.routeRequest(request);
 
 					System.out.printf("Route %s Processed: %s\n", request.getApi(), result);
 
-					// TODO: Either handle sending here or handle sending in the router
-					// TODO: either way, we need to send to that specific person or send to all
-					// sockets
-					// TODO: depending on what the request is
-
-				} catch (IOException e) {
+				} catch (SocketException e) {
 					// something went wrong... adding the request back to the queue and trying again
+					System.err.printf("Server Error: %s\n", e.getMessage());
+					System.err.println("Client disconnected: " + request.getReceiver().getInetAddress().getHostName());
+					 System.out.println(getWorkers().toString());
+				} catch (IOException e) {
 					System.err.printf("Server Error: %s\n", e.getMessage());
 					requestQueue.add(request);
 					continue;
@@ -219,6 +214,7 @@ public class Server implements Runnable {
 			System.out.println(socket.isConnected());
 			TimeUnit.SECONDS.sleep(1);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
+			// need a space before the query to allow the worker to read the first byte to see if the stream is still active
 			writer.write(" /api/conn/client/connection\n");
 			writer.flush();
 			// System.out.println(server.getWorkers().toString());
@@ -228,13 +224,10 @@ public class Server implements Runnable {
 			// System.out.println(server.getWorkers().toString());
 			// server.getServer().close();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
