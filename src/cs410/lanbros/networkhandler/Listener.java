@@ -23,7 +23,7 @@ public class Listener implements Runnable {
             try {
                 Socket newConnection = listen.accept();
                 System.out.println(
-                        "Received new Connection from: " + newConnection.getInetAddress().getLocalHost().toString());
+                        "Received new Connection from: " + newConnection.getInetAddress().getHostName());
                 if (server.getWorkers().size() >= server.getMAX_PLAYERS()) {
                     OutputStream stream = newConnection.getOutputStream();
                     if (newConnection.isConnected() && newConnection.isOutputShutdown()) {

@@ -219,7 +219,7 @@ public class Server implements Runnable {
 			System.out.println(socket.isConnected());
 			TimeUnit.SECONDS.sleep(1);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
-			writer.write("/api/conn/client/connection\n");
+			writer.write(" /api/conn/client/connection\n");
 			writer.flush();
 			// System.out.println(server.getWorkers().toString());
 			// writer.write("/terminate\n");

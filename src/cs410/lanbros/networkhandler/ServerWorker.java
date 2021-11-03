@@ -38,12 +38,13 @@ public class ServerWorker implements Runnable {
 		while (!connectionDetail.isInputShutdown() && (!connectionDetail.isClosed())
 				&& connectionDetail.isConnected()) {
 			try {
+				if (terminateThread || reader.read() == -1) {
+					connectionDetail.close();
+					break;
+				}
 				String apiCall = reader.readLine();
 				if (apiCall == null) {
 					continue;
-				}
-				if (terminateThread) {
-					break;
 				}
 				Request request = new Request(connectionDetail, apiCall);
 				server.addToQueue(request);
@@ -60,9 +61,11 @@ public class ServerWorker implements Runnable {
 		Request request = new Request(connectionDetail, "/api/that/will/disconnect/client/from/game");
 		server.addToQueue(request);
 		try {
-			System.out.println("Connection with host IP terminated: "
-					+ connectionDetail.getInetAddress().getLocalHost().toString());
-			connectionDetail.close();
+			System.out.println("Connection with host terminated: "
+					+ connectionDetail.getInetAddress().getHostName());
+			if (!connectionDetail.isClosed()) {
+				connectionDetail.close();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.err.printf("ServerWorker Read Error: %s\n", e.getMessage());
