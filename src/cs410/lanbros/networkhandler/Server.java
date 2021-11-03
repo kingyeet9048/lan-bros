@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,7 +47,7 @@ public class Server implements Runnable {
 	public Server(int port, int MAX_PLAYERS) {
 		try {
 			server = new ServerSocket(port);
-			workers = new HashMap<>();
+			workers = new ConcurrentHashMap<>();
 			String[] hostInfo = server.getInetAddress().getLocalHost().toString().split("/");
 			ipAddress = hostInfo[1];
 			hostName = hostInfo[0];
