@@ -3,7 +3,10 @@ package cs410.lanbros.networkhandler;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
+
+import com.google.gson.Gson;
 
 /**
  * Router will accept apis and route them to the corresponding logic. Router
@@ -23,13 +26,13 @@ public class Router {
         this.server = server;
     }
 
-    public boolean routeRequest(Request request) {
+    public boolean routeRequest(Request request) throws IOException {
         // place holder for routing the request...
         // ex /api/conn/client
         String api = request.getApi();
         // String[] apiSplit = api.split("/");
 
-        boolean result;
+        boolean result = false;
         if (api.contains("/api/conn")) {
             result = handleConnection(request);
         } else if (api.contains("/api/")) {
@@ -46,6 +49,16 @@ public class Router {
                 Socket currentKey = entry.getKey();
 
                 PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
+
+                Gson gson = new Gson();
+                Map<String, String> object = new HashMap<>();
+                object.put("api", request.getApi());
+                object.put("username", request.getReceiver().getInetAddress().getLocalHost().toString().split("/")[0]);
+                String payload = gson.toJson(object);
+
+                System.out.println(payload);
+
+                writer.write(payload);
             }
         }
         return true;

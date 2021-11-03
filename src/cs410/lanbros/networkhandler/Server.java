@@ -97,6 +97,14 @@ public class Server implements Runnable {
 		MAX_PLAYERS = mAX_PLAYERS;
 	}
 
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -211,14 +219,14 @@ public class Server implements Runnable {
 			System.out.println(socket.isConnected());
 			TimeUnit.SECONDS.sleep(1);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
-			writer.write("/api/something\n");
+			writer.write("/api/conn/client/connection\n");
 			writer.flush();
-			System.out.println(server.getWorkers().toString());
-			writer.write("/terminate\n");
-			writer.flush();
-			socket.close();
-			System.out.println(server.getWorkers().toString());
-			server.getServer().close();
+			// System.out.println(server.getWorkers().toString());
+			// writer.write("/terminate\n");
+			// writer.flush();
+			// socket.close();
+			// System.out.println(server.getWorkers().toString());
+			// server.getServer().close();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
