@@ -1,5 +1,7 @@
 package cs410.lanbros.networkhandler;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
 
@@ -37,11 +39,13 @@ public class Router {
         return result;
     }
 
-    public boolean handleConnection(Request request) {
+    public boolean handleConnection(Request request) throws IOException {
         if (request.getApi().contains("/client/connection")) {
             Map<Socket, ServerWorker> clients = server.getWorkers();
-            for (Map<Socket, ServerWorker>.Entry entry : clients.entrySet()) {
+            for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
+                Socket currentKey = entry.getKey();
 
+                PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
             }
         }
         return true;
