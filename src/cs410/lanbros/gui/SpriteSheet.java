@@ -22,26 +22,46 @@ public class SpriteSheet
 	 */
 	public final ImageIcon animImage;
 	
-	//The current animation id.
-	protected String curAnimID;
-	//the frames left in the current animation
-	protected ArrayList<String> framesLeft = new ArrayList<String>(); 	
-	//The current frame being acted on.
-	private SpriteFrame curFrame;
-	
 	/**
 	 * The map of registered stringIDs for this SpriteSheet to their {@link SpriteFrame}.
 	 */
-	protected HashMap<String, SpriteFrame> frameMap = new HashMap<String, SpriteFrame>();
+	protected final HashMap<String, SpriteFrame> frameMap;
 
 	/**
 	 * The map of registered animations for this SpriteSheet to a list of {@link SpriteFrame} for the animation.
 	 */
-	protected HashMap<String, List<String>> animMap = new HashMap<String, List<String>>();
+	protected final HashMap<String, List<String>> animMap;
 	
+	/**
+	 * The current animation id.
+	 */
+	protected String curAnimID;
+
+	/**
+	 * The frames left in the current animation.
+	 */
+	protected ArrayList<String> framesLeft = new ArrayList<String>(); 	
+	
+	/**
+	 * The current frame being acted on.
+	 */
+	private SpriteFrame curFrame;
+
+	/**
+	 * Whether or not the animation should continue updating.
+	 */
+	protected boolean isPaused;
+
+	/**
+	 * Creates a new SpriteSheet object for the specified image.
+	 * @param image the source image to use for this spritesheet.
+	 */
 	public SpriteSheet(ImageIcon image)
 	{
+		frameMap = new HashMap<String, SpriteFrame>();
+		animMap = new HashMap<String, List<String>>();
 		animImage = image;
+		isPaused = false;
 		addDefaultState();
 	}
 	
@@ -56,7 +76,7 @@ public class SpriteSheet
 	/**
 	 * Adds a frame with the given parameters to the frame map for this SpriteSheet. Intended to be called upon construction of SpriteSheet.
 	 * @param id the string id of this frame.
-	 * @param frameCount the amount of frames this frame should last.
+	 * @param frameCount the amount of frames this frame should last. If set to -1, any animation that uses this frame will stop updating on this frame.
 	 * @param uvx the top left corner of the rendered area of this frame, in pixels.
 	 * @param uvy the top left corner of the rendered area of this frame, in pixels.
 	 * @param uvw the width of the rendered area of this frame, in pixels. Offset by uvx.
@@ -138,10 +158,45 @@ public class SpriteSheet
 			curFrame.frameCount = curFrame.maxFrameCount;
 			return true;
 		}
-		else
+
+		return false;
+	}
+	
+	/**
+	 * Sets the currently displayed frame of this SpriteSheet. This will freeze any animations currently playing. 
+	 * If the frameID is not registered, this function does nothing.
+	 * 
+	 * @param frameID the string ID of the frame to render.
+	 * @return true if the frame exists, false if not.
+	 */
+	public boolean setCurrentFrame(String frameID)
+	{
+		if(frameMap.containsKey(frameID))
 		{
-			return false;
+			curFrame = frameMap.get(frameID);
+			curFrame.frameCount = -1;
+			return true;
 		}
+
+		return false;
+	}
+	
+	/**
+	 * Sets the animation state of this SpriteSheet.
+	 * 
+	 * @param paused true to pause the animation, false to update the animation
+	 */
+	public void setPaused(boolean paused)
+	{
+		isPaused = paused;
+	}
+	
+	/**
+	 * @return whether the animation is paused or not.
+	 */
+	public boolean isPaused()
+	{
+		return isPaused;
 	}
 
 	/**
@@ -169,7 +224,7 @@ public class SpriteSheet
 		}
 		
 		//check for >= 0, because if -1 then permanent frame.
-		if(curFrame.frameCount >= 0)
+		if(curFrame.frameCount >= 0 && !isPaused)
 		{
 			curFrame.updateCounter();
 			
@@ -187,7 +242,6 @@ public class SpriteSheet
 				curFrame = frameMap.get(framesLeft.get(0));
 				//and then reset frame lifetime to the maximum lifetime.
 				curFrame.frameCount = curFrame.maxFrameCount;					
-				System.out.println("New frame! "+curFrame.frameID);
 			}
 		}
 	}
@@ -233,11 +287,9 @@ public class SpriteSheet
 		{
 			int width = (int)(curFrame.uvW * xScale);
 			int height = (int)(curFrame.uvH * yScale);
-			graphics.translate(xPivot, yPivot);
-			graphics.rotate(rotation);
+			graphics.rotate(rotation, xPivot+x, yPivot+y);
 			graphics.drawImage(animImage.getImage(), (int)(x-width/2), (int)(y-height/2), (int)(x+width/2), (int)(y+height/2), curFrame.uvX, curFrame.uvY, curFrame.uvX+curFrame.uvW, curFrame.uvY+curFrame.uvH, null);
-			graphics.rotate(-rotation);
-			graphics.translate(-xPivot, -yPivot);			
+			graphics.rotate(-rotation, xPivot+x, yPivot+y);
 		}
 	}
 	
@@ -249,8 +301,16 @@ public class SpriteSheet
 	 */
 	public class SpriteFrame 
 	{
+		/**
+		 * The string ID of this frame.
+		 */
 		protected final String frameID;
+		
+		/**
+		 * A UV coordinate, specifying a rectangle in the source image of the SpriteSheet this frame is used in.
+		 */
 		protected int uvX, uvY, uvW, uvH;
+		
 		/**
 		 * The amount of ingame ticks to render this frame for.
 		 */
@@ -261,6 +321,16 @@ public class SpriteSheet
 		 */
 		protected int maxFrameCount;
 		
+		/**
+		 * Creates a new SpriteFrame for an animation in SpriteSheet.
+		 * 
+		 * @param id the string id of this frame.
+		 * @param frameC The amount of repaints this frame will last.
+		 * @param uvx the top-left x-coordinate of the source rect for this frame.
+		 * @param uvy the top-left y-coordinate of the source rect for this frame.
+		 * @param uvw the width of the source rect for this frame, offset by uvx.
+		 * @param uvh the height of the source rect for this frame, offset by uvy.
+		 */
 		public SpriteFrame(String id, int frameC, int uvx, int uvy, int uvw, int uvh)
 		{
 			frameID = id;
@@ -272,6 +342,9 @@ public class SpriteSheet
 			maxFrameCount = frameC;
 		}
 		
+		/**
+		 * A method to decrement the {@link frameCount}. Implemented to support inheritance for custom behavior.
+		 */
 		protected void updateCounter()
 		{
 			--frameCount;

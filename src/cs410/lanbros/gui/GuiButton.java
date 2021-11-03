@@ -1,7 +1,6 @@
 package cs410.lanbros.gui;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -17,7 +16,8 @@ public abstract class GuiButton extends JButton implements MouseListener
 	public GuiButton(String text)
 	{
 		super(text);
-		this.addMouseListener(this);
+		setVisible(true);
+		addMouseListener(this);
 	}
 	
 	public void paintComponent(Graphics graphics)
