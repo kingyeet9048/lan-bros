@@ -1,5 +1,7 @@
 package cs410.lanbros.animation;
 
+import java.awt.Rectangle;
+
 /**
  * A GUI element helper class to create and animate a list of frames into an animation. 
  * Has support for inheritance to allow for custom frame behaviors.
@@ -47,6 +49,14 @@ public class SpriteFrame
 		uvH = uvh;
 		frameCount = frameC;
 		maxFrameCount = frameC;
+	}
+	
+	/**
+	 * @return the source rectangle for the image this frame is used with.
+	 */
+	public Rectangle getSourceRect()
+	{
+		return new Rectangle(uvX,uvY,uvW,uvH);
 	}
 	
 	/**

@@ -20,17 +20,17 @@ public class SpriteSheet
 	/**
 	 * The image this SpriteSheet is splitting up.
 	 */
-	public final ImageIcon animImage;
+	protected ImageIcon sourceImage;
 	
 	/**
 	 * The map of registered stringIDs for this SpriteSheet to their {@link SpriteFrame}.
 	 */
-	protected final HashMap<String, SpriteFrame> frameMap;
+	protected HashMap<String, SpriteFrame> frameMap;
 
 	/**
 	 * The map of registered animations for this SpriteSheet to a list of {@link SpriteFrame} for the animation.
 	 */
-	protected final HashMap<String, List<String>> animMap;
+	protected HashMap<String, List<String>> animMap;
 	
 	/**
 	 * The current animation id.
@@ -45,7 +45,7 @@ public class SpriteSheet
 	/**
 	 * The current frame being acted on.
 	 */
-	private SpriteFrame curFrame;
+	protected SpriteFrame curFrame;
 
 	/**
 	 * Whether or not the animation should continue updating.
@@ -58,19 +58,33 @@ public class SpriteSheet
 	 */
 	public SpriteSheet(ImageIcon image)
 	{
+		setSourceImage(image);
+	}
+	
+	public ImageIcon getSourceImage()
+	{
+		return sourceImage;
+	}
+	
+	/**
+	 * Updates the image used by this SpriteSheet, resetting the animation
+	 * @param image the new image to use for this SpriteSheet.
+	 */
+	public SpriteSheet setSourceImage(ImageIcon image)
+	{
 		frameMap = new HashMap<String, SpriteFrame>();
 		animMap = new HashMap<String, List<String>>();
-		animImage = image;
+		sourceImage = image;
 		isPaused = false;
-		addDefaultState();
+		return addDefaultState();
 	}
 	
 	/**
 	 * A helper function to ensure that when the SpriteSheet constructs, or the frames or animations are cleared, there will always be something rendered.
 	 */
-	private void addDefaultState()
+	private SpriteSheet addDefaultState()
 	{
-		addFrame("default", -1, 0, 0, animImage.getIconWidth(), animImage.getIconHeight()); 
+		return addFrame("default", -1, 0, 0, sourceImage.getIconWidth(), sourceImage.getIconHeight()); 
 	}
 	
 	/**
@@ -330,7 +344,7 @@ public class SpriteSheet
 			int width = (int)(curFrame.uvW * xScale);
 			int height = (int)(curFrame.uvH * yScale);
 			graphics.rotate(rotation, xPivot+x, yPivot+y);
-			graphics.drawImage(animImage.getImage(), (int)(x-width/2), (int)(y-height/2), (int)(x+width/2), (int)(y+height/2), curFrame.uvX, curFrame.uvY, curFrame.uvX+curFrame.uvW, curFrame.uvY+curFrame.uvH, null);
+			graphics.drawImage(sourceImage.getImage(), (int)(x-width/2), (int)(y-height/2), (int)(x+width/2), (int)(y+height/2), curFrame.uvX, curFrame.uvY, curFrame.uvX+curFrame.uvW, curFrame.uvY+curFrame.uvH, null);
 			graphics.rotate(-rotation, xPivot+x, yPivot+y);
 		}
 	}
