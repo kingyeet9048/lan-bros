@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 public class Client implements Runnable {
 
@@ -72,14 +71,14 @@ public class Client implements Runnable {
 			System.out.println("Player list updated: " + currentPlayer.toString());
 		}
 	}
-	
-	public void removePlayerFromList (String player) {
+
+	public void removePlayerFromList(String player) {
 		if (currentPlayer.contains(player)) {
 			currentPlayer.remove(player);
 			System.out.println("Player list updated: " + currentPlayer.toString());
 		}
 	}
- 
+
 	public void updatePlayers() {
 		System.out.println("Would update players here");
 	}
