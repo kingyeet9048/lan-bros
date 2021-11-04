@@ -163,6 +163,7 @@ public class SpriteSheet
 		animMap.remove(animID);
 		animMap.put(animID, Arrays.asList(frameIDs));
 		curAnimID = animID;
+		framesLeft = new ArrayList<String>(animMap.get(animID));
 		
 		if(frameIDs.length > 0)
 		{

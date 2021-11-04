@@ -38,7 +38,7 @@ public class GuiFrame extends JFrame
 		}
 	});
 	
-	protected JPanel activePanel = new JPanel() {
+	protected final JPanel activePanel = new JPanel() {
 		private static final long serialVersionUID = 0;
 
 		public void paintComponent(Graphics g)
@@ -51,7 +51,7 @@ public class GuiFrame extends JFrame
 	//List of active states in this GuiFrame.
 	protected final LinkedList<GuiState> activeStates = new LinkedList<GuiState>();
 	//state flag for the frame
-	protected boolean frameClosed = false;
+	private boolean frameClosed = false;
 	
 	public GuiFrame()
 	{
