@@ -2,9 +2,9 @@ package cs410.lanbros.main;
 
 import javax.swing.ImageIcon;
 
+import cs410.lanbros.animation.SpriteSheet;
 import cs410.lanbros.gui.GuiButton;
 import cs410.lanbros.gui.GuiFrame;
-import cs410.lanbros.gui.SpriteSheet;
 import cs410.lanbros.gui.state.TestState;
 import cs410.lanbros.network.Client;
 import cs410.lanbros.network.Server;

@@ -1,4 +1,4 @@
-package cs410.lanbros.gui;
+package cs410.lanbros.animation;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -112,6 +112,33 @@ public class SpriteSheet
 	}
 	
 	/**
+	 * Sets the currently displayed frame of this SpriteSheet. This will freeze any animations currently playing. 
+	 * If the frameID is not registered, this function does nothing.
+	 * 
+	 * @param frameID the string ID of the frame to render.
+	 * @return true if the frame exists, false if not.
+	 */
+	public boolean setCurrentFrame(String frameID)
+	{
+		if(frameMap.containsKey(frameID))
+		{
+			curFrame = frameMap.get(frameID);
+			curFrame.frameCount = -1;
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
+	 * @return the String ID of the current frame, defined with {@link addFrame}.
+	 */
+	public String getCurrentFrame()
+	{
+		return curFrame.frameID;
+	}
+	
+	/**
 	 * Adds a registered animation to the animation map of this SpriteSheet with the list of frame IDs, in order. Intended to be called upon construction of SpriteSheet.
 	 * @param animID the id of the animation
 	 * @param frameIDs the list of frameIDs, in order, that this animation possesses.
@@ -133,6 +160,27 @@ public class SpriteSheet
 	}
 	
 	/**
+	 * A function that manually updates the animation the specified amount of times. 
+	 * With this, if a frame has a duration of -1, 
+	 * no matter how far you call this function it will stay on this frame once it becomes active.
+	 * 
+	 * @param frameCount The number of frames, specified in {@link SpriteFrame}, to update this animation by. Must be a positive number, otherwise this function does nothing.
+	 */
+	public void offsetAnimation(int frameCount)
+	{
+		for(;frameCount > 0; --frameCount)
+			updateSpriteSheet();
+	}
+	
+	/**
+	 * Restarts the current frame to the first frame of the current animation.
+	 */
+	public void restartAnimation()
+	{
+		setCurrentAnimation(curAnimID);
+	}
+	
+	/**
 	 * Wipes all registered frames from this SpriteSheet object.
 	 */
 	public void clearAnimations()
@@ -140,7 +188,6 @@ public class SpriteSheet
 		animMap.clear();
 		addDefaultState();
 	}
-
 	
 	/**
 	 * Sets the current animation to the specified animation. 
@@ -153,6 +200,7 @@ public class SpriteSheet
 		if(animMap.containsKey(animID))
 		{
 			curAnimID = animID;
+			framesLeft = new ArrayList<String>(animMap.get(animID));
 			//Initialize the working frame
 			curFrame = frameMap.get(framesLeft.get(0));	
 			curFrame.frameCount = curFrame.maxFrameCount;
@@ -163,22 +211,11 @@ public class SpriteSheet
 	}
 	
 	/**
-	 * Sets the currently displayed frame of this SpriteSheet. This will freeze any animations currently playing. 
-	 * If the frameID is not registered, this function does nothing.
-	 * 
-	 * @param frameID the string ID of the frame to render.
-	 * @return true if the frame exists, false if not.
+	 * @return the String ID of the current animation, defined with {@link addAnimation}.
 	 */
-	public boolean setCurrentFrame(String frameID)
+	public String getCurrentAnimation()
 	{
-		if(frameMap.containsKey(frameID))
-		{
-			curFrame = frameMap.get(frameID);
-			curFrame.frameCount = -1;
-			return true;
-		}
-
-		return false;
+		return curAnimID;
 	}
 	
 	/**
@@ -189,6 +226,11 @@ public class SpriteSheet
 	public void setPaused(boolean paused)
 	{
 		isPaused = paused;
+		
+		if(paused && curFrame.frameCount < 0) //resume animation if it was manually frozen with setCurrentFrame.
+		{
+			curFrame.frameCount = curFrame.maxFrameCount;
+		}
 	}
 	
 	/**
@@ -290,64 +332,6 @@ public class SpriteSheet
 			graphics.rotate(rotation, xPivot+x, yPivot+y);
 			graphics.drawImage(animImage.getImage(), (int)(x-width/2), (int)(y-height/2), (int)(x+width/2), (int)(y+height/2), curFrame.uvX, curFrame.uvY, curFrame.uvX+curFrame.uvW, curFrame.uvY+curFrame.uvH, null);
 			graphics.rotate(-rotation, xPivot+x, yPivot+y);
-		}
-	}
-	
-	/**
-	 * A GUI element helper class to create and animate a list of frames into an animation. 
-	 * Has support for inheritance to allow for custom frame behaviors.
-	 * 
-	 * @author Ashton Schultz
-	 */
-	public class SpriteFrame 
-	{
-		/**
-		 * The string ID of this frame.
-		 */
-		protected final String frameID;
-		
-		/**
-		 * A UV coordinate, specifying a rectangle in the source image of the SpriteSheet this frame is used in.
-		 */
-		protected int uvX, uvY, uvW, uvH;
-		
-		/**
-		 * The amount of ingame ticks to render this frame for.
-		 */
-		protected int frameCount;
-		
-		/**
-		 * The amount of ingame ticks to render this frame for. Used to reset {@link frameCount}.
-		 */
-		protected int maxFrameCount;
-		
-		/**
-		 * Creates a new SpriteFrame for an animation in SpriteSheet.
-		 * 
-		 * @param id the string id of this frame.
-		 * @param frameC The amount of repaints this frame will last.
-		 * @param uvx the top-left x-coordinate of the source rect for this frame.
-		 * @param uvy the top-left y-coordinate of the source rect for this frame.
-		 * @param uvw the width of the source rect for this frame, offset by uvx.
-		 * @param uvh the height of the source rect for this frame, offset by uvy.
-		 */
-		public SpriteFrame(String id, int frameC, int uvx, int uvy, int uvw, int uvh)
-		{
-			frameID = id;
-			uvX = uvx;
-			uvY = uvy;
-			uvW = uvw;
-			uvH = uvh;
-			frameCount = frameC;
-			maxFrameCount = frameC;
-		}
-		
-		/**
-		 * A method to decrement the {@link frameCount}. Implemented to support inheritance for custom behavior.
-		 */
-		protected void updateCounter()
-		{
-			--frameCount;
 		}
 	}
 }
