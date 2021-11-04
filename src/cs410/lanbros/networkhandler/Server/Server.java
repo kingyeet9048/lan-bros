@@ -1,4 +1,4 @@
-package cs410.lanbros.networkhandler;
+package cs410.lanbros.networkhandler.Server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,12 +6,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import cs410.lanbros.networkhandler.Request;
+import cs410.lanbros.networkhandler.Client.Client;
 
 /**
  * 
@@ -195,7 +197,7 @@ public class Server implements Runnable {
 					// something went wrong... adding the request back to the queue and trying again
 					System.err.printf("Server Error: %s\n", e.getMessage());
 					System.err.println("Client disconnected: " + request.getReceiver().getInetAddress().getHostName());
-					 System.out.println(getWorkers().toString());
+					System.out.println(getWorkers().toString());
 				} catch (IOException e) {
 					System.err.printf("Server Error: %s\n", e.getMessage());
 					requestQueue.add(request);
@@ -209,28 +211,16 @@ public class Server implements Runnable {
 		Server server = new Server(4321, 4);
 		Thread serveThread = new Thread(server);
 		serveThread.start();
-		try {
-			// test
-			Socket socket = new Socket(server.getIpAddress(), 4321);
-			System.out.println(socket.isConnected());
-			TimeUnit.SECONDS.sleep(1);
-			PrintWriter writer = new PrintWriter(socket.getOutputStream());
-			// need a space before the query to allow the worker to read the first byte to see if the stream is still active
-			writer.write(" /api/conn/client/connection\n");
-			writer.flush();
-			// System.out.println(server.getWorkers().toString());
-			// writer.write("/terminate\n");
-			// writer.flush();
-			// socket.close();
-			// System.out.println(server.getWorkers().toString());
-			// server.getServer().close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		// test
+		Client client = new Client(server.getIpAddress(), 4321);
+		Thread clientThread = new Thread(client);
+		clientThread.start();
+		// System.out.println(server.getWorkers().toString());
+		// writer.write("/terminate\n");
+		// writer.flush();
+		// socket.close();
+		// System.out.println(server.getWorkers().toString());
+		// server.getServer().close();
 	}
 
 }

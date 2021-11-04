@@ -1,10 +1,9 @@
-package cs410.lanbros.networkhandler;
+package cs410.lanbros.networkhandler.Server;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 
 public class Listener implements Runnable {
 
@@ -22,8 +21,7 @@ public class Listener implements Runnable {
         while (!listen.isClosed()) {
             try {
                 Socket newConnection = listen.accept();
-                System.out.println(
-                        "Received new Connection from: " + newConnection.getInetAddress().getHostName());
+                System.out.println("Received new Connection from: " + newConnection.getInetAddress().getHostName());
                 if (server.getWorkers().size() >= server.getMAX_PLAYERS()) {
                     OutputStream stream = newConnection.getOutputStream();
                     if (newConnection.isConnected() && newConnection.isOutputShutdown()) {

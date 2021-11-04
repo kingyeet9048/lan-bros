@@ -1,4 +1,4 @@
-package cs410.lanbros.networkhandler;
+package cs410.lanbros.networkhandler.Server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
+
+import cs410.lanbros.networkhandler.Request;
 
 /**
  * Router will accept apis and route them to the corresponding logic. Router
@@ -58,7 +60,8 @@ public class Router {
 
                 System.out.println(payload);
 
-                writer.write(payload);
+                writer.write(" " + payload + "\n");
+                writer.flush();
             }
         }
         return true;

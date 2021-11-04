@@ -1,9 +1,12 @@
-package cs410.lanbros.networkhandler;
+package cs410.lanbros.networkhandler.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
+
+import cs410.lanbros.networkhandler.Request;
 
 public class ServerWorker implements Runnable {
 
@@ -49,6 +52,10 @@ public class ServerWorker implements Runnable {
 				Request request = new Request(connectionDetail, apiCall);
 				server.addToQueue(request);
 				// System.out.println("Added a request to the queue: " + apiCall);
+			} catch (SocketException e1) {
+				System.err.printf("ServerWorker Read Error: %s\n", e1.getMessage());
+				break;
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.err.printf("ServerWorker Read Error: %s\n", e.getMessage());
@@ -61,8 +68,7 @@ public class ServerWorker implements Runnable {
 		Request request = new Request(connectionDetail, "/api/that/will/disconnect/client/from/game");
 		server.addToQueue(request);
 		try {
-			System.out.println("Connection with host terminated: "
-					+ connectionDetail.getInetAddress().getHostName());
+			System.out.println("Connection with host terminated: " + connectionDetail.getInetAddress().getHostName());
 			if (!connectionDetail.isClosed()) {
 				connectionDetail.close();
 			}
