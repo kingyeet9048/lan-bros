@@ -1,9 +1,11 @@
 package cs410.lanbros.main;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.ImageIcon;
 
+import cs410.lanbros.animation.SpriteSheet;
 import cs410.lanbros.gui.GuiButton;
+import cs410.lanbros.gui.GuiFrame;
+import cs410.lanbros.gui.state.TestState;
 import cs410.lanbros.network.Client;
 import cs410.lanbros.network.Server;
 import cs410.lanbros.network.packets.InputTypes;
@@ -13,13 +15,17 @@ import cs410.lanbros.security.TransitManager;
 
 public class Main 
 {
+	public static final SpriteSheet test = new SpriteSheet(new ImageIcon("resources/gfx/test.png"))
+			.addFrame("wink0", 15, 0, 0, 8, 8)
+			.addFrame("wink1", 10, 8, 0, 8, 8)
+			.addFrame("wink2", 15, 16, 0, 8, 8)
+			.addAnimation("wink", 	"wink0", "wink1", "wink2", "wink1");
+
 	public static void main(String[] args)
 	{
-		JFrame frame = new JFrame("Demo");
-		frame.setBounds(100, 100, 900, 600);
-		frame.setLocationRelativeTo(null); //center GUI
-		JPanel panel = new JPanel();
-		frame.add(panel);
+		GuiFrame frame = new GuiFrame();
+		frame.addActiveState(new TestState());
+
 		// test 
 		//Creating a new transit manager
 		TransitManager transitManger = new TransitManager("AES");
@@ -63,8 +69,29 @@ public class Main
 				}
 			}
 		};
+		button.setBounds(160, 66, 128, 32);
+		frame.getActivePanel().add(button);
+
 		
-		panel.add(button);
-		frame.setVisible(true);
+		new Thread(()-> {
+			while(!frame.isClosed())
+			{
+				try {
+					Thread.sleep(1000);					
+				}
+				catch(InterruptedException e)
+				{
+					break;
+				}
+			}
+			
+			client.closeServerDown();
+			client2.closeServerDown();
+			server.closeServerDown();
+			System.exit(0);
+		}).start();
+		
+		
 	}
 }
+

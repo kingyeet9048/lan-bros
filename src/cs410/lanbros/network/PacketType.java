@@ -1,17 +1,15 @@
-package cs410.lanbros.network.packets;
+package cs410.lanbros.network;
 
 /**
  * @CreatedBy Sulaiman Bada
  *
  */
-public enum PacketType {
+enum PacketType {
 	PLAYER_INPUT,
 	PLAYER_DISCONNECTED,
 	PLAYER_CONNECTED,
 	PLAYER_PAUSE,
 	LEVEL_RESTART,
 	GOAL_REACHED,
-	NPC_TOUCHED,
-	SERVER_DISCONNECT,
-	SERVER_CONNECT
+	NPC_TOUCHED
 }
