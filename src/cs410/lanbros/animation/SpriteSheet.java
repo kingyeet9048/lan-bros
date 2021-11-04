@@ -182,6 +182,22 @@ public class SpriteSheet
 	 */
 	public void offsetAnimation(int frameCount)
 	{
+		offsetAnimation(false, frameCount);
+	}
+	
+	/**
+	 * A function that manually updates the animation the specified amount of times. 
+	 * With this, if a frame has a duration of -1, 
+	 * no matter how far you call this function it will stay on this frame once it becomes active.
+	 * 
+	 * @param restart true to restart the animation before changing the offset, false to keep the animation at its current position.
+	 * @param frameCount The number of frames, specified in {@link SpriteFrame}, to update this animation by. Must be a positive number, otherwise this function does nothing.
+	 */
+	public void offsetAnimation(boolean restart, int frameCount)
+	{
+		if(restart)
+			restartAnimation();
+		
 		for(;frameCount > 0; --frameCount)
 			updateSpriteSheet();
 	}
