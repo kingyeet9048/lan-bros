@@ -28,7 +28,7 @@ public class GuiFrame extends JFrame
 	/**
 	 * A constant telling the time, in milliseconds, between each SpriteSheet frame update.
 	 */
-	public static final int ANIMATION_INTERVAL = 20;
+	public static final int ANIMATION_INTERVAL = 1000/60;
 	
 	//repaint for animation
 	protected final Timer animationTimer = new Timer(ANIMATION_INTERVAL, new ActionListener() {
