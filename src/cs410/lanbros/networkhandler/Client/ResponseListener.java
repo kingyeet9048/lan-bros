@@ -44,7 +44,7 @@ public class ResponseListener implements Runnable {
                 System.err.printf("ResponseListener Error: %s\n", e1.getMessage());
                 break;
             }
-            
+
             catch (IOException e) {
                 System.err.printf("ResponseListener Error: %s\n", e.getMessage());
             }
