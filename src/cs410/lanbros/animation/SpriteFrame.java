@@ -1,7 +1,5 @@
 package cs410.lanbros.animation;
 
-import java.awt.Rectangle;
-
 /**
  * A GUI element helper class to create and animate a list of frames into an animation. 
  * Has support for inheritance to allow for custom frame behaviors.
@@ -14,6 +12,11 @@ public class SpriteFrame
 	 * The string ID of this frame.
 	 */
 	protected final String frameID;
+	
+	/**
+	 * The {@link SpriteSheet} this frame is used in.
+	 */
+	protected final SpriteSheet spriteSheet;
 	
 	/**
 	 * A UV coordinate, specifying a rectangle in the source image of the SpriteSheet this frame is used in.
@@ -40,8 +43,9 @@ public class SpriteFrame
 	 * @param uvw the width of the source rect for this frame, offset by uvx.
 	 * @param uvh the height of the source rect for this frame, offset by uvy.
 	 */
-	public SpriteFrame(String id, int frameC, int uvx, int uvy, int uvw, int uvh)
+	public SpriteFrame(SpriteSheet sheet, String id, int frameC, int uvx, int uvy, int uvw, int uvh)
 	{
+		spriteSheet = sheet;
 		frameID = id;
 		uvX = uvx;
 		uvY = uvy;
@@ -49,14 +53,6 @@ public class SpriteFrame
 		uvH = uvh;
 		frameCount = frameC;
 		maxFrameCount = frameC;
-	}
-	
-	/**
-	 * @return the source rectangle for the image this frame is used with.
-	 */
-	public Rectangle getSourceRect()
-	{
-		return new Rectangle(uvX,uvY,uvW,uvH);
 	}
 	
 	/**

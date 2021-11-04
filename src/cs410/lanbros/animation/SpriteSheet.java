@@ -99,7 +99,7 @@ public class SpriteSheet
 	 */
 	public SpriteSheet addFrame(String id, int frameCount, int uvx, int uvy, int uvw, int uvh)
 	{
-		return addFrame(new SpriteFrame(id, frameCount, uvx, uvy, uvw, uvh));	
+		return addFrame(new SpriteFrame(this, id, frameCount, uvx, uvy, uvw, uvh));	
 	}
 
 	/**
