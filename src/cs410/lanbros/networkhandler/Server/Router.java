@@ -161,6 +161,8 @@ public class Router {
             for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
                 Socket currentKey = entry.getKey();
                 if (currentKey.equals(request.getReceiver())) {
+                    System.out.println("Router iterating through connection list: "
+                            + "this socket belongs to the requester. Skipping...");
                     continue;
                 }
                 PrintWriter writer = new PrintWriter(currentKey.getOutputStream());

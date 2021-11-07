@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import cs410.lanbros.networkhandler.Movements;
 import cs410.lanbros.networkhandler.Client.Client;
 
 /**
@@ -239,13 +240,17 @@ public class Server implements Runnable {
 		// writer.flush();
 		// socket.close();
 		// System.out.println(server.getWorkers().toString());
-		// try {
-		// TimeUnit.SECONDS.sleep(1);
-		// server.getServer().close();
-		// } catch (IOException | InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		try {
+			TimeUnit.SECONDS.sleep(1);
+			// server.getServer().close();
+			PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream());
+			writer.write(" " + "/api/movement/" + Movements.MOVE_LEFT.toString() + "\n");
+			writer.flush();
+			// client.getSocket().close();
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

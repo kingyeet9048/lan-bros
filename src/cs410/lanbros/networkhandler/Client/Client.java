@@ -103,6 +103,15 @@ public class Client implements Runnable {
 
 	public void movePlayer(String movement, String player) {
 		// TODO: Move player with given ENUM
+		System.out.println("This is where a player would be moved: " + player + " " + movement);
+	}
+
+	public Socket getSocket() {
+		return socket;
+	}
+
+	public void setSocket(Socket socket) {
+		this.socket = socket;
 	}
 
 	@Override
