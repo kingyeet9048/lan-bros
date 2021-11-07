@@ -35,7 +35,6 @@ public class ServerWorker implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("New ServerWorker Started");
-		// TODO Auto-generated method stub
 		while (!connectionDetail.isInputShutdown() && (!connectionDetail.isClosed())
 				&& connectionDetail.isConnected()) {
 			try {
@@ -59,11 +58,8 @@ public class ServerWorker implements Runnable {
 				System.err.printf("ServerWorker Read Error: %s\n", e.getMessage());
 			}
 		}
-		// TODO: Create new request to let all other players know that this connection
-		// has been disconnected.
 		server.getWorkers().remove(connectionDetail);
-		// TODO: Fahad make routes
-		Request request = new Request(connectionDetail, "/api/that/will/disconnect/client/from/game");
+		Request request = new Request(connectionDetail, "/api/conn/client/disconnection");
 		server.addToQueue(request);
 		try {
 			System.out.println("Connection with host terminated: " + connectionDetail.getInetAddress().getHostName());

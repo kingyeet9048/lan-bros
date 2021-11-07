@@ -18,10 +18,12 @@ public class Client implements Runnable {
 	private final int ATTEMPT_BEFORE_TIMEOUT = 10;
 	private Queue<Response> reponseQueue;
 	private ResponseRouter router;
+	private boolean isHost;
 
-	public Client(String serverAddress, int serverPort) {
+	public Client(String serverAddress, int serverPort, boolean isHost) {
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
+		this.isHost = isHost;
 		reponseQueue = new ConcurrentLinkedQueue<>();
 		router = new ResponseRouter(this);
 		currentPlayer = new LinkedList<>();
@@ -83,6 +85,26 @@ public class Client implements Runnable {
 		System.out.println("Would update players here");
 	}
 
+	public boolean isHost() {
+		return isHost;
+	}
+
+	public void setHost(boolean isHost) {
+		this.isHost = isHost;
+	}
+
+	public void startGame() {
+		// TODO
+	}
+
+	public void endGame() {
+		// TODO
+	}
+
+	public void movePlayer(String movement, String player) {
+		// TODO: Move player with given ENUM
+	}
+
 	@Override
 	public void run() {
 
@@ -104,6 +126,7 @@ public class Client implements Runnable {
 					System.out.printf("Response %s Processed: %s\n", response.getRawReponse(), result);
 				}
 			}
+			System.out.println("\nLost connection with the server goodbye\n");
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
 		}

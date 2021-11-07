@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import cs410.lanbros.networkhandler.Client.Client;
 
@@ -37,6 +38,8 @@ public class Server implements Runnable {
 	private String hostName;
 
 	private int MAX_PLAYERS;
+
+	private boolean gameClosed = false;
 
 	/**
 	 * 
@@ -102,6 +105,14 @@ public class Server implements Runnable {
 
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
+	}
+
+	public boolean isGameClosed() {
+		return gameClosed;
+	}
+
+	public void setGameClosed(boolean gameClosed) {
+		this.gameClosed = gameClosed;
 	}
 
 	@Override
@@ -202,6 +213,17 @@ public class Server implements Runnable {
 				}
 			}
 		}
+		for (Map.Entry<Socket, ServerWorker> entry : getWorkers().entrySet()) {
+			try {
+				entry.getKey().close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			entry.getValue().setTerminateThread(true);
+			System.out.println("Asked client to terminate...");
+
+		}
 	}
 
 	public static void main(String arg[]) {
@@ -209,7 +231,7 @@ public class Server implements Runnable {
 		Thread serveThread = new Thread(server);
 		serveThread.start();
 		// test
-		Client client = new Client(server.getIpAddress(), 4321);
+		Client client = new Client(server.getIpAddress(), 4321, true);
 		Thread clientThread = new Thread(client);
 		clientThread.start();
 		// System.out.println(server.getWorkers().toString());
@@ -217,7 +239,13 @@ public class Server implements Runnable {
 		// writer.flush();
 		// socket.close();
 		// System.out.println(server.getWorkers().toString());
+		// try {
+		// TimeUnit.SECONDS.sleep(1);
 		// server.getServer().close();
+		// } catch (IOException | InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 }
