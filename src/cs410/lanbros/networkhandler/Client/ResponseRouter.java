@@ -2,21 +2,32 @@ package cs410.lanbros.networkhandler.Client;
 
 import java.util.Map;
 
+/**
+ * Handles routing the reponses to the proper logic that will take care of the
+ * response
+ * 
+ * @author Sulaiman Bada
+ */
 public class ResponseRouter {
 
+    // instance variables
     private Client client;
 
+    /**
+     * router constructor
+     * 
+     * @param client
+     */
     public ResponseRouter(Client client) {
         this.client = client;
     }
 
     public boolean handleResponse(Response response) {
-        // place holder for routing the request...
-        // ex /api/conn/client
+        // get the mapped response
         Map map = response.getMappedResponse();
         String api = (String) map.get("api");
-        // String[] apiSplit = api.split("/");
 
+        // routes the api request.
         boolean result = false;
         if (api.contains("/api/conn")) {
             result = handleConn(map, api);
@@ -29,6 +40,14 @@ public class ResponseRouter {
         return result;
     }
 
+    /**
+     * Connection type api
+     * 
+     * @param map
+     * @param api
+     * @apiNote Refer to readme for more info
+     * @return
+     */
     private boolean handleConn(Map map, String api) {
         if (api.contains("/client/connection")) {
             client.addPlayerToList((String) map.get("username"));
@@ -51,6 +70,15 @@ public class ResponseRouter {
         return true;
     }
 
+    /**
+     * Game started or ending api
+     * 
+     * @param map
+     * @param api
+     * @apiNote Refer to readme for more info
+     * 
+     * @return
+     */
     private boolean handleGameState(Map map, String api) {
         if (api.contains("/started")) {
             // TODO: start game
@@ -64,6 +92,14 @@ public class ResponseRouter {
         return true;
     }
 
+    /**
+     * Player movement api
+     * 
+     * @param map
+     * @param api
+     * @apiNote Refer to readme for more info
+     * @return
+     */
     private boolean handleMovement(Map map, String api) {
         String player = (String) map.get("username");
         String movement = (String) map.get("movement");

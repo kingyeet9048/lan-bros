@@ -6,15 +6,27 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * Server worker will listen for new request from a speciic socket
+ * 
+ * @CreatedBy Sulaiman Bada
+ * @AmendedBy Sheikh Fahad
+ */
 public class ServerWorker implements Runnable {
 
+	// instance variables
 	private Socket connectionDetail;
 	private BufferedReader reader;
 	private Server server;
 	private boolean terminateThread = false;
 
+	/**
+	 * Constructor will need the socket to listen to and the instance of a server.
+	 * 
+	 * @param connectionDetail
+	 * @param server
+	 */
 	public ServerWorker(Socket connectionDetail, Server server) {
-		// TODO Auto-generated constructor stub
 		this.connectionDetail = connectionDetail;
 		this.server = server;
 		try {
@@ -24,40 +36,54 @@ public class ServerWorker implements Runnable {
 		}
 	}
 
+	/**
+	 * 
+	 * @return whether the thread should be terminated
+	 */
 	public boolean isTerminateThread() {
 		return terminateThread;
 	}
 
+	/**
+	 * Sets the termination boolean
+	 * 
+	 * @param terminateThread
+	 */
 	public void setTerminateThread(boolean terminateThread) {
 		this.terminateThread = terminateThread;
 	}
 
 	@Override
 	public void run() {
+
 		System.out.println("New ServerWorker Started");
+		// while the socket is alive
 		while (!connectionDetail.isInputShutdown() && (!connectionDetail.isClosed())
 				&& connectionDetail.isConnected()) {
 			try {
+				// while the thread is alive and the socket can be read from
 				if (terminateThread || reader.read() == -1) {
 					connectionDetail.close();
 					break;
 				}
+				// read the api call and wrap it around the request object.
+				// will also add it to the queue
 				String apiCall = reader.readLine();
 				if (apiCall == null) {
 					continue;
 				}
 				Request request = new Request(connectionDetail, apiCall);
 				server.addToQueue(request);
-				// System.out.println("Added a request to the queue: " + apiCall);
 			} catch (SocketException e1) {
 				System.err.printf("ServerWorker Read Error: %s\n", e1.getMessage());
 				break;
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				System.err.printf("ServerWorker Read Error: %s\n", e.getMessage());
 			}
 		}
+		// worker is terminating...
+		// we need to let the other clients know that the client is disconnecting
 		server.getWorkers().remove(connectionDetail);
 		Request request = new Request(connectionDetail, "/api/conn/client/disconnection");
 		server.addToQueue(request);

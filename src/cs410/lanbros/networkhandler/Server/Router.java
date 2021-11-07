@@ -15,19 +15,33 @@ import cs410.lanbros.networkhandler.Movements;
  * will also handle sending the payload simply because the router will know
  * which receipients the payload are meant for.
  * 
- * @author Sheikh Fahad, Sulaiman Bada
+ * @CreatedBy Sulaiman Bada
+ * @AmendedBy Sheikh Fahad
  * @apiNote The Router will handle routing the api string to where they need to
  *          go.
  */
 public class Router {
-    // TODO: make requests
 
+    // instance variables
     private Server server;
 
+    /**
+     * Constructor for the router. Needs the server instance.
+     * 
+     * @param server
+     */
     public Router(Server server) {
         this.server = server;
     }
 
+    /**
+     * routes the request to where it need to go and returns true or false depending
+     * on if the request was mapped successfully.
+     * 
+     * @param request
+     * @return
+     * @throws IOException
+     */
     public boolean routeRequest(Request request) throws IOException {
         String api = request.getApi();
 
@@ -43,8 +57,17 @@ public class Router {
         return result;
     }
 
+    /**
+     * Handles the connection api
+     * 
+     * @param request
+     * @apiNote refer to the readme
+     * @return
+     * @throws IOException
+     */
     private boolean handleConn(Request request) throws IOException {
         if (request.getApi().contains("/client/connection")) {
+            // if the flag for game close is true, return false
             if (server.isGameClosed()) {
                 return false;
             }
@@ -96,6 +119,14 @@ public class Router {
         return true;
     }
 
+    /**
+     * update the requested connection socket with a list of all connected clients
+     * 
+     * @param names
+     * @param request
+     * @apiNote refer to the readme
+     * @throws IOException
+     */
     private void updateAllClientNames(String names, Request request) throws IOException {
         Gson gson = new Gson();
         Map<String, String> object = new HashMap<>();
@@ -107,6 +138,14 @@ public class Router {
         writer.flush();
     }
 
+    /**
+     * Start or ends the game
+     * 
+     * @param request
+     * @apiNote refer to the readme
+     * @return
+     * @throws IOException
+     */
     private boolean startEndGame(Request request) throws IOException {
         String state = "";
         if (request.getApi().contains("/stared")) {
@@ -143,9 +182,18 @@ public class Router {
         return true;
     }
 
+    /**
+     * Moves a player
+     * 
+     * @param request
+     * @apiNote refer to the readme
+     * @return
+     * @throws IOException
+     */
     private boolean handleMovement(Request request) throws IOException {
         String currentAPI = request.getApi();
         String currentMovement = "";
+        // which the direction of the movement in the api
         if (currentAPI.contains(Movements.MOVE_LEFT.toString())) {
             currentMovement = Movements.MOVE_LEFT.toString();
         } else if (currentAPI.contains(Movements.MOVE_RIGHT.toString())) {
