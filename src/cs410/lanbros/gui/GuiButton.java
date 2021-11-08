@@ -13,11 +13,31 @@ import javax.swing.JButton;
 public abstract class GuiButton extends JButton implements MouseListener
 {
 	private static final long serialVersionUID = 0;
+	private int width, height;
 	public GuiButton(String text)
 	{
 		super(text);
 		setVisible(true);
 		addMouseListener(this);
+		setButtonSize(200,25);
+		this.setFont(getFont().deriveFont(17.0f));
+	}
+	
+	public GuiButton setButtonSize(int width, int height)
+	{
+		this.width = width;
+		this.height = height;
+		return this;
+	}
+	
+	public int getButtonWidth()
+	{
+		return width;
+	}
+	
+	public int getButtonHeight()
+	{
+		return height;
 	}
 	
 	public void paintComponent(Graphics graphics)

@@ -41,10 +41,12 @@ public class GuiFrame extends JFrame
 	protected final JPanel activePanel = new JPanel() {
 		private static final long serialVersionUID = 0;
 
-		public void paintComponent(Graphics g)
+		@Override
+		public void paintChildren(Graphics g)
 		{
-			super.paintComponent(g);
-			renderStates((Graphics2D)g);
+			renderStates((Graphics2D)g,false);
+			super.paintChildren(g);
+			renderStates((Graphics2D)g,true);
 		}
 	};;
 	
@@ -79,6 +81,7 @@ public class GuiFrame extends JFrame
 				animationTimer.stop();
 				frameClosed = true;
 				activeStates.clear();
+				setVisible(false);
 			}
 			
 			@Override
@@ -96,11 +99,15 @@ public class GuiFrame extends JFrame
 	/**
 	 * Updates all active GuiStates present in this GuiFrame.
 	 * @param g the graphics object to render the states to.
+	 * @param post whether this is called before or after rendering the active JPanel.
 	 */
-	public void renderStates(Graphics2D g)
+	public void renderStates(Graphics2D g, boolean post)
 	{		
 		for(GuiState state : activeStates)
-			state.render(g);
+			if(post)
+				state.renderPost(g);
+			else
+				state.renderPre(g);
 	}
 	
 	/**
@@ -116,6 +123,7 @@ public class GuiFrame extends JFrame
 		}
 		else
 		{
+			state.stateLoaded();
 			return activeStates.add(state);
 		}
 	}
@@ -129,6 +137,7 @@ public class GuiFrame extends JFrame
 	{
 		if(activeStates.contains(state))
 		{
+			state.stateUnloaded();
 			return activeStates.remove(state);
 		}
 		else
