@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import cs410.lanbros.networkhandler.Movements;
+
 /**
  * Client class that handles interactions with the server and game manager
  * controller. Current Capabilities: Connect to server with a timeout Disconnect
@@ -28,6 +30,7 @@ public class Client implements Runnable {
 	private Queue<Response> reponseQueue;
 	private ResponseRouter router;
 	private boolean isHost;
+	private PrintWriter writer;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -60,7 +63,7 @@ public class Client implements Runnable {
 				// we are past the socket line which means we joined.
 				hasJoined = true;
 				// send an api call to let server know that client has joined
-				PrintWriter writer = new PrintWriter(socket.getOutputStream());
+				writer = new PrintWriter(socket.getOutputStream());
 				writer.write(" /api/conn/client/connection\n");
 				writer.flush();
 				addPlayerToList(socket.getInetAddress().getHostName());
@@ -192,6 +195,11 @@ public class Client implements Runnable {
 	 */
 	public void setSocket(Socket socket) {
 		this.socket = socket;
+	}
+
+	public void moveThisPlayer(Movements move) {
+		writer.write(" " + "/api/movement/" + move.toString() + "\n");
+		writer.flush();
 	}
 
 	@Override
