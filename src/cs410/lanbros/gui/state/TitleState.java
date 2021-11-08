@@ -25,7 +25,8 @@ public class TitleState extends GuiState
 
 					@Override
 					public void onClick(boolean pressed) {
-						System.out.println("Pressed singleplayer!");
+						frame.addActiveState(new IngameState(frame));
+						frame.removeActiveState(TitleState.this);
 					}			
 				},
 				new GuiButton("Join Multiplayer")

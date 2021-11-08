@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import cs410.lanbros.gui.state.GuiState;
+import cs410.lanbros.io.UserInput;
 
 /**
  * 
@@ -24,11 +25,13 @@ import cs410.lanbros.gui.state.GuiState;
 public class GuiFrame extends JFrame
 {
 	private static final long serialVersionUID = 0;
-
+	
 	/**
 	 * A constant telling the time, in milliseconds, between each SpriteSheet frame update.
 	 */
 	public static final int ANIMATION_INTERVAL = 20;
+	
+	public static final int SCREEN_WIDTH = 900, SCREEN_HEIGHT = 600;
 	
 	//repaint for animation
 	protected final Timer animationTimer = new Timer(ANIMATION_INTERVAL, new ActionListener() {
@@ -58,7 +61,7 @@ public class GuiFrame extends JFrame
 	public GuiFrame()
 	{
 		super("Demo");
-		setBounds(100, 100, 900, 600);
+		setBounds(100, 100, SCREEN_WIDTH, SCREEN_HEIGHT);
 		setLocationRelativeTo(null); //center GUI
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -91,7 +94,9 @@ public class GuiFrame extends JFrame
 			public void windowActivated(WindowEvent e) {}
 		});
 		
+		
 		add(activePanel);
+		addKeyListener(new UserInput());
 		animationTimer.start();
 		setVisible(true);
 	}
