@@ -1,4 +1,4 @@
-package cs410.lanbros.networkhandler.Server;
+package cs410.lanbros.networkhandler.server;
 
 import java.net.Socket;
 
