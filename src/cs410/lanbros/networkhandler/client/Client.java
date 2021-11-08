@@ -227,9 +227,13 @@ public class Client implements Runnable {
 
 	@Override
 	public void run() {
-
-		boolean joined = joinGame();
-
+		boolean joined;
+		if (socket == null) {
+			joined = joinGame();
+		}
+		else {
+			joined = true;
+		}
 		if (joined) {
 			// reponse listener here (listens for a reponse)
 			ResponseListener responseListener = new ResponseListener(socket, this);
