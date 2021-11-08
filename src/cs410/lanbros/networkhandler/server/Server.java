@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Movements;
 import cs410.lanbros.networkhandler.Client.Client;
 
@@ -297,8 +298,9 @@ public class Server implements Runnable {
 		Server server = new Server(4321, 4);
 		Thread serveThread = new Thread(server);
 		serveThread.start();
+		Factory factory = new Factory();
 		// test
-		Client client = new Client(server.getIpAddress(), 4321, true);
+		Client client = new Client(server.getIpAddress(), 4321, true, factory);
 		Thread clientThread = new Thread(client);
 		clientThread.start();
 

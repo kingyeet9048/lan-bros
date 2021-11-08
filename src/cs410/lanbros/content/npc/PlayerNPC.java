@@ -7,38 +7,32 @@ import cs410.lanbros.content.tile.Tile;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.io.UserInput;
 
-public class PlayerNPC extends NPC
-{
+public class PlayerNPC extends NPC {
 	protected int jumpTime;
-	
-	public PlayerNPC(float x, float y) {
-		super(x, y,32,32);
+	public String playerName;
+
+	public PlayerNPC(float x, float y, String playerName) {
+		super(x, y, 32, 32);
 		jumpTime = 0;
+		this.playerName = playerName;
 	}
 
 	@Override
-	protected void updateNPC() 
-	{
-		if(jumpTime > 0)
-		{
+	protected void updateNPC() {
+		if (jumpTime > 0) {
 			--jumpTime;
-			if(jumpTime > 20)
-			{
-				motionY -= 1.2f+(float)((jumpTime-20)/10.0f);				
+			if (jumpTime > 20) {
+				motionY -= 1.2f + (float) ((jumpTime - 20) / 10.0f);
 			}
-		}
-		else if(UserInput.isKeyBindPressed(KeyBind.JUMP))
-		{
+		} else if (UserInput.isKeyBindPressed(KeyBind.JUMP)) {
 			jumpTime = 40;
 		}
-		
-		if(UserInput.isKeyBindPressed(KeyBind.LEFT))
-		{
+
+		if (UserInput.isKeyBindPressed(KeyBind.LEFT)) {
 			motionX -= 1.2f;
 		}
-		
-		if(UserInput.isKeyBindPressed(KeyBind.RIGHT))
-		{
+
+		if (UserInput.isKeyBindPressed(KeyBind.RIGHT)) {
 			motionX += 1.2f;
 		}
 	}
@@ -46,17 +40,17 @@ public class PlayerNPC extends NPC
 	@Override
 	public void renderNPC(Graphics2D g) {
 		g.setColor(Color.red);
-		g.fillOval((int)(npcX-npcWidth/2), (int)(npcY-npcHeight/2), (int)npcWidth, (int)npcHeight);
+		g.fillOval((int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), (int) npcWidth, (int) npcHeight);
 	}
 
 	@Override
 	public void onCollide(Tile tile) {
-		
+
 	}
 
 	@Override
 	public void onCollide(NPC npc) {
-		
+
 	}
 
 }
