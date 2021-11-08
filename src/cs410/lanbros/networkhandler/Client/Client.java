@@ -76,7 +76,10 @@ public class Client implements Runnable {
 				writer.write(" /api/conn/client/connection\n");
 				writer.flush();
 				addPlayerToList(socket.getInetAddress().getHostName());
+				thisPlayerName = getSocket().getInetAddress().getHostName();
+				// writer.close();
 				break;
+			} catch (IOException e) {
 				try {
 					// something happened and we were not able to join the game. Increase the couter
 					// and check to see if we have reached timeout
