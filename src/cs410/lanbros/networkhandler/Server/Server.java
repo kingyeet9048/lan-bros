@@ -1,4 +1,4 @@
-package cs410.lanbros.networkhandler.server;
+package cs410.lanbros.networkhandler.Server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cs410.lanbros.networkhandler.client.Client;
+import cs410.lanbros.networkhandler.Client.Client;
 
 /**
  * 
