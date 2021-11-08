@@ -9,12 +9,16 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
-import cs410.lanbros.networkhandler.client.Client;
+import cs410.lanbros.networkhandler.Movements;
+import cs410.lanbros.networkhandler.Client.Client;
 
 /**
+ * Server class to make sure all clients are up to date on the current game.
  * 
- * @CreatedBy Sulaiman Bada, Sheikh Fahad
+ * @CreatedBy Sulaiman Bada
+ * @AmendedBy Sheikh Fahad
  * @Version Beta.0.1.0
  */
 public class Server implements Runnable {
@@ -38,7 +42,10 @@ public class Server implements Runnable {
 
 	private int MAX_PLAYERS;
 
+	private boolean gameClosed = false;
+
 	/**
+	 * Constructor for server.
 	 * 
 	 * @param port        Port number for server to connect to
 	 * @param MAX_PLAYERS Max number of players that can play at a single time
@@ -60,48 +67,119 @@ public class Server implements Runnable {
 		}
 	}
 
+	/**
+	 * 
+	 * @return server instance
+	 */
 	public ServerSocket getServer() {
 		return server;
 	}
 
+	/**
+	 * sets server instance
+	 * 
+	 * @param server
+	 */
 	public void setServer(ServerSocket server) {
 		this.server = server;
 	}
 
+	/**
+	 * 
+	 * @return socket server map
+	 */
 	public Map<Socket, ServerWorker> getWorkers() {
 		return workers;
 	}
 
+	/**
+	 * sets socket server map
+	 * 
+	 * @param workers
+	 */
 	public void setWorkers(Map<Socket, ServerWorker> workers) {
 		this.workers = workers;
 	}
 
+	/**
+	 * adds a request to the queue
+	 * 
+	 * @param request
+	 */
 	public void addToQueue(Request request) {
 		requestQueue.add(request);
 	}
 
+	/**
+	 * gets listener
+	 * 
+	 * @return
+	 */
 	public Listener getListener() {
 		return listener;
 	}
 
+	/**
+	 * sets listener
+	 * 
+	 * @return
+	 */
 	public String getIpAddress() {
 		return ipAddress;
 	}
 
+	/**
+	 * get max player number
+	 * 
+	 * @return max number of player
+	 */
 	public int getMAX_PLAYERS() {
 		return MAX_PLAYERS;
 	}
 
-	public void setMAX_PLAYERS(int mAX_PLAYERS) {
-		MAX_PLAYERS = mAX_PLAYERS;
+	/**
+	 * Set max player number
+	 * 
+	 * @param MAX_PLAYERS
+	 */
+	public void setMAX_PLAYERS(int MAX_PLAYERS) {
+		this.MAX_PLAYERS = MAX_PLAYERS;
 	}
 
+	/**
+	 * get host name
+	 * 
+	 * @return host name
+	 */
 	public String getHostName() {
 		return hostName;
 	}
 
+	/**
+	 * set host name
+	 * 
+	 * @param hostName
+	 */
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
+	}
+
+	/**
+	 * Checks to see if the game is closed
+	 * 
+	 * @return
+	 */
+	public boolean isGameClosed() {
+		return gameClosed;
+	}
+
+	/**
+	 * Set game close state
+	 * 
+	 * @param gameClosed
+	 */
+	public void setGameClosed(boolean gameClosed) {
+		this.gameClosed = gameClosed;
 	}
 
 	@Override
@@ -202,6 +280,17 @@ public class Server implements Runnable {
 				}
 			}
 		}
+		for (Map.Entry<Socket, ServerWorker> entry : getWorkers().entrySet()) {
+			try {
+				entry.getKey().close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			entry.getValue().setTerminateThread(true);
+			System.out.println("Asked client to terminate...");
+
+		}
 	}
 
 	public static void main(String arg[]) {
@@ -209,15 +298,21 @@ public class Server implements Runnable {
 		Thread serveThread = new Thread(server);
 		serveThread.start();
 		// test
-		Client client = new Client(server.getIpAddress(), 4321);
+		Client client = new Client(server.getIpAddress(), 4321, true);
 		Thread clientThread = new Thread(client);
 		clientThread.start();
-		// System.out.println(server.getWorkers().toString());
-		// writer.write("/terminate\n");
-		// writer.flush();
-		// socket.close();
-		// System.out.println(server.getWorkers().toString());
-		// server.getServer().close();
+
+		try {
+			TimeUnit.SECONDS.sleep(1);
+			// server.getServer().close();
+			PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream());
+			writer.write(" " + "/api/movement/" + Movements.MOVE_LEFT.toString() + "\n");
+			writer.flush();
+			// client.getSocket().close();
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
