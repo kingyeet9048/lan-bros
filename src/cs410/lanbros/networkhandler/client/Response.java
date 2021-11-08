@@ -1,17 +1,27 @@
-package cs410.lanbros.networkhandler.client;
+package cs410.lanbros.networkhandler.Client;
 
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
+/**
+ * Response class to keep an instance of a reponse given from the server. Hold
+ * the raw api response and the mapped response.
+ * 
+ * @author Sulaiman Bada
+ */
 public class Response {
 
     // instance variables
     private Map mappedResponse;
     private String rawReponse;
 
+    /**
+     * Takes in the raw response and maps it to a Map right away. Uses the gson jar
+     * file from Google
+     * 
+     * @param rawReponse
+     */
     public Response(String rawReponse) {
         this.rawReponse = rawReponse;
         Gson gson = new Gson();
@@ -19,18 +29,38 @@ public class Response {
 
     }
 
+    /**
+     * returns the mapped response
+     * 
+     * @return
+     */
     public Map getMappedResponse() {
         return mappedResponse;
     }
 
+    /**
+     * Sets the mapped response
+     * 
+     * @param mappedResponse
+     */
     public void setMappedResponse(Map mappedResponse) {
         this.mappedResponse = mappedResponse;
     }
 
+    /**
+     * gets the raw response string
+     * 
+     * @return
+     */
     public String getRawReponse() {
         return rawReponse;
     }
 
+    /**
+     * Sets the raw response string.
+     * 
+     * @param rawReponse
+     */
     public void setRawReponse(String rawReponse) {
         this.rawReponse = rawReponse;
     }

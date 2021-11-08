@@ -1,4 +1,4 @@
-package cs410.lanbros.networkhandler.client;
+package cs410.lanbros.networkhandler.Client;
 
 import java.util.Map;
 

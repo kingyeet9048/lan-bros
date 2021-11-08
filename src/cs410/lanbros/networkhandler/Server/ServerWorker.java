@@ -1,4 +1,4 @@
-package cs410.lanbros.networkhandler.server;
+package cs410.lanbros.networkhandler.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
