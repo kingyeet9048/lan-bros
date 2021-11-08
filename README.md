@@ -2,7 +2,7 @@
 
 ## Team Name 
 
-“ExaCutiebles” 
+“ExeCutiebles” 
 
 ## Product Domain 
 
