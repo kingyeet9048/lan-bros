@@ -43,7 +43,6 @@ public class InMultiplayerGameState extends GuiState {
     public void stateLoaded() {
     	Level level = new Level();
         Main.getNetworkFactory().getCurrentClient().setCurrentLevel(level);
-        level.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
     }
 
     @Override

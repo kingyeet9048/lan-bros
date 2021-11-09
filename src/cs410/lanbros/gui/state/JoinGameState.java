@@ -34,12 +34,12 @@ public class JoinGameState extends GuiState {
                     {
                     	this.setText("Find Host To Join");
                         this.setEnabled(true);
-                        Main.getNetworkFactory().getCurrentClient().updateHostStatus(inputs[0].getText());
 
                     }
                     else
                     {
                     	System.out.println(inputs[0].getText());
+                        Main.getNetworkFactory().getCurrentClient().updateHostStatus(inputs[0].getText());
                     }
                 }
             }
