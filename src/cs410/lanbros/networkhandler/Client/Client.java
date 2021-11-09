@@ -2,7 +2,9 @@ package cs410.lanbros.networkhandler.Client;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -127,46 +129,39 @@ public class Client implements Runnable {
 		if (!currentPlayer.contains(player)) {
 			currentPlayer.add(player);
 
-			if(currentLevel != null)
-			{
+			if (currentLevel != null) {
 				currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, player));
 			}
-			
+
 			System.out.println("Player list updated: " + currentPlayer.toString());
 		}
 	}
-	
+
 	public synchronized void syncPlayerCoordinates() {
-		if(isHost)
-		{
+		if (isHost) {
 			String content = "";
-			for(ClientPlayerNPC player : currentLevel.playerSet)
-			{
-				content += player.npcX + "," + player.npcY + "," + player.playerName+"_";
+			for (ClientPlayerNPC player : currentLevel.playerSet) {
+				content += player.npcX + "," + player.npcY + "," + player.playerName + "_";
 			}
-			
-			writer.write(" /api/playersync/"+content.substring(0,content.length()-1)+"\n");
+
+			writer.write(" /api/playersync/" + content.substring(0, content.length() - 1) + "\n");
 			writer.flush();
 		}
 	}
-	
+
 	public synchronized void applyPlayerSync(String api) {
 		String[] players = api.split("_");
-		
-		for(String player : players)
-		{
-			if(player != null && player.length() > 0)
-			{
-				String[] comps = player.substring(player.lastIndexOf("/")+1).split(",");
-				for(ClientPlayerNPC play : currentLevel.playerSet)
-				{
-					if(play.playerName.equals(comps[2]))
-					{
+
+		for (String player : players) {
+			if (player != null && player.length() > 0) {
+				String[] comps = player.substring(player.lastIndexOf("/") + 1).split(",");
+				for (ClientPlayerNPC play : currentLevel.playerSet) {
+					if (play.playerName.equals(comps[2])) {
 						play.npcX = Float.parseFloat(comps[0]);
 						play.npcY = Float.parseFloat(comps[1]);
-						System.out.println("Synced player \'"+play.playerName+"\'!");
+						System.out.println("Synced player \'" + play.playerName + "\'!");
 					}
-				}				
+				}
 			}
 		}
 	}
@@ -237,8 +232,9 @@ public class Client implements Runnable {
 	 */
 	public void sendMovement(KeyBind key, boolean down) {
 		// TODO: Move player with given ENUM
-		//System.out.println("This is where a player would be moved: " + player + " " + movement);
-		writer.write(" /api/movement/"+key.ordinal()+"_"+down+"\n");
+		// System.out.println("This is where a player would be moved: " + player + " " +
+		// movement);
+		writer.write(" /api/movement/" + key.ordinal() + "_" + down + "\n");
 		writer.flush();
 	}
 
@@ -303,9 +299,8 @@ public class Client implements Runnable {
 		}
 	}
 
-	public void setCurrentLevel(Level level) 
-	{
-		currentLevel = level;		
+	public void setCurrentLevel(Level level) {
+		currentLevel = level;
 		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
 	}
 
@@ -313,11 +308,15 @@ public class Client implements Runnable {
 		return currentLevel;
 	}
 
-	public void updateHostStatus(String address) 
-	{
-		System.out.println("IS HOST? address="+address+",serv="+serverAddress);
-		if(serverAddress.equals(address))
-		{
+	public void updateHostStatus(String address) {
+		String myIP = "";
+		try {
+			myIP = InetAddress.getLocalHost().getHostAddress().toString();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
+		if (myIP.equals(address)) {
 			setHost(true);
 		}
 	}
