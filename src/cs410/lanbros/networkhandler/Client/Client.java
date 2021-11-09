@@ -127,7 +127,7 @@ public class Client implements Runnable {
 		if (!currentPlayer.contains(player)) {
 			currentPlayer.add(player);
 
-			if(currentLevel != null && !player.equals(thisPlayerName))
+			if(currentLevel != null)
 			{
 				currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, player));
 			}
@@ -146,7 +146,7 @@ public class Client implements Runnable {
 			}
 			
 			writer.write(" /api/playersync/"+content+"\n");
-			writer.flush();			
+			writer.flush();
 		}
 	}
 	
@@ -155,14 +155,17 @@ public class Client implements Runnable {
 		
 		for(String player : players)
 		{
-			String[] comps = player.split(",");
-			for(ClientPlayerNPC play : currentLevel.playerSet)
+			if(player != null && player.length() > 0)
 			{
-				if(play.playerName.equals(comps[2]))
+				String[] comps = player.substring(player.lastIndexOf("/")+1).split(",");
+				for(ClientPlayerNPC play : currentLevel.playerSet)
 				{
-					play.npcX = Float.parseFloat(comps[0]);
-					play.npcY = Float.parseFloat(comps[1]);
-				}
+					if(play.playerName.equals(comps[2]))
+					{
+						play.npcX = Float.parseFloat(comps[0]);
+						play.npcY = Float.parseFloat(comps[1]);
+					}
+				}				
 			}
 		}
 	}
@@ -302,6 +305,7 @@ public class Client implements Runnable {
 	public void setCurrentLevel(Level level) 
 	{
 		currentLevel = level;		
+		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
 	}
 
 	public Level getCurrentLevel() {
@@ -310,6 +314,7 @@ public class Client implements Runnable {
 
 	public void updateHostStatus(String address) 
 	{
+		System.out.println("IS HOST? address="+address+",serv="+serverAddress);
 		if(serverAddress.equals(address))
 		{
 			setHost(true);

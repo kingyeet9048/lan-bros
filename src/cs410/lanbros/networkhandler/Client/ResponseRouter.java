@@ -47,7 +47,7 @@ public class ResponseRouter {
 
     private boolean syncPlayers(Map map, String api) 
     {
-    	client.applyPlayerSync(api);
+    	client.applyPlayerSync((String)map.get("coordinates"));
 		return false;
 	}
 
