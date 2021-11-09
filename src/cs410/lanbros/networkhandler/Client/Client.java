@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 
 import cs410.lanbros.content.level.Level;
-import cs410.lanbros.content.npc.ClientPlayerNPC;
+import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Factory;
@@ -125,6 +125,12 @@ public class Client implements Runnable {
 		// the player cannot already be added to the list.
 		if (!currentPlayer.contains(player)) {
 			currentPlayer.add(player);
+
+			if(currentLevel != null && !player.equals(thisPlayerName))
+			{
+				currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, player));
+			}
+			
 			System.out.println("Player list updated: " + currentPlayer.toString());
 		}
 	}
