@@ -53,6 +53,8 @@ public class Router {
             result = startEndGame(request);
         } else if (api.contains("/api/movement/")) {
             result = handleMovement(request);
+        } else if (api.contains("/api/playersync/")) {
+        	result = syncPlayers(request);
         }
 
         return result;
@@ -137,6 +139,25 @@ public class Router {
         PrintWriter writer = new PrintWriter(request.getReceiver().getOutputStream());
         writer.write(" " + payload + "\n");
         writer.flush();
+    }
+
+    /**
+     * update the requested connection socket with a list of all connected clients
+     * 
+     * @param request
+     * @apiNote refer to the readme
+     * @throws IOException
+     */
+    private boolean syncPlayers(Request request) throws IOException {
+        Gson gson = new Gson();
+        Map<String, String> object = new HashMap<>();
+        object.put("api", "/api/playersync");
+        object.put("coordinates", request.getApi());
+        String payload = gson.toJson(object);
+        PrintWriter writer = new PrintWriter(request.getReceiver().getOutputStream());
+        writer.write(" " + payload + "\n");
+        writer.flush();
+        return true;
     }
 
     /**
