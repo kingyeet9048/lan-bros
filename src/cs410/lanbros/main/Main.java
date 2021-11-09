@@ -13,10 +13,10 @@ import cs410.lanbros.networkhandler.Server.Server;
 public class Main {
 	private static Factory factory = new Factory();
 	private static GuiFrame frame = new GuiFrame();
-	
+
 	public static void main(String[] args) {
 
-		Server server = new Server(4321, 4);
+		Server server = new Server(4321, 5);
 		Thread serveThread = new Thread(server);
 		serveThread.start();
 
@@ -33,42 +33,40 @@ public class Main {
 			System.exit(0);
 		}).start();
 	}
-	
-	public static boolean startClient(String serverAddress)
-	{
+
+	public static boolean startClient(String serverAddress) {
 		factory.setServerAddress(serverAddress);
-        factory.setHost(false);
-        Client currentClient = factory.makeClient();
-        
-        if (currentClient.joinGame() == true) {
-            Thread clientThread = new Thread(currentClient);
-            clientThread.start();
-            InMultiplayerGameState mpGame = factory.makeGameState(frame, currentClient.getThisPlayerName());
-            currentClient.setGUI(mpGame);
-            frame.wipeActiveStates();
-            frame.addActiveState(mpGame);
-            return true;
-        }
-        
-        return false;
+		factory.setHost(false);
+		Client currentClient = factory.makeClient();
+
+		if (currentClient.joinGame() == true) {
+			Thread clientThread = new Thread(currentClient);
+			clientThread.start();
+			InMultiplayerGameState mpGame = factory.makeGameState(frame, currentClient.getThisPlayerName());
+			currentClient.setGUI(mpGame);
+			frame.wipeActiveStates();
+			frame.addActiveState(mpGame);
+			return true;
+		}
+
+		return false;
 	}
-	
-	public static Factory getNetworkFactory()
-	{
+
+	public static Factory getNetworkFactory() {
 		return factory;
 	}
-	
-    public static void addNewPlayer(String playerName) {
-        boolean playerLoaded = false;
-        Level level = factory.getCurrentClient().getCurrentLevel();
-        for (ClientPlayerNPC player : level.playerSet) {
-            if (player.playerName.equals(playerName)) {
-                playerLoaded = true;
-                break;
-            }
-        }
-        if (!playerLoaded) {
-            level.playerSet.add(new ServerPlayerNPC(3, 3, playerName));
-        }
-    }
+
+	public static void addNewPlayer(String playerName) {
+		boolean playerLoaded = false;
+		Level level = factory.getCurrentClient().getCurrentLevel();
+		for (ClientPlayerNPC player : level.playerSet) {
+			if (player.playerName.equals(playerName)) {
+				playerLoaded = true;
+				break;
+			}
+		}
+		if (!playerLoaded) {
+			level.playerSet.add(new ServerPlayerNPC(3, 3, playerName));
+		}
+	}
 }
