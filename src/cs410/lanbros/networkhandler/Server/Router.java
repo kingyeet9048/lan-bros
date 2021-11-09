@@ -211,7 +211,7 @@ public class Router {
                 Map<String, String> object = new HashMap<>();
                 object.put("api", request.getApi());
                 object.put("username", request.getReceiver().getInetAddress().getHostName());
-                object.put("movement", keyBind.ordinal()+" "+inputActions[1]);
+                object.put("movement", keyBind.ordinal()+"_"+inputActions[1]);
                 String payload = gson.toJson(object);
 
                 System.out.println(payload);
