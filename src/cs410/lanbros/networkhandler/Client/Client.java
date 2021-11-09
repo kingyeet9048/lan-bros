@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 
 import cs410.lanbros.content.level.Level;
+import cs410.lanbros.content.npc.ClientPlayerNPC;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Factory;
@@ -263,6 +264,10 @@ public class Client implements Runnable {
 	public void setCurrentLevel(Level level) 
 	{
 		currentLevel = level;		
+	}
+
+	public Level getLevel() {
+		return currentLevel;
 	}
 
 }

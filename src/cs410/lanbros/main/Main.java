@@ -1,8 +1,10 @@
 package cs410.lanbros.main;
 
+import cs410.lanbros.content.level.Level;
+import cs410.lanbros.content.npc.ClientPlayerNPC;
+import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.GuiFrame;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
-import cs410.lanbros.gui.state.JoinGameState;
 import cs410.lanbros.gui.state.TestState;
 import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Client.Client;
@@ -55,4 +57,18 @@ public class Main {
 	{
 		return factory;
 	}
+	
+    public static void addNewPlayer(String playerName) {
+        boolean playerLoaded = false;
+        Level level = factory.getCurrentClient().getLevel();
+        for (ClientPlayerNPC player : level.playerSet) {
+            if (player.playerName.equals(playerName)) {
+                playerLoaded = true;
+                break;
+            }
+        }
+        if (!playerLoaded) {
+            level.playerSet.add(new ServerPlayerNPC(3, 3, playerName));
+        }
+    }
 }
