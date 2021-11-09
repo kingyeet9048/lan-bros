@@ -10,7 +10,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JOptionPane;
 
+import cs410.lanbros.content.level.Level;
+import cs410.lanbros.content.npc.ClientPlayerNPC;
+import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
+import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Movements;
 
@@ -38,6 +42,7 @@ public class Client implements Runnable {
 	private PrintWriter writer;
 	private InMultiplayerGameState gui;
 	private Factory factory;
+	private Level currentLevel;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -121,7 +126,53 @@ public class Client implements Runnable {
 		// the player cannot already be added to the list.
 		if (!currentPlayer.contains(player)) {
 			currentPlayer.add(player);
+
+			if(currentLevel != null)
+			{
+				currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, player));
+			}
+			
 			System.out.println("Player list updated: " + currentPlayer.toString());
+		}
+	}
+	
+	public void syncPlayerCoordinates() {
+		if(isHost)
+		{
+			String content = "";
+			for(ClientPlayerNPC player : currentLevel.playerSet)
+			{
+				content += player.npcX + "," + player.npcY + "," + player.playerName+"_";
+			}
+			
+			writer.write(" /api/playersync/"+content.substring(0,content.length()-1)+"\n");
+			writer.flush();
+		}
+	}
+	
+	public void applyPlayerSync(String api) {
+		String[] players = api.split("_");
+		
+		for(String player : players)
+		{
+			if(player != null && player.length() > 0)
+			{
+				String[] comps = player.substring(player.lastIndexOf("/")+1).split(",");
+				for(ClientPlayerNPC play : currentLevel.playerSet)
+				{
+					if(play.playerName.equals(comps[2]))
+					{
+						play.npcX = Float.parseFloat(comps[0]);
+						play.npcY = Float.parseFloat(comps[1]);
+						System.out.println("Synced player \'"+play.playerName+"\'!");
+					}
+					else
+					{
+						System.out.println("didn't Synced player \'"+play.playerName+"\'!");
+
+					}
+				}				
+			}
 		}
 	}
 
@@ -145,7 +196,7 @@ public class Client implements Runnable {
 	public void updatePlayers() {
 		System.out.println("Would update players here");
 		for (String player : currentPlayer) {
-			factory.getJoinedGameState().addNewPlayer(player);
+			factory.getCurrentClient().addPlayerToList(player);
 		}
 	}
 
@@ -189,9 +240,11 @@ public class Client implements Runnable {
 	 * @param movement
 	 * @param player
 	 */
-	public void movePlayer(String movement, String player) {
+	public void sendMovement(KeyBind key, boolean down) {
 		// TODO: Move player with given ENUM
-		System.out.println("This is where a player would be moved: " + player + " " + movement);
+		//System.out.println("This is where a player would be moved: " + player + " " + movement);
+		writer.write(" /api/movement/"+key.ordinal()+"_"+down+"\n");
+		writer.flush();
 	}
 
 	/**
@@ -253,7 +306,25 @@ public class Client implements Runnable {
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
 		}
+	}
 
+	public void setCurrentLevel(Level level) 
+	{
+		currentLevel = level;		
+		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
+	}
+
+	public Level getCurrentLevel() {
+		return currentLevel;
+	}
+
+	public void updateHostStatus(String address) 
+	{
+		System.out.println("IS HOST? address="+address+",serv="+serverAddress);
+		if(serverAddress.equals(address))
+		{
+			setHost(true);
+		}
 	}
 
 }

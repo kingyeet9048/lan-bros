@@ -3,15 +3,19 @@ package cs410.lanbros.content.npc;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import javax.swing.ImageIcon;
+
+import cs410.lanbros.animation.SpriteSheet;
 import cs410.lanbros.content.tile.Tile;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.io.UserInput;
 
-public class PlayerNPC extends NPC {
+public class ClientPlayerNPC extends NPC {
+	public static final SpriteSheet PLAYER_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/player_Chef1.png"));
 	protected int jumpTime;
 	public String playerName;
 
-	public PlayerNPC(float x, float y, String playerName) {
+	public ClientPlayerNPC(float x, float y, String playerName) {
 		super(x, y, 32, 32);
 		jumpTime = 0;
 		this.playerName = playerName;
@@ -19,6 +23,11 @@ public class PlayerNPC extends NPC {
 
 	@Override
 	protected void updateNPC() {
+		handleMovement();
+	}
+	
+	protected void handleMovement()
+	{
 		if (jumpTime > 0) {
 			--jumpTime;
 			if (jumpTime > 20) {
@@ -37,10 +46,10 @@ public class PlayerNPC extends NPC {
 		}
 	}
 
+
 	@Override
 	public void renderNPC(Graphics2D g) {
-		g.setColor(Color.red);
-		g.fillOval((int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), (int) npcWidth, (int) npcHeight);
+		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), (int) npcWidth, (int) npcHeight);
 	}
 
 	@Override

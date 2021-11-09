@@ -263,7 +263,11 @@ public class Server implements Runnable {
 				Request request = requestQueue.poll();
 
 				// will output the payload and all we do is send the result of it.
-
+				if(request == null)
+				{
+					continue;
+				}
+				
 				try {
 					boolean result = router.routeRequest(request);
 

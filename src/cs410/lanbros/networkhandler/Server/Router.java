@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Movements;
 
 /**
@@ -52,6 +53,8 @@ public class Router {
             result = startEndGame(request);
         } else if (api.contains("/api/movement/")) {
             result = handleMovement(request);
+        } else if (api.contains("/api/playersync/")) {
+        	result = syncPlayers(request);
         }
 
         return result;
@@ -139,6 +142,25 @@ public class Router {
     }
 
     /**
+     * update the requested connection socket with a list of all connected clients
+     * 
+     * @param request
+     * @apiNote refer to the readme
+     * @throws IOException
+     */
+    private boolean syncPlayers(Request request) throws IOException {
+        Gson gson = new Gson();
+        Map<String, String> object = new HashMap<>();
+        object.put("api", "/api/playersync");
+        object.put("coordinates", request.getApi());
+        String payload = gson.toJson(object);
+        PrintWriter writer = new PrintWriter(request.getReceiver().getOutputStream());
+        writer.write(" " + payload + "\n");
+        writer.flush();
+        return true;
+    }
+
+    /**
      * Start or ends the game
      * 
      * @param request
@@ -192,19 +214,10 @@ public class Router {
      */
     private boolean handleMovement(Request request) throws IOException {
         String currentAPI = request.getApi();
-        String currentMovement = "";
-        // which the direction of the movement in the api
-        if (currentAPI.contains(Movements.MOVE_LEFT.toString())) {
-            currentMovement = Movements.MOVE_LEFT.toString();
-        } else if (currentAPI.contains(Movements.MOVE_RIGHT.toString())) {
-            currentMovement = Movements.MOVE_RIGHT.toString();
-        } else if (currentAPI.contains(Movements.MOVE_DOWN.toString())) {
-            currentMovement = Movements.MOVE_DOWN.toString();
-        } else if (currentAPI.contains(Movements.MOVE_UP.toString())) {
-            currentMovement = Movements.MOVE_UP.toString();
-        }
-
-        if (!currentMovement.equals("")) {
+        if(currentAPI.contains("_"))
+        {
+            String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/")+1).split("_");
+            KeyBind keyBind = KeyBind.values()[Integer.parseInt(inputActions[0])];
             Map<Socket, ServerWorker> clients = server.getWorkers();
             for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
                 Socket currentKey = entry.getKey();
@@ -219,7 +232,7 @@ public class Router {
                 Map<String, String> object = new HashMap<>();
                 object.put("api", request.getApi());
                 object.put("username", request.getReceiver().getInetAddress().getHostName());
-                object.put("movement", currentMovement);
+                object.put("movement", keyBind.ordinal()+"_"+inputActions[1]);
                 String payload = gson.toJson(object);
 
                 System.out.println(payload);
@@ -227,7 +240,10 @@ public class Router {
                 writer.write(" " + payload + "\n");
                 writer.flush();
             }
+
+            return true;
         }
-        return true;
+
+        return false;
     }
 }

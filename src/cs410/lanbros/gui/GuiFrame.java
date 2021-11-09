@@ -156,6 +156,11 @@ public class GuiFrame extends JFrame
 	 */
 	public void wipeActiveStates()
 	{
+		for(GuiState state : activeStates)
+		{
+			state.stateUnloaded();
+		}
+		
 		activeStates.clear();
 	}
 	

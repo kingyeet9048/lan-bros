@@ -2,6 +2,9 @@ package cs410.lanbros.networkhandler.Client;
 
 import java.util.Map;
 
+import cs410.lanbros.io.KeyBind;
+import cs410.lanbros.io.UserInput;
+
 /**
  * Handles routing the reponses to the proper logic that will take care of the
  * response
@@ -35,12 +38,20 @@ public class ResponseRouter {
             result = handleGameState(map, api);
         } else if (api.contains("/api/movement")) {
             result = handleMovement(map, api);
+        } else if (api.contains("/api/playersync")) {
+        	result = syncPlayers(map, api);
         }
 
         return result;
     }
 
-    /**
+    private boolean syncPlayers(Map map, String api) 
+    {
+    	client.applyPlayerSync((String)map.get("coordinates"));
+		return false;
+	}
+
+	/**
      * Connection type api
      * 
      * @param map
@@ -102,8 +113,10 @@ public class ResponseRouter {
      */
     private boolean handleMovement(Map map, String api) {
         String player = (String) map.get("username");
-        String movement = (String) map.get("movement");
-        client.movePlayer(movement, player);
+        String[] movement = ((String) map.get("movement")).split("_");
+        KeyBind bind = KeyBind.values()[Integer.parseInt(movement[0])];
+        boolean down = movement[1].equals("true");
+        UserInput.setServerKeyPressed(player, bind, down);
         return true;
     }
 }
