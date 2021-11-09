@@ -142,10 +142,10 @@ public class Client implements Runnable {
 			String content = "";
 			for(ClientPlayerNPC player : currentLevel.playerSet)
 			{
-				content += player.npcX + "," + player.npcY + "," + player.playerName;
+				content += player.npcX + "," + player.npcY + "," + player.playerName+"_";
 			}
 			
-			writer.write(" /api/playersync/"+content+"\n");
+			writer.write(" /api/playersync/"+content.substring(0,content.length()-1)+"\n");
 			writer.flush();
 		}
 	}
