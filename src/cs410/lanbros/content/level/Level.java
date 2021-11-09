@@ -26,7 +26,7 @@ public class Level
 		
 	}
 	
-	public void renderLevel(Graphics2D g)
+	public synchronized void renderLevel(Graphics2D g)
 	{
 		for(ClientPlayerNPC player : playerSet)
 		{
