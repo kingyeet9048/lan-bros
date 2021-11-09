@@ -164,6 +164,12 @@ public class Client implements Runnable {
 					{
 						play.npcX = Float.parseFloat(comps[0]);
 						play.npcY = Float.parseFloat(comps[1]);
+						System.out.println("Synced player \'"+play.playerName+"\'!");
+					}
+					else
+					{
+						System.out.println("didn't Synced player \'"+play.playerName+"\'!");
+
 					}
 				}				
 			}
