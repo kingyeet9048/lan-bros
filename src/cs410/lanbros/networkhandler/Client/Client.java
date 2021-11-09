@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 
 import cs410.lanbros.gui.state.InMultiplayerGameState;
+import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Movements;
 
@@ -189,9 +190,10 @@ public class Client implements Runnable {
 	 * @param movement
 	 * @param player
 	 */
-	public void movePlayer(String movement, String player) {
+	public void sendMovement(KeyBind key) {
 		// TODO: Move player with given ENUM
-		System.out.println("This is where a player would be moved: " + player + " " + movement);
+		//System.out.println("This is where a player would be moved: " + player + " " + movement);
+		writer.write(" /api/movement/"+key.toString());
 	}
 
 	/**

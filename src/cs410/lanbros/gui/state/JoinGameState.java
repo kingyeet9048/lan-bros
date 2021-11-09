@@ -9,13 +9,13 @@ import java.util.concurrent.TimeUnit;
 import cs410.lanbros.gui.GuiButton;
 import cs410.lanbros.gui.GuiFrame;
 import cs410.lanbros.gui.GuiInput;
+import cs410.lanbros.main.Main;
 import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Client.Client;
 
 public class JoinGameState extends GuiState {
 
     private Rectangle screenSize;
-    private Client currentClient;
 
     public JoinGameState(GuiFrame frame, Factory factory) {
         super(frame);
@@ -28,22 +28,17 @@ public class JoinGameState extends GuiState {
             public void onClick(boolean pressed) {
                 if (pressed) {
                     this.setEnabled(false);
-                    factory.setServerAddress(inputs[0].getText());
-                    factory.setHost(false);
-                    currentClient = factory.makeClient();
                     this.setText("Please wait while we try to connect...");
-                    if (currentClient.joinGame() == true) {
-                        Thread clientThread = new Thread(currentClient);
-                        clientThread.start();
-                        InMultiplayerGameState mpGame = factory.makeGameState(frame, currentClient.getThisPlayerName());
-                        currentClient.setGUI(mpGame);
-                        frame.addActiveState(mpGame);
-                        frame.removeActiveState(JoinGameState.this);
-                    } else {
-                        this.setText("Find Host To Join");
+                    
+                    if(!Main.startClient(inputs[0].getText()))
+                    {
+                    	this.setText("Find Host To Join");
                         this.setEnabled(true);
                     }
-                    System.out.println(inputs[0].getText());
+                    else
+                    {
+                    	System.out.println(inputs[0].getText());
+                    }
                 }
             }
         } };

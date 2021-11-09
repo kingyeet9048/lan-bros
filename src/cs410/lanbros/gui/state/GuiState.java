@@ -107,6 +107,7 @@ public abstract class GuiState {
 	protected void removeButtons() {
 		for (GuiButton button : buttons) {
 			frame.getActivePanel().remove(button);
+			button.setVisible(false);
 		}
 	}
 
@@ -116,6 +117,7 @@ public abstract class GuiState {
 	protected void removeInputs() {
 		for (GuiInput input : inputs) {
 			frame.getActivePanel().remove(input);
+			input.setVisible(false);
 		}
 	}
 

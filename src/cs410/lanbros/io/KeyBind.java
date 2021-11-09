@@ -6,7 +6,8 @@ public enum KeyBind
 {
 	LEFT(KeyEvent.VK_A, KeyEvent.VK_LEFT),
 	RIGHT(KeyEvent.VK_D, KeyEvent.VK_RIGHT),
-	JUMP(KeyEvent.VK_W, KeyEvent.VK_SPACE);
+	JUMP(KeyEvent.VK_W, KeyEvent.VK_SPACE),
+	PAUSE(KeyEvent.VK_ESCAPE);
 	public int[] keyCodes;
 	
 	private KeyBind(int... keycode)

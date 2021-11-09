@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Movements;
 
 /**
@@ -193,6 +194,7 @@ public class Router {
     private boolean handleMovement(Request request) throws IOException {
         String currentAPI = request.getApi();
         String currentMovement = "";
+        KeyBind keyBind = KeyBind.values()[Integer.parseInt(currentAPI.substring(currentAPI.lastIndexOf("/")))];
         // which the direction of the movement in the api
         if (currentAPI.contains(Movements.MOVE_LEFT.toString())) {
             currentMovement = Movements.MOVE_LEFT.toString();
@@ -219,7 +221,7 @@ public class Router {
                 Map<String, String> object = new HashMap<>();
                 object.put("api", request.getApi());
                 object.put("username", request.getReceiver().getInetAddress().getHostName());
-                object.put("movement", currentMovement);
+                object.put("movement", ""+keyBind.ordinal());
                 String payload = gson.toJson(object);
 
                 System.out.println(payload);

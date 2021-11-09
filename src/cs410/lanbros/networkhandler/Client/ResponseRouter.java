@@ -103,7 +103,7 @@ public class ResponseRouter {
     private boolean handleMovement(Map map, String api) {
         String player = (String) map.get("username");
         String movement = (String) map.get("movement");
-        client.movePlayer(movement, player);
+        client.sendMovement(movement, player);
         return true;
     }
 }
