@@ -2,6 +2,9 @@ package cs410.lanbros.networkhandler.Client;
 
 import java.util.Map;
 
+import cs410.lanbros.io.KeyBind;
+import cs410.lanbros.io.UserInput;
+
 /**
  * Handles routing the reponses to the proper logic that will take care of the
  * response
@@ -102,8 +105,10 @@ public class ResponseRouter {
      */
     private boolean handleMovement(Map map, String api) {
         String player = (String) map.get("username");
-        String movement = (String) map.get("movement");
-        client.sendMovement(movement, player);
+        String[] movement = ((String) map.get("movement")).split("_");
+        KeyBind bind = KeyBind.values()[Integer.parseInt(movement[0])];
+        boolean down = movement[1].equals("true");
+        UserInput.setServerKeyPressed(player, bind, down);
         return true;
     }
 }

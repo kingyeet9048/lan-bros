@@ -193,20 +193,10 @@ public class Router {
      */
     private boolean handleMovement(Request request) throws IOException {
         String currentAPI = request.getApi();
-        String currentMovement = "";
-        KeyBind keyBind = KeyBind.values()[Integer.parseInt(currentAPI.substring(currentAPI.lastIndexOf("/")))];
-        // which the direction of the movement in the api
-        if (currentAPI.contains(Movements.MOVE_LEFT.toString())) {
-            currentMovement = Movements.MOVE_LEFT.toString();
-        } else if (currentAPI.contains(Movements.MOVE_RIGHT.toString())) {
-            currentMovement = Movements.MOVE_RIGHT.toString();
-        } else if (currentAPI.contains(Movements.MOVE_DOWN.toString())) {
-            currentMovement = Movements.MOVE_DOWN.toString();
-        } else if (currentAPI.contains(Movements.MOVE_UP.toString())) {
-            currentMovement = Movements.MOVE_UP.toString();
-        }
-
-        if (!currentMovement.equals("")) {
+        if(currentAPI.contains("_"))
+        {
+            String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/")).split("_");
+            KeyBind keyBind = KeyBind.values()[Integer.parseInt(inputActions[0])];
             Map<Socket, ServerWorker> clients = server.getWorkers();
             for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
                 Socket currentKey = entry.getKey();
@@ -221,7 +211,7 @@ public class Router {
                 Map<String, String> object = new HashMap<>();
                 object.put("api", request.getApi());
                 object.put("username", request.getReceiver().getInetAddress().getHostName());
-                object.put("movement", ""+keyBind.ordinal());
+                object.put("movement", keyBind.ordinal()+" "+inputActions[1]);
                 String payload = gson.toJson(object);
 
                 System.out.println(payload);
@@ -229,7 +219,10 @@ public class Router {
                 writer.write(" " + payload + "\n");
                 writer.flush();
             }
+
+            return true;
         }
-        return true;
+
+        return false;
     }
 }

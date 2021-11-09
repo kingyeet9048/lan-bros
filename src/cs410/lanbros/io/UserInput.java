@@ -46,6 +46,23 @@ public class UserInput implements KeyListener
 	}
 	
 	/**
+	 * Sets the state of a keybind for a remote client, called by {@link ResponseRouter}.
+	 * @param user the name of the user to modify
+	 * @param bind the keybind to modify
+	 * @param pressed whether the key is pressed or not
+	 */
+	public static void setServerKeyPressed(String user, KeyBind bind, boolean pressed)
+	{
+		HashMap<KeyBind, Boolean> curKeys = serverKeyPressed.get(user);
+		if(curKeys == null)
+		{
+			serverKeyPressed.put(user, new HashMap<KeyBind, Boolean>());
+		}
+		
+		serverKeyPressed.get(user).put(bind, pressed);
+	}
+	
+	/**
 	 * Checks to see if the keybind is currently pressed.
 	 * @param bind the keybind to check
 	 * @return true if it is pressed, false if not

@@ -190,10 +190,11 @@ public class Client implements Runnable {
 	 * @param movement
 	 * @param player
 	 */
-	public void sendMovement(KeyBind key) {
+	public void sendMovement(KeyBind key, boolean down) {
 		// TODO: Move player with given ENUM
 		//System.out.println("This is where a player would be moved: " + player + " " + movement);
-		writer.write(" /api/movement/"+key.toString());
+		writer.write(" /api/movement/"+key.toString()+"_"+down+"\n");
+		writer.flush();
 	}
 
 	/**
