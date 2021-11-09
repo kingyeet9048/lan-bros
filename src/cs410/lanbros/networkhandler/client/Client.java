@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.swing.JOptionPane;
-
-import cs410.lanbros.gui.state.InMultiplayerGameState;
-import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Movements;
 
 /**
@@ -27,17 +23,14 @@ public class Client implements Runnable {
 
 	// instance variables
 	private Socket socket;
-	private String thisPlayerName;
 	private List<String> currentPlayer;
 	private String serverAddress;
 	private int serverPort;
-	private final int ATTEMPT_BEFORE_TIMEOUT = 1;
+	private final int ATTEMPT_BEFORE_TIMEOUT = 10;
 	private Queue<Response> reponseQueue;
 	private ResponseRouter router;
 	private boolean isHost;
 	private PrintWriter writer;
-	private InMultiplayerGameState gui;
-	private Factory factory;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -47,14 +40,13 @@ public class Client implements Runnable {
 	 * @param serverPort
 	 * @param isHost
 	 */
-	public Client(String serverAddress, int serverPort, boolean isHost, Factory factory) {
+	public Client(String serverAddress, int serverPort, boolean isHost) {
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.isHost = isHost;
 		reponseQueue = new ConcurrentLinkedQueue<>();
 		router = new ResponseRouter(this);
 		currentPlayer = new LinkedList<>();
-		this.factory = factory;
 	}
 
 	/**
@@ -66,7 +58,6 @@ public class Client implements Runnable {
 		while (true) {
 			try {
 				// trys to connect to the addess and port.
-				JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
 				socket = new Socket(serverAddress, serverPort);
 				System.out.println("Connected to the game!");
 				// we are past the socket line which means we joined.
@@ -76,7 +67,6 @@ public class Client implements Runnable {
 				writer.write(" /api/conn/client/connection\n");
 				writer.flush();
 				addPlayerToList(socket.getInetAddress().getHostName());
-				thisPlayerName = getSocket().getInetAddress().getHostName();
 				// writer.close();
 				break;
 			} catch (IOException e) {
@@ -87,9 +77,7 @@ public class Client implements Runnable {
 					if (attemptNumber >= ATTEMPT_BEFORE_TIMEOUT) {
 						System.err.printf("Reached max number of attempts (%d). Stopping and closing...",
 								ATTEMPT_BEFORE_TIMEOUT);
-						JOptionPane.showMessageDialog(null,
-								"Reached max number of attempts. Stopping and closing...: ");
-
+						break;
 					}
 					System.err.println("Could not connect to game. Trying agin in 10 second...");
 					Thread.sleep(10000);
@@ -144,9 +132,6 @@ public class Client implements Runnable {
 	 */
 	public void updatePlayers() {
 		System.out.println("Would update players here");
-		for (String player : currentPlayer) {
-			factory.getJoinedGameState().addNewPlayer(player);
-		}
 	}
 
 	/**
@@ -215,14 +200,6 @@ public class Client implements Runnable {
 	public void moveThisPlayer(Movements move) {
 		writer.write(" " + "/api/movement/" + move.toString() + "\n");
 		writer.flush();
-	}
-
-	public void setGUI(InMultiplayerGameState gui) {
-		this.gui = gui;
-	}
-
-	public String getThisPlayerName() {
-		return thisPlayerName;
 	}
 
 	@Override
