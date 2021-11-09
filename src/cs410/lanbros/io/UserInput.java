@@ -25,12 +25,14 @@ public class UserInput implements KeyListener
 			if(!keyPressed.containsKey(key))
 			{
 				keyPressed.put(key,true);
-				Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);				
+				if(Main.getNetworkFactory().getCurrentClient() != null)
+					Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);				
 			}
 			else if(keyPressed.get(key) != true)
 			{
 				keyPressed.put(key, true);
-				Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);				
+				if(Main.getNetworkFactory().getCurrentClient() != null)
+					Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);				
 			}
 		}
 	}
@@ -44,12 +46,14 @@ public class UserInput implements KeyListener
 			if(!keyPressed.containsKey(key))
 			{
 				keyPressed.put(key,false);
-				Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);				
+				if(Main.getNetworkFactory().getCurrentClient() != null)
+					Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);				
 			}
 			else if(keyPressed.get(key) != false)
 			{
 				keyPressed.put(key, false);
-				Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);				
+				if(Main.getNetworkFactory().getCurrentClient() != null)
+					Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);				
 			}
 		}		
 	}
