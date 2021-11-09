@@ -17,8 +17,9 @@ public class ServerPlayerNPC extends ClientPlayerNPC {
 		this.playerName = playerName;
 	}
 
-	@Override
-	protected void updateNPC() {
+	
+	protected void handleMovement()
+	{
 		if (jumpTime > 0) {
 			--jumpTime;
 			if (jumpTime > 20) {
@@ -34,23 +35,7 @@ public class ServerPlayerNPC extends ClientPlayerNPC {
 
 		if (UserInput.isServerKeyBindPressed(playerName, KeyBind.RIGHT)) {
 			motionX += 1.2f;
-		}
-	}
-
-	@Override
-	public void renderNPC(Graphics2D g) {
-		g.setColor(Color.red);
-		g.fillOval((int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), (int) npcWidth, (int) npcHeight);
-	}
-
-	@Override
-	public void onCollide(Tile tile) {
-
-	}
-
-	@Override
-	public void onCollide(NPC npc) {
-
+		}		
 	}
 
 }

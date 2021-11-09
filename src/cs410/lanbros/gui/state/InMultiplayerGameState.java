@@ -11,6 +11,7 @@ import cs410.lanbros.main.Main;
 public class InMultiplayerGameState extends GuiState {
 
     public String thisPlayerName;
+    int syncCounter = 100;
 
     public InMultiplayerGameState(GuiFrame frame, String thisPlayerName) {
         super(frame);
@@ -22,6 +23,14 @@ public class InMultiplayerGameState extends GuiState {
     	Level level = Main.getNetworkFactory().getCurrentClient().getCurrentLevel();
         level.updateLevel();
         level.renderLevel(g);
+        
+        --syncCounter;
+        
+        if(syncCounter <= 0)
+        {
+        	syncCounter = 100;
+        	Main.getNetworkFactory().getCurrentClient().syncPlayerCoordinates();
+        }
     }
 
     @Override
