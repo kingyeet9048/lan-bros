@@ -122,7 +122,7 @@ public class Client implements Runnable {
 	 * 
 	 * @param player
 	 */
-	public void addPlayerToList(String player) {
+	public synchronized void addPlayerToList(String player) {
 		// the player cannot already be added to the list.
 		if (!currentPlayer.contains(player)) {
 			currentPlayer.add(player);
@@ -136,7 +136,7 @@ public class Client implements Runnable {
 		}
 	}
 	
-	public void syncPlayerCoordinates() {
+	public synchronized void syncPlayerCoordinates() {
 		if(isHost)
 		{
 			String content = "";
@@ -150,7 +150,7 @@ public class Client implements Runnable {
 		}
 	}
 	
-	public void applyPlayerSync(String api) {
+	public synchronized void applyPlayerSync(String api) {
 		String[] players = api.split("_");
 		
 		for(String player : players)
@@ -165,11 +165,6 @@ public class Client implements Runnable {
 						play.npcX = Float.parseFloat(comps[0]);
 						play.npcY = Float.parseFloat(comps[1]);
 						System.out.println("Synced player \'"+play.playerName+"\'!");
-					}
-					else
-					{
-						System.out.println("didn't Synced player \'"+play.playerName+"\'!");
-
 					}
 				}				
 			}

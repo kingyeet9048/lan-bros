@@ -13,7 +13,7 @@ public class Level
 	public ArrayList<Tile> tileSet = new ArrayList<Tile>();
 	public ArrayList<NPC> npcSet = new ArrayList<NPC>();	
 	
-	public void updateLevel()
+	public synchronized void updateLevel()
 	{
 		for(ClientPlayerNPC player : playerSet)
 		{
