@@ -60,7 +60,7 @@ public class Main {
 	
     public static void addNewPlayer(String playerName) {
         boolean playerLoaded = false;
-        Level level = factory.getCurrentClient().getLevel();
+        Level level = factory.getCurrentClient().getCurrentLevel();
         for (ClientPlayerNPC player : level.playerSet) {
             if (player.playerName.equals(playerName)) {
                 playerLoaded = true;

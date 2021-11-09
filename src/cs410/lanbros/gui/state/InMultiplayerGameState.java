@@ -6,10 +6,10 @@ import cs410.lanbros.content.level.Level;
 import cs410.lanbros.content.npc.ClientPlayerNPC;
 import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.GuiFrame;
+import cs410.lanbros.main.Main;
 
 public class InMultiplayerGameState extends GuiState {
 
-    public Level currentLevel;
     public String thisPlayerName;
 
     public InMultiplayerGameState(GuiFrame frame, String thisPlayerName) {
@@ -19,8 +19,9 @@ public class InMultiplayerGameState extends GuiState {
 
     @Override
     public void renderPre(Graphics2D g) {
-        currentLevel.updateLevel();
-        currentLevel.renderLevel(g);
+    	Level level = Main.getNetworkFactory().getCurrentClient().getCurrentLevel();
+        level.updateLevel();
+        level.renderLevel(g);
     }
 
     @Override
@@ -31,21 +32,9 @@ public class InMultiplayerGameState extends GuiState {
 
     @Override
     public void stateLoaded() {
-        currentLevel = new Level();
-        currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
-    }
-
-    public void addNewPlayer(String playerName) {
-        boolean playerLoaded = false;
-        for (ClientPlayerNPC player : currentLevel.playerSet) {
-            if (player.playerName.equals(playerName)) {
-                playerLoaded = true;
-                break;
-            }
-        }
-        if (!playerLoaded) {
-            currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, playerName));
-        }
+    	Level level = new Level();
+        Main.getNetworkFactory().getCurrentClient().setCurrentLevel(level);
+        level.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
     }
 
     @Override
