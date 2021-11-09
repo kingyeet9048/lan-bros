@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 
+import cs410.lanbros.main.Main;
+
 public class UserInput implements KeyListener
 {
 	private static HashMap<KeyBind, Boolean> keyPressed = new HashMap<KeyBind,Boolean>();
@@ -21,7 +23,7 @@ public class UserInput implements KeyListener
 		if(key != null)
 		{
 			keyPressed.put(key, true);
-			
+			Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);
 		}
 	}
 
@@ -32,6 +34,7 @@ public class UserInput implements KeyListener
 		if(key != null)
 		{
 			keyPressed.put(key, false);
+			Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);
 		}		
 	}
 	
