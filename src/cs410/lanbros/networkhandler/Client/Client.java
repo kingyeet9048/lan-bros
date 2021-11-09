@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 
 import cs410.lanbros.content.level.Level;
+import cs410.lanbros.content.npc.ClientPlayerNPC;
 import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
 import cs410.lanbros.io.KeyBind;
@@ -132,6 +133,37 @@ public class Client implements Runnable {
 			}
 			
 			System.out.println("Player list updated: " + currentPlayer.toString());
+		}
+	}
+	
+	public void syncPlayerCoordinates() {
+		if(isHost)
+		{
+			String content = "";
+			for(ClientPlayerNPC player : currentLevel.playerSet)
+			{
+				content += player.npcX + "," + player.npcY + "," + player.playerName;
+			}
+			
+			writer.write(" /api/playersync/"+content+"\n");
+			writer.flush();			
+		}
+	}
+	
+	public void applyPlayerSync(String api) {
+		String[] players = api.split("_");
+		
+		for(String player : players)
+		{
+			String[] comps = player.split(",");
+			for(ClientPlayerNPC play : currentLevel.playerSet)
+			{
+				if(play.playerName.equals(comps[2]))
+				{
+					play.npcX = Float.parseFloat(comps[0]);
+					play.npcY = Float.parseFloat(comps[1]);
+				}
+			}
 		}
 	}
 
@@ -274,6 +306,14 @@ public class Client implements Runnable {
 
 	public Level getCurrentLevel() {
 		return currentLevel;
+	}
+
+	public void updateHostStatus(String address) 
+	{
+		if(serverAddress.equals(address))
+		{
+			setHost(true);
+		}
 	}
 
 }

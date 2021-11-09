@@ -38,12 +38,20 @@ public class ResponseRouter {
             result = handleGameState(map, api);
         } else if (api.contains("/api/movement")) {
             result = handleMovement(map, api);
+        } else if (api.contains("/api/playersync")) {
+        	result = syncPlayers(map, api);
         }
 
         return result;
     }
 
-    /**
+    private boolean syncPlayers(Map map, String api) 
+    {
+    	client.applyPlayerSync(api);
+		return false;
+	}
+
+	/**
      * Connection type api
      * 
      * @param map
