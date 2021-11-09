@@ -22,8 +22,11 @@ public class UserInput implements KeyListener
 		
 		if(key != null)
 		{
-			keyPressed.put(key, true);
-			Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);
+			if(keyPressed.get(key) != true)
+			{
+				keyPressed.put(key, true);
+				Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);				
+			}
 		}
 	}
 
@@ -33,8 +36,11 @@ public class UserInput implements KeyListener
 		
 		if(key != null)
 		{
-			keyPressed.put(key, false);
-			Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);
+			if(keyPressed.get(key) != false)
+			{
+				keyPressed.put(key, false);
+				Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);				
+			}
 		}		
 	}
 	

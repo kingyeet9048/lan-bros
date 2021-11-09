@@ -266,7 +266,7 @@ public class Client implements Runnable {
 		currentLevel = level;		
 	}
 
-	public Level getLevel() {
+	public Level getCurrentLevel() {
 		return currentLevel;
 	}
 
