@@ -7,7 +7,7 @@ import cs410.lanbros.content.tile.Tile;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.io.UserInput;
 
-public class ServerPlayerNPC extends PlayerNPC {
+public class ServerPlayerNPC extends ClientPlayerNPC {
 	protected int jumpTime;
 	public String playerName;
 

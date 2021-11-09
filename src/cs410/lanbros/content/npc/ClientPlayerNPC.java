@@ -7,11 +7,11 @@ import cs410.lanbros.content.tile.Tile;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.io.UserInput;
 
-public class PlayerNPC extends NPC {
+public class ClientPlayerNPC extends NPC {
 	protected int jumpTime;
 	public String playerName;
 
-	public PlayerNPC(float x, float y, String playerName) {
+	public ClientPlayerNPC(float x, float y, String playerName) {
 		super(x, y, 32, 32);
 		jumpTime = 0;
 		this.playerName = playerName;

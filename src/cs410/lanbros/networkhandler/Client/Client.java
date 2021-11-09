@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JOptionPane;
 
+import cs410.lanbros.content.level.Level;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Factory;
@@ -39,6 +40,7 @@ public class Client implements Runnable {
 	private PrintWriter writer;
 	private InMultiplayerGameState gui;
 	private Factory factory;
+	private Level currentLevel;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -146,7 +148,7 @@ public class Client implements Runnable {
 	public void updatePlayers() {
 		System.out.println("Would update players here");
 		for (String player : currentPlayer) {
-			factory.getJoinedGameState().addNewPlayer(player);
+			factory.getCurrentClient().addPlayerToList(player);
 		}
 	}
 
@@ -193,7 +195,7 @@ public class Client implements Runnable {
 	public void sendMovement(KeyBind key, boolean down) {
 		// TODO: Move player with given ENUM
 		//System.out.println("This is where a player would be moved: " + player + " " + movement);
-		writer.write(" /api/movement/"+key.toString()+"_"+down+"\n");
+		writer.write(" /api/movement/"+key.ordinal()+"_"+down+"\n");
 		writer.flush();
 	}
 
@@ -256,7 +258,11 @@ public class Client implements Runnable {
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
 		}
+	}
 
+	public void setCurrentLevel(Level level) 
+	{
+		currentLevel = level;		
 	}
 
 }

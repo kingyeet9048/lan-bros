@@ -3,7 +3,8 @@ package cs410.lanbros.gui.state;
 import java.awt.Graphics2D;
 
 import cs410.lanbros.content.level.Level;
-import cs410.lanbros.content.npc.PlayerNPC;
+import cs410.lanbros.content.npc.ClientPlayerNPC;
+import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.GuiFrame;
 
 public class InMultiplayerGameState extends GuiState {
@@ -31,19 +32,19 @@ public class InMultiplayerGameState extends GuiState {
     @Override
     public void stateLoaded() {
         currentLevel = new Level();
-        currentLevel.playerSet.add(new PlayerNPC(3, 3, thisPlayerName));
+        currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
     }
 
     public void addNewPlayer(String playerName) {
         boolean playerLoaded = false;
-        for (PlayerNPC player : currentLevel.playerSet) {
+        for (ClientPlayerNPC player : currentLevel.playerSet) {
             if (player.playerName.equals(playerName)) {
                 playerLoaded = true;
                 break;
             }
         }
         if (!playerLoaded) {
-            currentLevel.playerSet.add(new PlayerNPC(3, 3, playerName));
+            currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, playerName));
         }
     }
 

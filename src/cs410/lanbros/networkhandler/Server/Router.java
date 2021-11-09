@@ -195,7 +195,7 @@ public class Router {
         String currentAPI = request.getApi();
         if(currentAPI.contains("_"))
         {
-            String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/")).split("_");
+            String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/")+1).split("_");
             KeyBind keyBind = KeyBind.values()[Integer.parseInt(inputActions[0])];
             Map<Socket, ServerWorker> clients = server.getWorkers();
             for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
