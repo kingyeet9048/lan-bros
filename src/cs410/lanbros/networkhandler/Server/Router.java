@@ -54,7 +54,7 @@ public class Router {
         } else if (api.contains("/api/movement/")) {
             result = handleMovement(request);
         } else if (api.contains("/api/playersync/")) {
-        	result = syncPlayers(request);
+            result = syncPlayers(request);
         }
 
         return result;
@@ -149,14 +149,23 @@ public class Router {
      * @throws IOException
      */
     private boolean syncPlayers(Request request) throws IOException {
-        Gson gson = new Gson();
-        Map<String, String> object = new HashMap<>();
-        object.put("api", "/api/playersync");
-        object.put("coordinates", request.getApi());
-        String payload = gson.toJson(object);
-        PrintWriter writer = new PrintWriter(request.getReceiver().getOutputStream());
-        writer.write(" " + payload + "\n");
-        writer.flush();
+        Map<Socket, ServerWorker> clients = server.getWorkers();
+        for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
+            Socket currentKey = entry.getKey();
+
+            PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
+
+            if (currentKey.equals(request.getReceiver())) {
+                continue;
+            }
+            Gson gson = new Gson();
+            Map<String, String> object = new HashMap<>();
+            object.put("api", "/api/playersync");
+            object.put("coordinates", request.getApi());
+            String payload = gson.toJson(object);
+            writer.write(" " + payload + "\n");
+            writer.flush();
+        }
         return true;
     }
 
@@ -214,9 +223,8 @@ public class Router {
      */
     private boolean handleMovement(Request request) throws IOException {
         String currentAPI = request.getApi();
-        if(currentAPI.contains("_"))
-        {
-            String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/")+1).split("_");
+        if (currentAPI.contains("_")) {
+            String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/") + 1).split("_");
             KeyBind keyBind = KeyBind.values()[Integer.parseInt(inputActions[0])];
             Map<Socket, ServerWorker> clients = server.getWorkers();
             for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
@@ -232,7 +240,7 @@ public class Router {
                 Map<String, String> object = new HashMap<>();
                 object.put("api", request.getApi());
                 object.put("username", request.getReceiver().getInetAddress().getHostName());
-                object.put("movement", keyBind.ordinal()+"_"+inputActions[1]);
+                object.put("movement", keyBind.ordinal() + "_" + inputActions[1]);
                 String payload = gson.toJson(object);
 
                 System.out.println(payload);
