@@ -20,6 +20,7 @@ public class JoinGameState extends GuiState {
     public JoinGameState(GuiFrame frame, Factory factory) {
         super(frame);
         inputs = new GuiInput[] { new GuiInput("IP Address") {
+			private static final long serialVersionUID = 1L;
         } };
         buttons = new GuiButton[] { new GuiButton("Find Host To Join") {
             private static final long serialVersionUID = 1L;

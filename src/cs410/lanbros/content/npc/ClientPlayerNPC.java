@@ -1,6 +1,5 @@
 package cs410.lanbros.content.npc;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import javax.swing.ImageIcon;
@@ -49,7 +48,7 @@ public class ClientPlayerNPC extends NPC {
 
 	@Override
 	public void renderNPC(Graphics2D g) {
-		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), (int) npcWidth, (int) npcHeight);
+		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), 3.0f, 3.0f);
 	}
 
 	@Override

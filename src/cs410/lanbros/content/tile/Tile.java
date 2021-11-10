@@ -8,6 +8,11 @@ public abstract class Tile
 {
 	public int tileX, tileY;
 	
+	/**
+	 * Indicates whether this tile collides with the player or not.
+	 */
+	protected boolean collideWith;
+	
 	public Tile(int x, int y)
 	{
 		tileX = x;
