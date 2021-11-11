@@ -22,6 +22,7 @@ public class ServerPlayerNPC extends ClientPlayerNPC {
 	{
 		if (jumpTime > 0) {
 			--jumpTime;
+			onGround = false;
 			if (jumpTime > 20) {
 				motionY -= 1.2f + (float) ((jumpTime - 20) / 10.0f);
 			}

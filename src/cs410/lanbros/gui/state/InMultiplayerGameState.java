@@ -1,6 +1,7 @@
 package cs410.lanbros.gui.state;
 
 import java.awt.Graphics2D;
+import java.io.File;
 
 import cs410.lanbros.content.level.Level;
 import cs410.lanbros.content.npc.ClientPlayerNPC;
@@ -41,7 +42,7 @@ public class InMultiplayerGameState extends GuiState {
 
     @Override
     public void stateLoaded() {
-    	Level level = new Level();
+    	Level level = new Level(new File("resources/level/level0.data"));
         Main.getNetworkFactory().getCurrentClient().setCurrentLevel(level);
     }
 

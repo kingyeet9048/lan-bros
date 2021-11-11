@@ -1,6 +1,7 @@
 package cs410.lanbros.gui.state;
 
 import java.awt.Graphics2D;
+import java.io.File;
 
 import cs410.lanbros.content.level.Level;
 import cs410.lanbros.content.npc.ClientPlayerNPC;
@@ -27,7 +28,7 @@ public class IngameState extends GuiState {
 
 	@Override
 	public void stateLoaded() {
-		currentLevel = new Level();
+		currentLevel = new Level(new File("resources/level/level0.data"));
 		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, "Bob"));
 		System.out.println("Joined singleplayer!");
 

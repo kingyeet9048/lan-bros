@@ -10,6 +10,7 @@ public abstract class NPC {
 	public float npcX, npcY, motionX, motionY, npcWidth, npcHeight;
 	protected boolean active;
 	protected int lifeTime = 0;
+	public boolean onGround;
 
 	public NPC(float x, float y, float width, float height)
 	{
@@ -45,7 +46,8 @@ public abstract class NPC {
 		}
 		else if(npcY < GuiFrame.SCREEN_HEIGHT - npcHeight * 3.0)
 		{
-			motionY += 1.1f;
+			if(!onGround)
+				motionY += 1.1f;
 		}
 		
 		updateNPC();
