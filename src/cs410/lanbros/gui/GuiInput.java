@@ -49,5 +49,9 @@ public abstract class GuiInput extends JTextField implements FocusListener {
 
     @Override
     public void focusLost(FocusEvent e) {
+    	if(e.getSource() == this && getText().isEmpty())
+    	{
+    		setText(defaultText);
+    	}
     }
 }
