@@ -93,12 +93,11 @@ public abstract class Tile implements ITileEntry
 	protected static void applyBaseCollide(Tile tile, NPC npc)
 	{
 		float xpos = (npc.npcX+npc.motionX)/TILE_SIZE-tile.tileX;
-		float ypos = (npc.npcX+npc.motionY)/TILE_SIZE-tile.tileY;
+		float ypos = (npc.npcY+npc.motionY)/TILE_SIZE-tile.tileY;
 		
 		if(xpos < 0.75 && xpos > 0.5)
 		{
 			System.out.println("XPOS="+xpos + " and was VALID");
-			npc.npcX=npc.npcY + TILE_SIZE;
 			npc.npcX=tile.tileX*TILE_SIZE+npc.npcWidth;
 		}
 		else if(xpos > 0.25 && xpos < 0.5)
@@ -107,7 +106,7 @@ public abstract class Tile implements ITileEntry
 			npc.npcX=tile.tileX*TILE_SIZE-npc.npcWidth;
 		}
 		
-		if(ypos > -0.5 && ypos < 0)
+		if(ypos < -0.5 && ypos < 0)
 		{
 			System.out.println("YPOS="+ypos + " and was VALID");
 			npc.npcY=tile.tileY*TILE_SIZE-npc.npcHeight;

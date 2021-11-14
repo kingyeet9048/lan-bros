@@ -52,7 +52,10 @@ public class ClientPlayerNPC extends NPC {
 	public void renderNPC(Graphics2D g) {
 		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), 3.0f, 3.0f);
 		g.setColor(Color.black);
-		g.fillRect((int)(npcX-npcWidth/2),(int)(npcY-npcHeight/2),(int)(npcWidth),(int)(npcHeight));
+		double xpos = Math.floor((int)(npcX+motionX)/Tile.TILE_SIZE);
+		double ypos = Math.floor((int)(npcY+motionY)/Tile.TILE_SIZE);
+
+		g.drawRect((int)(xpos*Tile.TILE_SIZE),(int)(ypos*Tile.TILE_SIZE),(int)(npcWidth),(int)(npcHeight));
 	}
 
 	@Override
