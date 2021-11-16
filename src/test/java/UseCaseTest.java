@@ -27,9 +27,6 @@ public class UseCaseTest {
 
     @BeforeClass
     public static void setUp() {
-        server = new Server(4321, 5, factory);
-        testingThread = new Thread(server);
-        testingThread.start();
         factory = new Factory();
         factory.makeBaseAPIRegistry();
         factory.setHost(true);
@@ -41,6 +38,9 @@ public class UseCaseTest {
             fail(e.getMessage());
         }
         factory.setServerPort(4321);
+        server = factory.makeServer();
+        testingThread = new Thread(server);
+        testingThread.start();
         client = factory.makeClient();
         clientThread = new Thread(client);
 
