@@ -1,4 +1,4 @@
-package cs410.lanbros.main;
+package main.java;
 
 import cs410.lanbros.content.level.Level;
 import cs410.lanbros.content.npc.ClientPlayerNPC;

@@ -6,7 +6,7 @@ import cs410.lanbros.content.level.Level;
 import cs410.lanbros.content.npc.ClientPlayerNPC;
 import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.GuiFrame;
-import cs410.lanbros.main.Main;
+import main.java.Main;
 
 public class InMultiplayerGameState extends GuiState {
 
@@ -20,16 +20,15 @@ public class InMultiplayerGameState extends GuiState {
 
     @Override
     public void renderPre(Graphics2D g) {
-    	Level level = Main.getNetworkFactory().getCurrentClient().getCurrentLevel();
+        Level level = Main.getNetworkFactory().getCurrentClient().getCurrentLevel();
         level.updateLevel();
         level.renderLevel(g);
-        
+
         --syncCounter;
-        
-        if(syncCounter <= 0)
-        {
-        	syncCounter = 100;
-        	Main.getNetworkFactory().getCurrentClient().syncPlayerCoordinates();
+
+        if (syncCounter <= 0) {
+            syncCounter = 100;
+            Main.getNetworkFactory().getCurrentClient().syncPlayerCoordinates();
         }
     }
 
@@ -41,7 +40,7 @@ public class InMultiplayerGameState extends GuiState {
 
     @Override
     public void stateLoaded() {
-    	Level level = new Level();
+        Level level = new Level();
         Main.getNetworkFactory().getCurrentClient().setCurrentLevel(level);
     }
 

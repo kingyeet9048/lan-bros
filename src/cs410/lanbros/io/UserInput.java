@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 
-import cs410.lanbros.main.Main;
+import main.java.Main;
 
 public class UserInput implements KeyListener {
 	private static HashMap<KeyBind, Boolean> keyPressed = new HashMap<KeyBind, Boolean>();

@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit;
 import cs410.lanbros.gui.GuiButton;
 import cs410.lanbros.gui.GuiFrame;
 import cs410.lanbros.gui.GuiInput;
-import cs410.lanbros.main.Main;
 import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Client.Client;
+import main.java.Main;
 
 public class JoinGameState extends GuiState {
 

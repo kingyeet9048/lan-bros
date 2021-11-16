@@ -1,4 +1,4 @@
-package cs410.lanbros.Testing;
+package test.java;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
