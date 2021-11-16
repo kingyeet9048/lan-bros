@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.AfterClass;
@@ -33,7 +34,7 @@ public class UseCaseTest {
         factory.setPort(4321);
         factory.setMAX_PLAYERS(5);
         try {
-            factory.setServerAddress(client.getThisMachineIP());
+            factory.setServerAddress(InetAddress.getLocalHost().getHostAddress().toString());
         } catch (UnknownHostException e) {
             fail(e.getMessage());
         }
