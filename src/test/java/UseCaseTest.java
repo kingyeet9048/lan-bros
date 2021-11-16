@@ -31,6 +31,7 @@ public class UseCaseTest {
         testingThread = new Thread(server);
         testingThread.start();
         factory = new Factory();
+        factory.makeBaseAPIRegistry();
         factory.setHost(true);
         factory.setPort(4321);
         factory.setMAX_PLAYERS(5);
