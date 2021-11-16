@@ -53,7 +53,7 @@ public class UseCaseTest {
     @Test
     public void serverStartedSuccessfully() {
         System.out.println("Making sure server can start successfully");
-        assertEquals(server.getServer().isBound(), false);
+        assertEquals(server.getServer().isBound(), true);
     }
 
     /**
