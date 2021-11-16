@@ -73,7 +73,9 @@ public class Client implements Runnable {
 		while (true) {
 			try {
 				// trys to connect to the addess and port.
-				JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
+				new Thread(() -> {
+					JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
+				}).start();
 				socket = new Socket(serverAddress, serverPort);
 				System.out.println("Connected to the game!");
 				// we are past the socket line which means we joined.
@@ -94,9 +96,11 @@ public class Client implements Runnable {
 					if (attemptNumber >= ATTEMPT_BEFORE_TIMEOUT) {
 						System.err.printf("Reached max number of attempts (%d). Stopping and closing...",
 								ATTEMPT_BEFORE_TIMEOUT);
-						JOptionPane.showMessageDialog(null,
-								"Reached max number of attempts. Stopping and closing...: ");
+						new Thread(() -> {
+							JOptionPane.showMessageDialog(null,
+									"Reached max number of attempts. Stopping and closing...: ");
 
+						}).start();
 					}
 					System.err.println("Could not connect to game. Trying agin in 10 second...");
 					Thread.sleep(10000);
