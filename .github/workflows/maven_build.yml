@@ -13,11 +13,6 @@ jobs:
         with:
           java-version: '12'
           distribution: 'adopt'
-      - name: Build with Maven
+      - name: Run Unit Test with Maven Build
         run: mvn --batch-mode --update-snapshots verify
         
-      - name: Run tests with Maven
-        run: mvn -B test --file pom.xml
-        
-      - name: Test Use Case 
-        run: mvn test
