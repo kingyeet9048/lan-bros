@@ -269,6 +269,32 @@ public class Client implements Runnable {
 		return thisPlayerName;
 	}
 
+	public void setCurrentLevel(Level level) {
+		currentLevel = level;
+		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
+	}
+
+	public Level getCurrentLevel() {
+		return currentLevel;
+	}
+
+	public String getThisMachineIP() throws UnknownHostException {
+		return InetAddress.getLocalHost().getHostAddress().toString();
+	}
+
+	public void updateHostStatus(String address) {
+		String myIP = "";
+		try {
+			myIP = getThisMachineIP();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
+		if (myIP.equals(address)) {
+			setHost(true);
+		}
+	}
+
 	@Override
 	public void run() {
 		boolean joined;
@@ -296,28 +322,6 @@ public class Client implements Runnable {
 			System.out.println("\nLost connection with the server goodbye\n");
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
-		}
-	}
-
-	public void setCurrentLevel(Level level) {
-		currentLevel = level;
-		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
-	}
-
-	public Level getCurrentLevel() {
-		return currentLevel;
-	}
-
-	public void updateHostStatus(String address) {
-		String myIP = "";
-		try {
-			myIP = InetAddress.getLocalHost().getHostAddress().toString();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
-		if (myIP.equals(address)) {
-			setHost(true);
 		}
 	}
 
