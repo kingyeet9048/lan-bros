@@ -6,7 +6,7 @@
   <name>Maven_Migration</name>
   <description>This is lan-bros project's maven migration.</description>
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
     <resources>
       <resource>
         <directory>src</directory>
