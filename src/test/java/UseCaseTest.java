@@ -17,8 +17,8 @@ import java.net.UnknownHostException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-@Category(UseCaseTesting.class)
-public class UseCaseTesting {
+@Category(UseCaseTest.class)
+public class UseCaseTest {
 
     static Server server;
     static Client client;
