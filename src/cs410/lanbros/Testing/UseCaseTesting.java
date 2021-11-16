@@ -1,6 +1,8 @@
 package cs410.lanbros.Testing;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import cs410.lanbros.networkhandler.Factory;
 import cs410.lanbros.networkhandler.Client.Client;
 import cs410.lanbros.networkhandler.Server.Server;
@@ -15,6 +17,7 @@ import java.net.UnknownHostException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+@Category(UseCaseTesting.class)
 public class UseCaseTesting {
 
     static Server server;
