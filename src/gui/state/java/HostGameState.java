@@ -6,10 +6,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 
-import gui.java.GuiButton;
-import gui.java.GuiFrame;
-import gui.java.GuiInput;
-import networkhandler.java.Factory;
+import gui.components.java.GuiButton;
+import gui.components.java.GuiFrame;
+import gui.components.java.GuiInput;
+import networkhandler.shared.java.Factory;
 
 public class HostGameState extends GuiState{
 
