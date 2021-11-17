@@ -9,11 +9,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import cs410.lanbros.networkhandler.Factory;
-import cs410.lanbros.networkhandler.Movements;
-import cs410.lanbros.networkhandler.Client.Client;
+import cs410.lanbros.networkhandler.NetPacket;
 
 /**
  * Server class to make sure all clients are up to date on the current game.
@@ -33,8 +31,6 @@ public class Server implements Runnable {
 
 	private Queue<Request> requestQueue;
 
-	private Router router;
-
 	private PrintWriter writer;
 
 	private Listener listener;
@@ -45,13 +41,15 @@ public class Server implements Runnable {
 
 	private boolean gameClosed = false;
 
+	private Factory factory;
+
 	/**
 	 * Constructor for server.
 	 * 
 	 * @param port        Port number for server to connect to
 	 * @param MAX_PLAYERS Max number of players that can play at a single time
 	 */
-	public Server(int port, int MAX_PLAYERS) {
+	public Server(int port, int MAX_PLAYERS, Factory factory) {
 		try {
 			server = new ServerSocket(port);
 			workers = new ConcurrentHashMap<>();
@@ -60,7 +58,7 @@ public class Server implements Runnable {
 			hostName = hostInfo[0];
 			requestQueue = new LinkedList<>();
 			this.MAX_PLAYERS = MAX_PLAYERS;
-			router = new Router(this);
+			this.factory = factory;
 			System.out.println(hostName);
 			System.out.println(ipAddress);
 		} catch (IOException e) {
@@ -191,7 +189,6 @@ public class Server implements Runnable {
 		result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
 		result = prime * result + ((listener == null) ? 0 : listener.hashCode());
 		result = prime * result + ((requestQueue == null) ? 0 : requestQueue.hashCode());
-		result = prime * result + ((router == null) ? 0 : router.hashCode());
 		result = prime * result + ((server == null) ? 0 : server.hashCode());
 		result = prime * result + ((workers == null) ? 0 : workers.hashCode());
 		result = prime * result + ((writer == null) ? 0 : writer.hashCode());
@@ -227,11 +224,6 @@ public class Server implements Runnable {
 				return false;
 		} else if (!requestQueue.equals(other.requestQueue))
 			return false;
-		if (router == null) {
-			if (other.router != null)
-				return false;
-		} else if (!router.equals(other.router))
-			return false;
 		if (server == null) {
 			if (other.server != null)
 				return false;
@@ -263,15 +255,24 @@ public class Server implements Runnable {
 				Request request = requestQueue.poll();
 
 				// will output the payload and all we do is send the result of it.
-				if(request == null)
-				{
+				if (request == null) {
 					continue;
 				}
-				
-				try {
-					boolean result = router.routeRequest(request);
 
-					System.out.printf("Route %s Processed: %s\n", request.getApi(), result);
+				try {
+					String key = factory.getPathFromSupported(request.getApi());
+					if (key == null) {
+						System.out.println("Server Does not understand the request: " + request.getApi());
+					} else {
+						NetPacket packet = factory.getAPIRegistry().getOrDefault(key, null);
+
+						if (packet == null) {
+							System.out.println("Server does not have an implementation for: " + request.getApi());
+						} else {
+							packet.serverExecute(request);
+						}
+					}
+					System.out.printf("Route %s Processed\n", request.getApi());
 
 				} catch (SocketException e) {
 					// something went wrong... adding the request back to the queue and trying again
@@ -297,28 +298,4 @@ public class Server implements Runnable {
 
 		}
 	}
-
-	public static void main(String arg[]) {
-		Server server = new Server(4321, 4);
-		Thread serveThread = new Thread(server);
-		serveThread.start();
-		Factory factory = new Factory();
-		// test
-		Client client = new Client(server.getIpAddress(), 4321, true, factory);
-		Thread clientThread = new Thread(client);
-		clientThread.start();
-
-		try {
-			TimeUnit.SECONDS.sleep(1);
-			// server.getServer().close();
-			PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream());
-			writer.write(" " + "/api/movement/" + Movements.MOVE_LEFT.toString() + "\n");
-			writer.flush();
-			// client.getSocket().close();
-		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 }

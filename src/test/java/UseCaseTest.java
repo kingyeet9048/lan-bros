@@ -28,10 +28,8 @@ public class UseCaseTest {
 
     @BeforeClass
     public static void setUp() {
-        server = new Server(4321, 5);
-        testingThread = new Thread(server);
-        testingThread.start();
         factory = new Factory();
+        factory.makeBaseAPIRegistry();
         factory.setHost(true);
         factory.setPort(4321);
         factory.setMAX_PLAYERS(5);
@@ -41,6 +39,9 @@ public class UseCaseTest {
             fail(e.getMessage());
         }
         factory.setServerPort(4321);
+        server = factory.makeServer();
+        testingThread = new Thread(server);
+        testingThread.start();
         client = factory.makeClient();
         clientThread = new Thread(client);
 
