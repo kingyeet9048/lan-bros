@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -18,7 +19,7 @@ import cs410.lanbros.content.npc.ServerPlayerNPC;
 import cs410.lanbros.gui.state.InMultiplayerGameState;
 import cs410.lanbros.io.KeyBind;
 import cs410.lanbros.networkhandler.Factory;
-import cs410.lanbros.networkhandler.Movements;
+import cs410.lanbros.networkhandler.NetPacket;
 
 /**
  * Client class that handles interactions with the server and game manager
@@ -39,7 +40,6 @@ public class Client implements Runnable {
 	private int serverPort;
 	private final int ATTEMPT_BEFORE_TIMEOUT = 1;
 	private Queue<Response> reponseQueue;
-	private ResponseRouter router;
 	private boolean isHost;
 	private PrintWriter writer;
 	private InMultiplayerGameState gui;
@@ -59,7 +59,6 @@ public class Client implements Runnable {
 		this.serverPort = serverPort;
 		this.isHost = isHost;
 		reponseQueue = new ConcurrentLinkedQueue<>();
-		router = new ResponseRouter(this);
 		currentPlayer = new LinkedList<>();
 		this.factory = factory;
 	}
@@ -73,7 +72,9 @@ public class Client implements Runnable {
 		while (true) {
 			try {
 				// trys to connect to the addess and port.
-				JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
+				new Thread(() -> {
+					JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
+				}).start();
 				socket = new Socket(serverAddress, serverPort);
 				System.out.println("Connected to the game!");
 				// we are past the socket line which means we joined.
@@ -94,9 +95,11 @@ public class Client implements Runnable {
 					if (attemptNumber >= ATTEMPT_BEFORE_TIMEOUT) {
 						System.err.printf("Reached max number of attempts (%d). Stopping and closing...",
 								ATTEMPT_BEFORE_TIMEOUT);
-						JOptionPane.showMessageDialog(null,
-								"Reached max number of attempts. Stopping and closing...: ");
+						new Thread(() -> {
+							JOptionPane.showMessageDialog(null,
+									"Reached max number of attempts. Stopping and closing...: ");
 
+						}).start();
 					}
 					System.err.println("Could not connect to game. Trying agin in 10 second...");
 					Thread.sleep(10000);
@@ -256,17 +259,38 @@ public class Client implements Runnable {
 		this.socket = socket;
 	}
 
-	public void moveThisPlayer(Movements move) {
-		writer.write(" " + "/api/movement/" + move.toString() + "\n");
-		writer.flush();
-	}
-
 	public void setGUI(InMultiplayerGameState gui) {
 		this.gui = gui;
 	}
 
 	public String getThisPlayerName() {
 		return thisPlayerName;
+	}
+
+	public void setCurrentLevel(Level level) {
+		currentLevel = level;
+		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
+	}
+
+	public Level getCurrentLevel() {
+		return currentLevel;
+	}
+
+	public String getThisMachineIP() throws UnknownHostException {
+		return InetAddress.getLocalHost().getHostAddress().toString();
+	}
+
+	public void updateHostStatus(String address) {
+		String myIP = "";
+		try {
+			myIP = getThisMachineIP();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
+		if (myIP.equals(address)) {
+			setHost(true);
+		}
 	}
 
 	@Override
@@ -288,36 +312,23 @@ public class Client implements Runnable {
 					// poll it and process it through the router
 					Response response = reponseQueue.poll();
 
-					boolean result = router.handleResponse(response);
+					Map map = response.getMappedResponse();
+					String api = (String) map.get("api");
 
-					System.out.printf("Response %s Processed: %s\n", response.getRawReponse(), result);
+					NetPacket packet = factory.getAPIRegistry().getOrDefault(api, null);
+
+					if (packet == null) {
+						System.out.println("Response not recognized: " + api);
+					} else {
+						packet.clientExecute(map);
+					}
+
+					System.out.printf("Response %s Processed\n", response.getRawReponse());
 				}
 			}
 			System.out.println("\nLost connection with the server goodbye\n");
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
-		}
-	}
-
-	public void setCurrentLevel(Level level) {
-		currentLevel = level;
-		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
-	}
-
-	public Level getCurrentLevel() {
-		return currentLevel;
-	}
-
-	public void updateHostStatus(String address) {
-		String myIP = "";
-		try {
-			myIP = InetAddress.getLocalHost().getHostAddress().toString();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
-		if (myIP.equals(address)) {
-			setHost(true);
 		}
 	}
 
