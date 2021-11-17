@@ -18,8 +18,8 @@ import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
-import networkhandler.java.Factory;
-import networkhandler.java.NetPacket;
+import networkhandler.shared.java.Factory;
+import networkhandler.shared.java.NetPacket;
 
 /**
  * Client class that handles interactions with the server and game manager

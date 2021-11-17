@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
-import gui.java.GuiFrame;
+import gui.components.java.GuiFrame;
 
 public class IngameState extends GuiState {
 	public Level currentLevel;

@@ -3,12 +3,12 @@ package main.java;
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
-import gui.java.GuiFrame;
+import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import gui.state.java.TestState;
 import networkhandler.client.java.Client;
-import networkhandler.java.Factory;
 import networkhandler.server.java.Server;
+import networkhandler.shared.java.Factory;
 
 public class Main {
 	private static Factory factory = new Factory();
