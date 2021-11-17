@@ -39,7 +39,8 @@ public class TitleState extends GuiState {
 
 			@Override
 			public void onClick(boolean pressed) {
-				System.out.println("Pressed host game!");
+				frame.addActiveState(new HostGameState(frame, factory));
+				frame.removeActiveState(TitleState.this);
 			}
 		}, new GuiButton("Quit") {
 			private static final long serialVersionUID = 1L;
