@@ -9,6 +9,7 @@ import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import networkhandler.shared.java.Factory;
 
+
 public class TitleState extends GuiState {
 	/**
 	 * A temporary, faster reference to the size of the GuiFrame.

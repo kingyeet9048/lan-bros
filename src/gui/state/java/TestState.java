@@ -10,6 +10,7 @@ import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import networkhandler.shared.java.Factory;
 
+
 public class TestState extends GuiState {
 	private GuiButton button;
 

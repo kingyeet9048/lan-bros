@@ -6,7 +6,6 @@ import org.junit.experimental.categories.Category;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
