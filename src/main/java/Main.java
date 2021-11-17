@@ -1,14 +1,14 @@
 package main.java;
 
-import cs410.lanbros.content.level.Level;
-import cs410.lanbros.content.npc.ClientPlayerNPC;
-import cs410.lanbros.content.npc.ServerPlayerNPC;
-import cs410.lanbros.gui.GuiFrame;
-import cs410.lanbros.gui.state.InMultiplayerGameState;
-import cs410.lanbros.gui.state.TestState;
-import cs410.lanbros.networkhandler.Factory;
-import cs410.lanbros.networkhandler.Client.Client;
-import cs410.lanbros.networkhandler.Server.Server;
+import content.level.java.Level;
+import content.npc.java.ClientPlayerNPC;
+import content.npc.java.ServerPlayerNPC;
+import gui.java.GuiFrame;
+import gui.state.java.InMultiplayerGameState;
+import gui.state.java.TestState;
+import networkhandler.client.java.Client;
+import networkhandler.java.Factory;
+import networkhandler.server.java.Server;
 
 public class Main {
 	private static Factory factory = new Factory();
