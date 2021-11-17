@@ -1,4 +1,4 @@
-package networkhandler.java;
+package networkhandler.shared.java;
 
 import java.io.IOException;
 import java.util.Map;

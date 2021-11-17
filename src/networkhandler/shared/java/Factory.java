@@ -1,4 +1,4 @@
-package networkhandler.java;
+package networkhandler.shared.java;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 
-import gui.java.GuiFrame;
+import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
 import io.java.UserInput;

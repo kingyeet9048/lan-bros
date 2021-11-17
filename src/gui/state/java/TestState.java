@@ -6,9 +6,9 @@ import java.awt.Graphics2D;
 import javax.swing.ImageIcon;
 
 import animation.java.SpriteSheet;
-import gui.java.GuiButton;
-import gui.java.GuiFrame;
-import networkhandler.java.Factory;
+import gui.components.java.GuiButton;
+import gui.components.java.GuiFrame;
+import networkhandler.shared.java.Factory;
 
 public class TestState extends GuiState {
 	private GuiButton button;

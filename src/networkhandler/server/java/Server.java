@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
-import networkhandler.java.Factory;
-import networkhandler.java.NetPacket;
+import networkhandler.shared.java.Factory;
+import networkhandler.shared.java.NetPacket;
 
 /**
  * Server class to make sure all clients are up to date on the current game.

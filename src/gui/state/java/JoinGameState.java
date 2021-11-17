@@ -6,12 +6,12 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.concurrent.TimeUnit;
 
-import gui.java.GuiButton;
-import gui.java.GuiFrame;
-import gui.java.GuiInput;
+import gui.components.java.GuiButton;
+import gui.components.java.GuiFrame;
+import gui.components.java.GuiInput;
 import main.java.Main;
 import networkhandler.client.java.Client;
-import networkhandler.java.Factory;
+import networkhandler.shared.java.Factory;
 
 public class JoinGameState extends GuiState {
 

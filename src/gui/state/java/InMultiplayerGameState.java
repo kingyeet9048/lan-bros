@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
-import gui.java.GuiFrame;
+import gui.components.java.GuiFrame;
 import main.java.Main;
 
 public class InMultiplayerGameState extends GuiState {
