@@ -5,9 +5,9 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import gui.java.GuiButton;
-import gui.java.GuiFrame;
-import networkhandler.java.Factory;
+import gui.components.java.GuiButton;
+import gui.components.java.GuiFrame;
+import networkhandler.shared.java.Factory;
 
 public class TitleState extends GuiState {
 	/**

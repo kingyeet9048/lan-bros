@@ -6,9 +6,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import gui.java.GuiButton;
-import gui.java.GuiFrame;
-import gui.java.GuiInput;
+import gui.components.java.GuiButton;
+import gui.components.java.GuiFrame;
+import gui.components.java.GuiInput;
 
 /**
  * An abstract class to handle rendering a state of the game. Intended to

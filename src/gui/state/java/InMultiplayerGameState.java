@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.io.File;
 
 import content.level.java.Level;
-import gui.java.GuiFrame;
+import gui.components.java.GuiFrame;
 import main.java.Main;
 
 public class InMultiplayerGameState extends GuiState {

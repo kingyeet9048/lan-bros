@@ -3,10 +3,9 @@ package content.npc.java;
 import java.awt.Graphics2D;
 
 import content.level.java.Level;
-import content.tile.java.ITileEntry;
 import content.tile.java.Tile;
 import content.tile.java.TileFace;
-import gui.java.GuiFrame;
+import gui.components.java.GuiFrame;
 
 public abstract class NPC {
 	public float npcX, npcY, motionX, motionY, npcWidth, npcHeight;
