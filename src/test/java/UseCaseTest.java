@@ -3,9 +3,9 @@ package test.java;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import cs410.lanbros.networkhandler.Factory;
-import cs410.lanbros.networkhandler.Client.Client;
-import cs410.lanbros.networkhandler.Server.Server;
+import networkhandler.client.java.Client;
+import networkhandler.java.Factory;
+import networkhandler.server.java.Server;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
