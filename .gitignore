@@ -47,6 +47,3 @@ hs_err_pid*
 
 # vscode specific git ignore
 .vscode
-
-# github specific git ignore
-.github
