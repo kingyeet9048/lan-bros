@@ -69,7 +69,7 @@ public class Main {
 			}
 		}
 		if (!playerLoaded) {
-			level.playerSet.add(new ServerPlayerNPC(3, 3, playerName));
+			level.playerSet.add(new ServerPlayerNPC(level, 3, 3, playerName));
 		}
 	}
 }

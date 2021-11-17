@@ -9,18 +9,28 @@ import java.util.ArrayList;
 
 import content.npc.java.ClientPlayerNPC;
 import content.npc.java.NPC;
+import content.tile.java.ITileEntry;
 import content.tile.java.Tile;
+import content.tile.java.TileFace;
 
 public class Level 
 {
 	public ArrayList<ClientPlayerNPC> playerSet = new ArrayList<ClientPlayerNPC>();
-	public Tile[][] tileMap;
-	public ArrayList<NPC> npcSet = new ArrayList<NPC>();	
-	private int[][] tileNeighborOffsets = {
-			{-1,0}, {1,0}, {0,-1}, {0,1}
-	};
+	public ArrayList<NPC> npcSet = new ArrayList<NPC>();
+	private Tile[][] tileMap;
+	private int[] heightMap;
+	private final File levelFile;
 	
-	public Level(File levelFile)
+	public Level(File file)
+	{
+		levelFile = file;
+		if(!loadFromFile(file))
+		{
+			System.err.println("** WARNING!!! Unable to load level from file \'"+file.toString()+"\'!!! **");
+		}
+	}
+	
+	protected boolean loadFromFile(File file)
 	{
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(levelFile));
@@ -31,34 +41,45 @@ public class Level
 			while(line != null)
 			{
 				lines.add(line);	
-				maxSize = line.split(" ").length;
 				line = reader.readLine();
 			}
 			
+			maxSize = lines.get(0).split(" ").length;
 			tileMap = new Tile[lines.size()][maxSize];
+			heightMap = new int[lines.size()];
 			
-			for(int y = 0; y < tileMap.length; ++y)
+			for(int x = 0; x < tileMap.length; ++x)
 			{
-				int tY = y;
-				String[] tiles = lines.get(y).split(" ");
-				tileMap[tY] = new Tile[tiles.length];
+				String[] tiles = lines.get(x).split(" ");
+				tileMap[x] = new Tile[tiles.length];
+				heightMap[x] = tiles.length;
 				
-				for(int x = 0; x < tiles.length; ++x)
+				for(int y = 0; y < tiles.length; ++y)
 				{
-					int tX = x;
-					tileMap[tY][tX] = Tile.fromID(tiles[tX]);
+					Tile tile = Tile.fromID(this, tiles[y]);
+					tileMap[x][y] = tile;
 					
-					if(tileMap[tY][tX] != null)
-						tileMap[tY][tX].setPosition(tX,tY);
+					if(tile != null)
+					{
+						tile.setPosition(x,y);
+						
+						if(((ITileEntry)tile).shouldCollideFromSide(TileFace.TOP))
+						{
+							heightMap[x] = heightMap[x] > y ? y : heightMap[x]; 
+						}
+					}
 				}
 			}
 			
 			reader.close();
+			return true;
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
 		}
+		
+		return false;
 	}
 	
 	public synchronized void updateLevel()
@@ -66,26 +87,12 @@ public class Level
 		for(ClientPlayerNPC player : playerSet)
 		{
 			player.update();
-			int tX = (int) (player.npcX/Tile.TILE_SIZE);
-			int tY = (int) (player.npcY/Tile.TILE_SIZE);
-			
-			for(int[] off : tileNeighborOffsets)
-			{
-				int offX = tX + off[0], offY = tY + off[1];
-				
-				if(offX >= 0 && offX < tileMap.length && offY >= 0 && offY < tileMap[offX].length)
-				{
-					System.out.println("Checking \'"+tX+"+"+off[0]+"\', \'"+tY+"+"+off[1]);
-					if(tileMap[offX][offY] != null && tileMap[offX][offY].collideWith(player))
-						tileMap[offX][offY].applyCollision(player);
-				}
-			}
 		}
 	}
 	
 	public void resetLevel()
 	{
-		
+		loadFromFile(levelFile);
 	}
 	
 	public synchronized void renderLevel(Graphics2D g)
@@ -103,5 +110,13 @@ public class Level
 					tile.renderTile(g);
 			}
 		}
+	}
+
+	public Tile[][] getTileMap() {
+		return tileMap;
+	}
+	
+	public int[] getHeightMap() {
+		return heightMap;
 	}
 }

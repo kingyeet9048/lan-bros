@@ -1,11 +1,12 @@
 package content.npc.java;
 
-import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 import javax.swing.ImageIcon;
 
 import animation.java.SpriteSheet;
+import content.level.java.Level;
 import content.tile.java.Tile;
 import io.java.KeyBind;
 import io.java.UserInput;
@@ -15,8 +16,8 @@ public class ClientPlayerNPC extends NPC {
 	protected int jumpTime;
 	public String playerName;
 
-	public ClientPlayerNPC(float x, float y, String playerName) {
-		super(x, y, 32, 32);
+	public ClientPlayerNPC(Level level, float x, float y, String playerName) {
+		super(level, x, y, 32, 32);
 		jumpTime = 0;
 		this.playerName = playerName;
 	}
@@ -32,9 +33,9 @@ public class ClientPlayerNPC extends NPC {
 			--jumpTime;
 			onGround = false;
 			if (jumpTime > 20) {
-				motionY -= 1.2f + (float) ((jumpTime - 20) / 10.0f);
+				motionY -= 1.9f + (float) ((jumpTime - 20) / 10.0f);
 			}
-		} else if (UserInput.isKeyBindPressed(KeyBind.JUMP)) {
+		} else if (UserInput.isKeyBindPressed(KeyBind.JUMP) && onGround) {
 			jumpTime = 40;
 		}
 
@@ -50,12 +51,12 @@ public class ClientPlayerNPC extends NPC {
 
 	@Override
 	public void renderNPC(Graphics2D g) {
-		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX - npcWidth / 2), (int) (npcY - npcHeight / 2), 3.0f, 3.0f);
+		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX), (int) (npcY - npcHeight / 2), 3.0f, 3.0f);
 		g.setColor(Color.black);
-		double xpos = Math.floor((int)(npcX+motionX)/Tile.TILE_SIZE);
-		double ypos = Math.floor((int)(npcY+motionY)/Tile.TILE_SIZE);
+		double xpos = (int)(npcX+motionX);
+		double ypos = (int)(npcY+motionY);
 
-		g.drawRect((int)(xpos*Tile.TILE_SIZE),(int)(ypos*Tile.TILE_SIZE),(int)(npcWidth),(int)(npcHeight));
+		g.drawRect((int)(xpos-npcWidth/2.0f),(int)(ypos-npcHeight/2.0f),(int)(npcWidth),(int)(npcHeight));
 	}
 
 	@Override

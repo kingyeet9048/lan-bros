@@ -3,15 +3,16 @@ package content.tile.java;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import content.level.java.Level;
 import content.npc.java.NPC;
 
 public class BlockTile extends Tile
 {
-	public BlockTile() {
-		super();
+	public BlockTile(Level level) {
+		super(level);
 	}
-	public BlockTile(int x, int y) {
-		super(x,y);
+	public BlockTile(Level level, int x, int y) {
+		super(level, x,y);
 	}
 
 	@Override
@@ -47,8 +48,8 @@ public class BlockTile extends Tile
 	}
 	
 	@Override
-	public Tile createTile() {
-		return new BlockTile();
+	public Tile createTile(Level level) {
+		return new BlockTile(level);
 	}
 
 	@Override

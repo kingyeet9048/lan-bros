@@ -133,7 +133,7 @@ public class Client implements Runnable {
 			currentPlayer.add(player);
 
 			if (currentLevel != null) {
-				currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, player));
+				currentLevel.playerSet.add(new ServerPlayerNPC(currentLevel, 3, 3, player));
 			}
 
 			System.out.println("Player list updated: " + currentPlayer.toString());
@@ -269,7 +269,7 @@ public class Client implements Runnable {
 
 	public void setCurrentLevel(Level level) {
 		currentLevel = level;
-		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
+		currentLevel.playerSet.add(new ClientPlayerNPC(currentLevel, 3, 3, thisPlayerName));
 	}
 
 	public Level getCurrentLevel() {
