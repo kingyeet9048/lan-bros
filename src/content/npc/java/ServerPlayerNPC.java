@@ -1,6 +1,7 @@
 package content.npc.java;
 
 import content.level.java.Level;
+import content.tile.java.TileFace;
 import io.java.KeyBind;
 import io.java.UserInput;
 
@@ -27,11 +28,11 @@ public class ServerPlayerNPC extends ClientPlayerNPC {
 			jumpTime = 40;
 		}
 
-		if (UserInput.isServerKeyBindPressed(playerName, KeyBind.LEFT)) {
+		if (UserInput.isServerKeyBindPressed(playerName, KeyBind.LEFT) && wallHit != TileFace.RIGHT) {
 			motionX -= 1.2f;
 		}
 
-		if (UserInput.isServerKeyBindPressed(playerName, KeyBind.RIGHT)) {
+		if (UserInput.isServerKeyBindPressed(playerName, KeyBind.RIGHT) && wallHit != TileFace.LEFT) {
 			motionX += 1.2f;
 		}		
 	}

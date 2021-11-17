@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import animation.java.SpriteSheet;
 import content.level.java.Level;
 import content.tile.java.Tile;
+import content.tile.java.TileFace;
 import io.java.KeyBind;
 import io.java.UserInput;
 
@@ -39,11 +40,11 @@ public class ClientPlayerNPC extends NPC {
 			jumpTime = 40;
 		}
 
-		if (UserInput.isKeyBindPressed(KeyBind.LEFT)) {
+		if (UserInput.isKeyBindPressed(KeyBind.LEFT) && wallHit != TileFace.RIGHT) {
 			motionX -= 1.2f;
 		}
 
-		if (UserInput.isKeyBindPressed(KeyBind.RIGHT)) {
+		if (UserInput.isKeyBindPressed(KeyBind.RIGHT) && wallHit != TileFace.LEFT) {
 			motionX += 1.2f;
 		}
 	}

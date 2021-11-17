@@ -9,9 +9,10 @@ import gui.components.java.GuiFrame;
 
 public abstract class NPC {
 	public float npcX, npcY, motionX, motionY, npcWidth, npcHeight;
+	public TileFace wallHit = null;
+	public boolean onGround;
 	protected boolean active;
 	protected int lifeTime = 0;
-	public boolean onGround;
 	protected Level level;
 	private final int[][][] tileNeighborOffsets = {
 			{{-1,0}, {1,0}}, {{0,-1}, {0,1}}
@@ -35,6 +36,15 @@ public abstract class NPC {
 		npcX += motionX *= 0.85f;
 		npcY += motionY *= 0.85f;
 		
+		if(wallHit == TileFace.RIGHT && motionX < 0)
+		{
+			wallHit = null;
+		}
+		else if(wallHit == TileFace.LEFT && motionX > 0)
+		{
+			wallHit = null;
+		}
+		
 		if(Math.abs(motionX) < 0.025)
 		{
 			motionX = 0;
@@ -56,10 +66,7 @@ public abstract class NPC {
 			if(!onGround)
 			{
 				motionY += 1.1f;
-				System.out.println("OffGround!");
 			}
-			else
-				System.out.println("OnGround!");
 		}
 		
 		updateTileCollision();
@@ -74,6 +81,7 @@ public abstract class NPC {
 
 		if(tX < tileMap.length)
 		{			
+			boolean collided = false;
 			for(int[][] offSets : tileNeighborOffsets)
 			{
 				for(int[] off : offSets)
@@ -84,13 +92,18 @@ public abstract class NPC {
 						if(tileMap[offX][offY] != null && tileMap[offX][offY].collideWith(this))
 						{
 							tileMap[offX][offY].applyCollision(this);
+							collided = true;
 							//System.out.println("\t|\tCollided with tile "+((ITileEntry)(tileMap[offX][offY])).getTileID());					
 							break;
 						}
 					}				
 				}
 			}
-		
+			
+			if(!collided)
+			{
+				wallHit = null;
+			}
 			
 			onGround = false;
 			

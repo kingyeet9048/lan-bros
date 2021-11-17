@@ -118,6 +118,7 @@ public abstract class Tile implements ITileEntry
 			if(npc.motionX < 0)
 			{
 				npc.motionX = 0;
+				npc.wallHit = TileFace.RIGHT;
 				
 				if(xpos > 0.7)
 					npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE/2.0f + npc.npcWidth/2.0f;
@@ -142,7 +143,8 @@ public abstract class Tile implements ITileEntry
 			{
 				//npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE/2.0f - npc.npcWidth/2.0f;
 				npc.motionX = 0;
-				
+				npc.wallHit = TileFace.LEFT;
+
 				if(xpos < 0.3)
 					npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE/2.0f - npc.npcWidth/2.0f;
 				
