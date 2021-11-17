@@ -41,7 +41,14 @@ public class JoinGameState extends GuiState {
                     }
                 }
             }
-        } };
+        }, new GuiButton("Go Back to Title") {
+
+            @Override
+            public void onClick(boolean pressed) {
+                frame.addActiveState(new TitleState(frame, factory));
+                frame.removeActiveState(JoinGameState.this);             
+            }
+        }};
     }
 
     @Override
