@@ -19,7 +19,7 @@ public class JoinGameState extends GuiState {
 
     public JoinGameState(GuiFrame frame, Factory factory) {
         super(frame);
-        inputs = new GuiInput[] { new GuiInput("IP Address") {
+        inputs = new GuiInput[] { new GuiInput("localhost") {
             private static final long serialVersionUID = 1L;
         } };
         buttons = new GuiButton[] { new GuiButton("Find Host To Join") {
@@ -41,7 +41,14 @@ public class JoinGameState extends GuiState {
                     }
                 }
             }
-        } };
+        }, new GuiButton("Go Back to Title") {
+
+            @Override
+            public void onClick(boolean pressed) {
+                frame.addActiveState(new TitleState(frame, factory));
+                frame.removeActiveState(JoinGameState.this);             
+            }
+        }};
     }
 
     @Override

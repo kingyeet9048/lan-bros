@@ -5,52 +5,33 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import gui.components.java.GuiButton;
-import gui.components.java.GuiFrame;
-import networkhandler.shared.java.Factory;
-
-
-public class TitleState extends GuiState {
-	/**
+import gui.java.GuiButton;
+import gui.java.GuiFrame;
+import networkhandler.java.Factory;
+public class PauseState extends GuiState{
+    /**
 	 * A temporary, faster reference to the size of the GuiFrame.
 	 */
 	private Rectangle screenSize;
 
-	public TitleState(GuiFrame frame, Factory factory) {
+	public PauseState(GuiFrame frame, Factory factory) {
 		super(frame);
-		buttons = new GuiButton[] { new GuiButton("Singleplayer") {
+		buttons = new GuiButton[] { new GuiButton("Return to Game") {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void onClick(boolean pressed) {
-				frame.addActiveState(new IngameState(frame));
-				frame.removeActiveState(TitleState.this);
+				//TODO:
 			}
-		}, new GuiButton("Join Multiplayer") {
+		}, new GuiButton("Return to Title") {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void onClick(boolean pressed) {
-				frame.addActiveState(new JoinGameState(frame, factory));
-				frame.removeActiveState(TitleState.this);
+				//TODO
 			}
 
-		}, new GuiButton("Host Game") {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void onClick(boolean pressed) {
-				frame.addActiveState(new HostGameState(frame, factory));
-				frame.removeActiveState(TitleState.this);
-			}
-		}, new GuiButton("Quit") {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void onClick(boolean pressed) {
-				frame.setVisible(false);
-			}
-		} };
+		}};
 	}
 
 	@Override
