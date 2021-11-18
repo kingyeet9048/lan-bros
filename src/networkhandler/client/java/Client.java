@@ -45,7 +45,7 @@ public class Client implements Runnable {
 	private InMultiplayerGameState gui;
 	private Factory factory;
 	private Level currentLevel;
-    private ClientPlayerNPC thisPlayer;
+	private ClientPlayerNPC thisPlayer;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -152,10 +152,9 @@ public class Client implements Runnable {
 			writer.flush();
 		}
 	}
-	
-	public synchronized void updateClientPlayerPosition()
-	{
-		writer.write("/api/setposmotion/\n");
+
+	public synchronized void updateClientPlayerPosition() {
+		writer.write(" /api/setposmotion/\n");
 		writer.flush();
 	}
 
@@ -339,8 +338,7 @@ public class Client implements Runnable {
 		}
 	}
 
-	public ClientPlayerNPC getThisPlayer() 
-	{
+	public ClientPlayerNPC getThisPlayer() {
 		return thisPlayer;
 	}
 

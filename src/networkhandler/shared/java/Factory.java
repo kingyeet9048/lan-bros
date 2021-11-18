@@ -33,10 +33,10 @@ public class Factory {
     private boolean isHost;
     private InMultiplayerGameState joinedGameState;
     private ConcurrentHashMap<String, NetPacket> apiRegistry = new ConcurrentHashMap<>();
-    private final LinkedList<String> supportAPIs = new LinkedList<String>(
-            Arrays.asList("/api/playersync", "/api/conn/client/connection", "/api/conn/client/disconnection",
-                    "/api/conn/listUpdate", "/api/game/started", "/api/game/end", "/api/movement"));
-    
+    private final LinkedList<String> supportAPIs = new LinkedList<String>(Arrays.asList("/api/playersync",
+            "/api/conn/client/connection", "/api/conn/client/disconnection", "/api/conn/listUpdate",
+            "/api/game/started", "/api/game/end", "/api/movement", "/api/setposmotion/"));
+
     public Factory() {
     }
 
@@ -274,37 +274,33 @@ public class Factory {
             }
 
         });
-        
-        apiRegistry.put("/api/setposmotion", new NetPacket() {
+
+        apiRegistry.put("/api/setposmotion/", new NetPacket() {
 
             @Override
             String getCommand() {
-                return "/api/setposmotion";
+                return "/api/setposmotion/";
             }
 
             @Override
-            public void clientExecute(Map map) 
-            {
-                String username = (String)map.get("username");
-                String[] posStrings = ((String)map.get("position")).split("_");
-                String[] motionStrings = ((String)map.get("position")).split("_");
+            public void clientExecute(Map map) {
+                String username = (String) map.get("username");
+                String[] posStrings = ((String) map.get("position")).split("_");
+                String[] motionStrings = ((String) map.get("position")).split("_");
                 TileFace face = null;
-                
-                if(map.containsKey("wall"))
-                {
-                	face = TileFace.values()[Integer.parseInt((String)map.get("wall"))];
+
+                if (map.containsKey("wall")) {
+                    face = TileFace.values()[Integer.parseInt((String) map.get("wall"))];
                 }
-                
-                for(ClientPlayerNPC player : client.getCurrentLevel().playerSet)
-                {
-                	if(player.playerName.equals(username))
-                	{
-                		player.npcX = Float.parseFloat(posStrings[0]);
-                		player.npcY = Float.parseFloat(posStrings[1]);
-                		player.motionX = Float.parseFloat(motionStrings[0]);
-                		player.motionY = Float.parseFloat(motionStrings[1]);
-                		player.wallHit = face;
-                	}
+
+                for (ClientPlayerNPC player : client.getCurrentLevel().playerSet) {
+                    if (player.playerName.equals(username)) {
+                        player.npcX = Float.parseFloat(posStrings[0]);
+                        player.npcY = Float.parseFloat(posStrings[1]);
+                        player.motionX = Float.parseFloat(motionStrings[0]);
+                        player.motionY = Float.parseFloat(motionStrings[1]);
+                        player.wallHit = face;
+                    }
                 }
             }
 
@@ -321,14 +317,13 @@ public class Factory {
                     Map<String, String> object = new HashMap<>();
                     object.put("api", request.getApi());
                     object.put("username", request.getReceiver().getInetAddress().getHostName());
-                    object.put("position", client.getThisPlayer().npcX+"_"+client.getThisPlayer().npcY);
-                    object.put("motion",client.getThisPlayer().motionX+"_"+client.getThisPlayer().motionY);
-                    
-                    if(client.getThisPlayer().wallHit != null)
-                    {
-                        object.put("wall", client.getThisPlayer().wallHit.ordinal()+"");                    	
+                    object.put("position", client.getThisPlayer().npcX + "_" + client.getThisPlayer().npcY);
+                    object.put("motion", client.getThisPlayer().motionX + "_" + client.getThisPlayer().motionY);
+
+                    if (client.getThisPlayer().wallHit != null) {
+                        object.put("wall", client.getThisPlayer().wallHit.ordinal() + "");
                     }
-                    
+
                     String payload = gson.toJson(object);
 
                     System.out.println(payload);
