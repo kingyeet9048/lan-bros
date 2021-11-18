@@ -45,6 +45,7 @@ public class Client implements Runnable {
 	private InMultiplayerGameState gui;
 	private Factory factory;
 	private Level currentLevel;
+    private ClientPlayerNPC thisPlayer;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -133,7 +134,7 @@ public class Client implements Runnable {
 			currentPlayer.add(player);
 
 			if (currentLevel != null) {
-				currentLevel.playerSet.add(new ServerPlayerNPC(currentLevel, 3, 3, player));
+				currentLevel.playerSet.add(new ServerPlayerNPC(currentLevel, 128, 128, player));
 			}
 
 			System.out.println("Player list updated: " + currentPlayer.toString());
@@ -150,6 +151,12 @@ public class Client implements Runnable {
 			writer.write(" /api/playersync/" + content.substring(0, content.length() - 1) + "\n");
 			writer.flush();
 		}
+	}
+	
+	public synchronized void updateClientPlayerPosition()
+	{
+		writer.write("/api/setposmotion/\n");
+		writer.flush();
 	}
 
 	public synchronized void applyPlayerSync(String api) {
@@ -269,7 +276,7 @@ public class Client implements Runnable {
 
 	public void setCurrentLevel(Level level) {
 		currentLevel = level;
-		currentLevel.playerSet.add(new ClientPlayerNPC(currentLevel, 3, 3, thisPlayerName));
+		currentLevel.playerSet.add(thisPlayer = new ClientPlayerNPC(currentLevel, 128, 128, thisPlayerName));
 	}
 
 	public Level getCurrentLevel() {
@@ -330,6 +337,11 @@ public class Client implements Runnable {
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
 		}
+	}
+
+	public ClientPlayerNPC getThisPlayer() 
+	{
+		return thisPlayer;
 	}
 
 }

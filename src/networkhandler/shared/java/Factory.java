@@ -6,12 +6,13 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 
+import content.npc.java.ClientPlayerNPC;
+import content.tile.java.TileFace;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
@@ -35,7 +36,7 @@ public class Factory {
     private final LinkedList<String> supportAPIs = new LinkedList<String>(
             Arrays.asList("/api/playersync", "/api/conn/client/connection", "/api/conn/client/disconnection",
                     "/api/conn/listUpdate", "/api/game/started", "/api/game/end", "/api/movement"));
-
+    
     public Factory() {
     }
 
@@ -269,6 +270,71 @@ public class Factory {
                         writer.write(" " + payload + "\n");
                         writer.flush();
                     }
+                }
+            }
+
+        });
+        
+        apiRegistry.put("/api/setposmotion", new NetPacket() {
+
+            @Override
+            String getCommand() {
+                return "/api/setposmotion";
+            }
+
+            @Override
+            public void clientExecute(Map map) 
+            {
+                String username = (String)map.get("username");
+                String[] posStrings = ((String)map.get("position")).split("_");
+                String[] motionStrings = ((String)map.get("position")).split("_");
+                TileFace face = null;
+                
+                if(map.containsKey("wall"))
+                {
+                	face = TileFace.values()[Integer.parseInt((String)map.get("wall"))];
+                }
+                
+                for(ClientPlayerNPC player : client.getCurrentLevel().playerSet)
+                {
+                	if(player.playerName.equals(username))
+                	{
+                		player.npcX = Float.parseFloat(posStrings[0]);
+                		player.npcY = Float.parseFloat(posStrings[1]);
+                		player.motionX = Float.parseFloat(motionStrings[0]);
+                		player.motionY = Float.parseFloat(motionStrings[1]);
+                		player.wallHit = face;
+                	}
+                }
+            }
+
+            @Override
+            public void serverExecute(Request request) throws IOException {
+                Map<Socket, ServerWorker> clients = server.getWorkers();
+                for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
+                    Socket currentKey = entry.getKey();
+
+                    PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
+                    // serverworker removes the connection from the list so there is no
+                    // need to do it here.
+                    Gson gson = new Gson();
+                    Map<String, String> object = new HashMap<>();
+                    object.put("api", request.getApi());
+                    object.put("username", request.getReceiver().getInetAddress().getHostName());
+                    object.put("position", client.getThisPlayer().npcX+"_"+client.getThisPlayer().npcY);
+                    object.put("motion",client.getThisPlayer().motionX+"_"+client.getThisPlayer().motionY);
+                    
+                    if(client.getThisPlayer().wallHit != null)
+                    {
+                        object.put("wall", client.getThisPlayer().wallHit.ordinal()+"");                    	
+                    }
+                    
+                    String payload = gson.toJson(object);
+
+                    System.out.println(payload);
+
+                    writer.write(" " + payload + "\n");
+                    writer.flush();
                 }
             }
 

@@ -6,6 +6,7 @@ import content.level.java.Level;
 import content.tile.java.Tile;
 import content.tile.java.TileFace;
 import gui.components.java.GuiFrame;
+import main.java.Main;
 
 public abstract class NPC {
 	public float npcX, npcY, motionX, motionY, npcWidth, npcHeight;
@@ -81,6 +82,7 @@ public abstract class NPC {
 
 		if(tX < tileMap.length)
 		{			
+			boolean packetFlag = false;
 			boolean collided = false;
 			for(int[][] offSets : tileNeighborOffsets)
 			{
@@ -93,6 +95,7 @@ public abstract class NPC {
 						{
 							tileMap[offX][offY].applyCollision(this);
 							collided = true;
+							packetFlag = true;
 							//System.out.println("\t|\tCollided with tile "+((ITileEntry)(tileMap[offX][offY])).getTileID());					
 							break;
 						}
@@ -114,13 +117,21 @@ public abstract class NPC {
 				if(lowerTile != null && lowerTile.shouldCollideFromSide(TileFace.TOP))
 				{
 					if(!airFound)
+					{
 						onGround = true;
+						packetFlag = true;
+					}
 					break;
 				}
 				else
 				{
 					airFound = true;
 				}
+			}
+			
+			if(packetFlag)
+			{
+				Main.getNetworkFactory().getCurrentClient().updateClientPlayerPosition();
 			}
 		}
 		else
