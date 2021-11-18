@@ -28,16 +28,13 @@ public class UseCaseTest {
     @BeforeClass
     public static void setUp() {
         factory = new Factory();
-        factory.makeBaseAPIRegistry();
+        factory.startFactory();
         factory.setHost(true);
-        factory.setPort(4321);
-        factory.setMAX_PLAYERS(5);
         try {
             factory.setServerAddress(InetAddress.getLocalHost().getHostAddress().toString());
         } catch (UnknownHostException e) {
             fail(e.getMessage());
         }
-        factory.setServerPort(4321);
         server = factory.makeServer();
         testingThread = new Thread(server);
         testingThread.start();

@@ -16,9 +16,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		factory.setPort(4321);
-		factory.setMAX_PLAYERS(5);
-		factory.makeBaseAPIRegistry();
+		factory.startFactory();
 		Server server = factory.makeServer();
 		Thread serveThread = new Thread(server);
 		serveThread.start();
