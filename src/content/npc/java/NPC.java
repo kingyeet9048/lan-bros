@@ -133,7 +133,7 @@ public abstract class NPC {
 			{
 				if(Main.getNetworkFactory().getCurrentClient() != null)
 				{
-					//Main.getNetworkFactory().getCurrentClient().updateClientPlayerPosition();					
+					Main.getNetworkFactory().getCurrentClient().updateClientPlayerPosition();					
 				}
 			}
 		}
