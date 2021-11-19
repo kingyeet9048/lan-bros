@@ -341,5 +341,4 @@ public class Client implements Runnable {
 	public ClientPlayerNPC getThisPlayer() {
 		return thisPlayer;
 	}
-
 }

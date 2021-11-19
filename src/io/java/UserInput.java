@@ -26,7 +26,6 @@ public class UserInput implements KeyListener {
 					Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);
 			} else if (keyPressed.get(key) != true) {
 				keyPressed.put(key, true);
-				
 				if (Main.getNetworkFactory().getCurrentClient() != null)
 					Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);
 			}

@@ -75,5 +75,4 @@ public class BlockTile extends Tile
 	public void applyCollision(NPC npc) {
 		Tile.applyBaseCollide(this, npc);
 	}
-
 }

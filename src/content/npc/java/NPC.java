@@ -45,7 +45,7 @@ public abstract class NPC {
 		{
 			wallHit = null;
 		}
-		
+
 		if(Math.abs(motionX) < 0.025)
 		{
 			motionX = 0;

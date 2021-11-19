@@ -4,55 +4,49 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.FocusEvent;
 
 import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
-import main.java.Main;
 import networkhandler.shared.java.Factory;
 
-public class JoinGameState extends GuiState {
+public class HostGameState extends GuiState{
 
     private Rectangle screenSize;
 
-    public JoinGameState(GuiFrame frame, Factory factory) {
+    public HostGameState(GuiFrame frame, Factory factory) {
         super(frame);
-        inputs = new GuiInput[] { new GuiInput("IP Address") {
-            private static final long serialVersionUID = 1L;
-        } };
-        buttons = new GuiButton[] { new GuiButton("Find Host To Join") {
-            private static final long serialVersionUID = 1L;
+        inputs = new GuiInput[] { new GuiInput("Something here") {
+            @Override
+            public void focusGained(FocusEvent e) {
+                
+            }
+        }};
+        inputs[0].setEditable(false);
+        buttons = new GuiButton[] { new GuiButton("Start Game") {
 
             @Override
             public void onClick(boolean pressed) {
-                if (pressed) {
-                    this.setEnabled(false);
-                    this.setText("Please wait while we try to connect...");
-
-                    if (!Main.startClient(inputs[0].getText())) {
-                        this.setText("Find Host To Join");
-                        this.setEnabled(true);
-
-                    } else {
-                        System.out.println(inputs[0].getText());
-                        Main.getNetworkFactory().getCurrentClient().updateHostStatus(inputs[0].getText());
-                    }
-                }
+                // TODO Auto-generated method stub
+                
             }
+            
         }, new GuiButton("Go Back to Title") {
 
             @Override
             public void onClick(boolean pressed) {
                 frame.addActiveState(new TitleState(frame, factory));
-                frame.removeActiveState(JoinGameState.this);             
+                frame.removeActiveState(HostGameState.this);                
             }
+            
         }};
     }
 
     @Override
     public void renderPre(Graphics2D g) {
         g.setColor(new Color(0, 0, 20, 100));
-        g.fillRect(0, 0, screenSize.width, screenSize.height);
+        g.fillRect(0, 0, screenSize.width, screenSize.height);        
     }
 
     @Override
@@ -60,8 +54,8 @@ public class JoinGameState extends GuiState {
         Font font = g.getFont();
         g.setColor(Color.black);
         this.drawCentered(g, font.deriveFont(50.0f), "LAN Bros!", screenSize.width / 2, 100);
-        this.drawCentered(g, font.deriveFont(50.0f), "Enter an IP Address to search", screenSize.width / 2, 200);
-
+        this.drawCentered(g, font.deriveFont(30.0f), "This is your ip address for clients to join", screenSize.width / 2, 200);
+        
     }
 
     @Override
@@ -78,5 +72,5 @@ public class JoinGameState extends GuiState {
         removeButtons();
         removeInputs();
     }
-
+    
 }

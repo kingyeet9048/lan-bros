@@ -19,12 +19,7 @@ public abstract class Tile implements ITileEntry
 		tileX = 0;
 		tileY = 0;
 	}
-	
-	/**
-	 * Indicates whether this tile collides with the player or not.
-	 */
-	protected boolean collideWith;
-	
+
 	public Tile(Level level, int x, int y)
 	{
 		this.level = level;

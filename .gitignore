@@ -46,5 +46,4 @@ hs_err_pid*
 /bin/
 
 # vscode specific git ignore
-
 .vscode

@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,9 +34,9 @@ public class Factory {
     private boolean isHost;
     private InMultiplayerGameState joinedGameState;
     private ConcurrentHashMap<String, NetPacket> apiRegistry = new ConcurrentHashMap<>();
-    private final LinkedList<String> supportAPIs = new LinkedList<String>(Arrays.asList("/api/playersync",
-            "/api/conn/client/connection", "/api/conn/client/disconnection", "/api/conn/listUpdate",
-            "/api/game/started", "/api/game/end", "/api/movement", "/api/setposmotion/"));
+    private final LinkedList<String> supportAPIs = new LinkedList<String>(
+            Arrays.asList("/api/playersync", "/api/conn/client/connection", "/api/conn/client/disconnection",
+                    "/api/conn/listUpdate", "/api/game/started", "/api/game/end", "/api/movement", "/api/setposmotion/"));
 
     public Factory() {
     }
