@@ -274,11 +274,11 @@ public class Factory {
 
         });
 
-        apiRegistry.put("/api/setposmotion/", new NetPacket() {
+        addSupportedCommand(new NetPacket() {
 
             @Override
             String getCommand() {
-                return "/api/setposmotion/";
+                return "/api/setposmotion";
             }
 
             @Override
@@ -317,13 +317,14 @@ public class Factory {
                     // need to do it here.
                     Gson gson = new Gson();
                     Map<String, String> object = new HashMap<>();
+                    String[] parameters = request.getApi().substring(request.getApi().lastIndexOf("/")+1).split("_");
                     object.put("api", request.getApi());
                     object.put("username", request.getReceiver().getInetAddress().getHostName());
-                    object.put("position", client.getThisPlayer().npcX + "_" + client.getThisPlayer().npcY);
-                    object.put("motion", client.getThisPlayer().motionX + "_" + client.getThisPlayer().motionY);
+                    object.put("position", parameters[0] + "_" + parameters[1]);
+                    object.put("motion", parameters[2] + "_" + parameters[3]);
 
-                    if (client.getThisPlayer().wallHit != null) {
-                        object.put("wall", client.getThisPlayer().wallHit.ordinal() + "");
+                    if (parameters.length == 5) {
+                        object.put("wall", parameters[4] + "");
                     }
 
                     String payload = gson.toJson(object);

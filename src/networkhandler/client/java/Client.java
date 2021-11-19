@@ -154,7 +154,7 @@ public class Client implements Runnable {
 	}
 
 	public synchronized void updateClientPlayerPosition() {
-		writer.write(" /api/setposmotion/\n");
+		writer.write(" /api/setposmotion/"+thisPlayer.npcX+"_"+thisPlayer.npcY+"_"+thisPlayer.motionX+"_"+thisPlayer.motionY+"_"+thisPlayer.wallHit.ordinal()+"\n");
 		writer.flush();
 	}
 
