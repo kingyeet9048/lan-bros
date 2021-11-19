@@ -35,6 +35,7 @@ public class Factory {
     private InMultiplayerGameState joinedGameState;
     private ConcurrentHashMap<String, NetPacket> apiRegistry = new ConcurrentHashMap<>();
     private final LinkedList<String> supportAPIs = new LinkedList<String>();
+    private String username;
 
     public Factory() {
     }
@@ -98,20 +99,22 @@ public class Factory {
                         Socket currentKey = entry.getKey();
 
                         PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
+                        String[] splitString = request.getApi().split("/");
                         if (currentKey.equals(request.getReceiver())) {
+                            entry.getValue().setPlayersUsername(splitString[splitString.length - 1]);
                             continue;
                         }
                         Gson gson = new Gson();
                         Map<String, String> object = new HashMap<>();
                         object.put("api", request.getApi());
-                        object.put("username", request.getReceiver().getInetAddress().getHostName());
+                        object.put("username", splitString[splitString.length - 1]);
                         String payload = gson.toJson(object);
 
                         System.out.println(payload);
 
                         writer.write(" " + payload + "\n");
                         writer.flush();
-                        builder.append(currentKey.getInetAddress().getHostName() + ",");
+                        builder.append(entry.getValue().getPlayersUsername() + ",");
                     }
                     if (clients.size() >= 2) {
                         updateAllClientNames(builder.toString(), request);
@@ -146,7 +149,7 @@ public class Factory {
                     Gson gson = new Gson();
                     Map<String, String> object = new HashMap<>();
                     object.put("api", request.getApi());
-                    object.put("username", request.getReceiver().getInetAddress().getHostName());
+                    object.put("username", clients.get(request.getReceiver()).getPlayersUsername());
                     String payload = gson.toJson(object);
 
                     System.out.println(payload);
@@ -260,7 +263,7 @@ public class Factory {
                         Gson gson = new Gson();
                         Map<String, String> object = new HashMap<>();
                         object.put("api", request.getApi());
-                        object.put("username", request.getReceiver().getInetAddress().getHostName());
+                        object.put("username", clients.get(request.getReceiver()).getPlayersUsername());
                         object.put("movement", keyBind.ordinal() + "_" + inputActions[1]);
                         String payload = gson.toJson(object);
 
@@ -283,8 +286,7 @@ public class Factory {
 
             @Override
             public void clientExecute(Map map) {
-            	if(client.getCurrentLevel() != null)
-            	{
+                if (client.getCurrentLevel() != null) {
                     String username = (String) map.get("username");
                     String[] posStrings = ((String) map.get("position")).split("_");
                     String[] motionStrings = ((String) map.get("position")).split("_");
@@ -302,8 +304,8 @@ public class Factory {
                             player.motionY = Float.parseFloat(motionStrings[1]);
                             player.wallHit = face;
                         }
-                    }            		
-            	}
+                    }
+                }
             }
 
             @Override
@@ -317,9 +319,9 @@ public class Factory {
                     // need to do it here.
                     Gson gson = new Gson();
                     Map<String, String> object = new HashMap<>();
-                    String[] parameters = request.getApi().substring(request.getApi().lastIndexOf("/")+1).split("_");
+                    String[] parameters = request.getApi().substring(request.getApi().lastIndexOf("/") + 1).split("_");
                     object.put("api", request.getApi());
-                    object.put("username", request.getReceiver().getInetAddress().getHostName());
+                    object.put("username", clients.get(request.getReceiver()).getPlayersUsername());
                     object.put("position", parameters[0] + "_" + parameters[1]);
                     object.put("motion", parameters[2] + "_" + parameters[3]);
 
@@ -427,7 +429,7 @@ public class Factory {
     }
 
     public Client makeClient() {
-        client = new Client(serverAddress, serverPort, isHost, this);
+        client = new Client(serverAddress, serverPort, isHost, username, this);
         return client;
     }
 
@@ -491,6 +493,10 @@ public class Factory {
             }
         }
         return null;
+    }
+
+    public void setPlayerUsername(String username) {
+        this.username = username;
     }
 
 }

@@ -42,6 +42,14 @@ public class TitleState extends GuiState {
 				frame.addActiveState(new HostGameState(frame, factory));
 				frame.removeActiveState(TitleState.this);
 			}
+		}, new GuiButton("Set Username") {
+
+			@Override
+			public void onClick(boolean pressed) {
+				frame.addActiveState(new TestState(frame, factory));
+				frame.removeActiveState(TitleState.this);
+			}
+
 		}, new GuiButton("Quit") {
 			private static final long serialVersionUID = 1L;
 

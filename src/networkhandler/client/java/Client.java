@@ -42,10 +42,10 @@ public class Client implements Runnable {
 	private Queue<Response> reponseQueue;
 	private boolean isHost;
 	private PrintWriter writer;
-	private InMultiplayerGameState gui;
 	private Factory factory;
 	private Level currentLevel;
 	private ClientPlayerNPC thisPlayer;
+	private InMultiplayerGameState gui;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -54,14 +54,16 @@ public class Client implements Runnable {
 	 * @param serverAddress
 	 * @param serverPort
 	 * @param isHost
+	 * @param username
 	 */
-	public Client(String serverAddress, int serverPort, boolean isHost, Factory factory) {
+	public Client(String serverAddress, int serverPort, boolean isHost, String username, Factory factory) {
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.isHost = isHost;
 		reponseQueue = new ConcurrentLinkedQueue<>();
 		currentPlayer = new LinkedList<>();
 		this.factory = factory;
+		this.thisPlayerName = username;
 	}
 
 	/**
@@ -82,10 +84,9 @@ public class Client implements Runnable {
 				hasJoined = true;
 				// send an api call to let server know that client has joined
 				writer = new PrintWriter(socket.getOutputStream());
-				writer.write(" /api/conn/client/connection\n");
+				writer.write(" /api/conn/client/connection/" + thisPlayerName + "\n");
 				writer.flush();
-				addPlayerToList(socket.getInetAddress().getHostName());
-				thisPlayerName = getSocket().getInetAddress().getHostName();
+				addPlayerToList(thisPlayerName);
 				// writer.close();
 				break;
 			} catch (IOException e) {
@@ -154,13 +155,13 @@ public class Client implements Runnable {
 	}
 
 	public synchronized void updateClientPlayerPosition() {
-		writer.write(" /api/setposmotion/"+thisPlayer.npcX+"_"+thisPlayer.npcY+"_"+thisPlayer.motionX+"_"+thisPlayer.motionY+(thisPlayer.wallHit != null ? "_"+thisPlayer.wallHit.ordinal():"")+"\n");
+		writer.write(" /api/setposmotion/" + thisPlayer.npcX + "_" + thisPlayer.npcY + "_" + thisPlayer.motionX + "_"
+				+ thisPlayer.motionY + (thisPlayer.wallHit != null ? "_" + thisPlayer.wallHit.ordinal() : "") + "\n");
 		writer.flush();
 	}
 
 	public synchronized void applyPlayerSync(String api) {
-		if(currentLevel != null)
-		{
+		if (currentLevel != null) {
 			String[] players = api.split("_");
 
 			for (String player : players) {
@@ -174,7 +175,7 @@ public class Client implements Runnable {
 						}
 					}
 				}
-			}			
+			}
 		}
 	}
 
@@ -268,10 +269,6 @@ public class Client implements Runnable {
 		this.socket = socket;
 	}
 
-	public void setGUI(InMultiplayerGameState gui) {
-		this.gui = gui;
-	}
-
 	public String getThisPlayerName() {
 		return thisPlayerName;
 	}
@@ -300,6 +297,14 @@ public class Client implements Runnable {
 		if (myIP.equals(address)) {
 			setHost(true);
 		}
+	}
+
+	public ClientPlayerNPC getThisPlayer() {
+		return thisPlayer;
+	}
+
+	public void setGUI(InMultiplayerGameState mpGame) {
+		gui = mpGame;
 	}
 
 	@Override
@@ -344,9 +349,5 @@ public class Client implements Runnable {
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
 		}
-	}
-
-	public ClientPlayerNPC getThisPlayer() {
-		return thisPlayer;
 	}
 }

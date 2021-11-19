@@ -19,6 +19,7 @@ public class ServerWorker implements Runnable {
 	private BufferedReader reader;
 	private Server server;
 	private boolean terminateThread = false;
+	private String playersUsername;
 
 	/**
 	 * Constructor will need the socket to listen to and the instance of a server.
@@ -51,6 +52,14 @@ public class ServerWorker implements Runnable {
 	 */
 	public void setTerminateThread(boolean terminateThread) {
 		this.terminateThread = terminateThread;
+	}
+
+	public String getPlayersUsername() {
+		return playersUsername;
+	}
+
+	public void setPlayersUsername(String playersUsername) {
+		this.playersUsername = playersUsername;
 	}
 
 	@Override
