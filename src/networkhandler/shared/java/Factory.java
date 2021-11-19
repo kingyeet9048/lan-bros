@@ -284,24 +284,27 @@ public class Factory {
 
             @Override
             public void clientExecute(Map map) {
-                String username = (String) map.get("username");
-                String[] posStrings = ((String) map.get("position")).split("_");
-                String[] motionStrings = ((String) map.get("position")).split("_");
-                TileFace face = null;
+            	if(client.getCurrentLevel() != null)
+            	{
+                    String username = (String) map.get("username");
+                    String[] posStrings = ((String) map.get("position")).split("_");
+                    String[] motionStrings = ((String) map.get("position")).split("_");
+                    TileFace face = null;
 
-                if (map.containsKey("wall")) {
-                    face = TileFace.values()[Integer.parseInt((String) map.get("wall"))];
-                }
-
-                for (ClientPlayerNPC player : client.getCurrentLevel().playerSet) {
-                    if (player.playerName.equals(username)) {
-                        player.npcX = Float.parseFloat(posStrings[0]);
-                        player.npcY = Float.parseFloat(posStrings[1]);
-                        player.motionX = Float.parseFloat(motionStrings[0]);
-                        player.motionY = Float.parseFloat(motionStrings[1]);
-                        player.wallHit = face;
+                    if (map.containsKey("wall")) {
+                        face = TileFace.values()[Integer.parseInt((String) map.get("wall"))];
                     }
-                }
+
+                    for (ClientPlayerNPC player : client.getCurrentLevel().playerSet) {
+                        if (player.playerName.equals(username)) {
+                            player.npcX = Float.parseFloat(posStrings[0]);
+                            player.npcY = Float.parseFloat(posStrings[1]);
+                            player.motionX = Float.parseFloat(motionStrings[0]);
+                            player.motionY = Float.parseFloat(motionStrings[1]);
+                            player.wallHit = face;
+                        }
+                    }            		
+            	}
             }
 
             @Override
