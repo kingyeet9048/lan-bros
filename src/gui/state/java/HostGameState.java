@@ -11,7 +11,6 @@ import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import main.java.Main;
-import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
 
 public class HostGameState extends GuiState {
@@ -44,7 +43,7 @@ public class HostGameState extends GuiState {
             @Override
             public void onClick(boolean pressed) {
                 try {
-                    server.getServer().close();
+                    factory.getCurrentServer().getServer().close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
