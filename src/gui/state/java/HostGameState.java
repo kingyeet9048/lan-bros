@@ -6,13 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import main.java.Main;
-import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
 
@@ -22,10 +20,8 @@ public class HostGameState extends GuiState {
 
     public HostGameState(GuiFrame frame, Factory factory) {
         super(frame);
-        Server server = factory.makeServer();
-        Thread serveThread = new Thread(server);
-        serveThread.start();
-        inputs = new GuiInput[] { new GuiInput(server.getIpAddress()) {
+        Main.startServer();
+        inputs = new GuiInput[] { new GuiInput(factory.getCurrentServer().getIpAddress()) {
             @Override
             public void focusGained(FocusEvent e) {
 

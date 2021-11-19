@@ -7,11 +7,13 @@ import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import gui.state.java.TestState;
 import networkhandler.client.java.Client;
+import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
 
 public class Main {
 	private static Factory factory = new Factory();
 	private static GuiFrame frame = new GuiFrame();
+	private static Server server;
 
 	public static void main(String[] args) {
 		factory.startFactory();
@@ -63,5 +65,11 @@ public class Main {
 		if (!playerLoaded) {
 			level.playerSet.add(new ServerPlayerNPC(level, 3, 3, playerName));
 		}
+	}
+
+	public static void startServer() {
+		server = factory.makeServer();
+		Thread serveThread = new Thread(server);
+		serveThread.start();
 	}
 }

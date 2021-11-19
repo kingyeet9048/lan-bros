@@ -19,6 +19,7 @@ import content.npc.java.ServerPlayerNPC;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
 import io.java.UserInput;
+import main.java.Main;
 import networkhandler.shared.java.Factory;
 import networkhandler.shared.java.NetPacket;
 
@@ -236,7 +237,8 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
-		factory.canMove = true;
+		thisPlayer.canMove = true;
+		System.out.println("User can now move...");
 	}
 
 	/**

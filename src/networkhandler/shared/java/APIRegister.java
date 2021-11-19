@@ -367,7 +367,7 @@ public class APIRegister {
      */
     private boolean startEndGame(Request request) throws IOException {
         String state = "";
-        if (request.getApi().contains("/stared")) {
+        if (request.getApi().contains("/started")) {
             state = "true";
             factory.getCurrentServer().setGameClosed(true);
         } else if (request.getApi().contains("/end")) {

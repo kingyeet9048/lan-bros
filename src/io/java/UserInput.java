@@ -19,7 +19,7 @@ public class UserInput implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		KeyBind key = KeyBind.getInputFor(e.getExtendedKeyCode());
 
-		if (key != null && Main.getNetworkFactory().canMove) {
+		if (key != null) {
 			if (!keyPressed.containsKey(key)) {
 				keyPressed.put(key, true);
 				if (Main.getNetworkFactory().getCurrentClient() != null)
@@ -36,7 +36,7 @@ public class UserInput implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		KeyBind key = KeyBind.getInputFor(e.getExtendedKeyCode());
 
-		if (key != null && Main.getNetworkFactory().canMove) {
+		if (key != null) {
 			if (!keyPressed.containsKey(key)) {
 				keyPressed.put(key, false);
 				if (Main.getNetworkFactory().getCurrentClient() != null)
@@ -68,14 +68,12 @@ public class UserInput implements KeyListener {
 	 * @param pressed whether the key is pressed or not
 	 */
 	public static void setServerKeyPressed(String user, KeyBind bind, boolean pressed) {
-		if (Main.getNetworkFactory().canMove) {
-			HashMap<KeyBind, Boolean> curKeys = serverKeyPressed.get(user);
-			if (curKeys == null) {
-				serverKeyPressed.put(user, new HashMap<KeyBind, Boolean>());
-			}
-
-			serverKeyPressed.get(user).put(bind, pressed);
+		HashMap<KeyBind, Boolean> curKeys = serverKeyPressed.get(user);
+		if (curKeys == null) {
+			serverKeyPressed.put(user, new HashMap<KeyBind, Boolean>());
 		}
+
+		serverKeyPressed.get(user).put(bind, pressed);
 	}
 
 	/**

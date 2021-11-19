@@ -25,7 +25,6 @@ public class Factory {
     private String username;
     private ConfigurationManager configurationManager;
     private APIRegister register;
-    public boolean canMove = false;
 
     public ConcurrentHashMap<String, NetPacket> getAPIRegistry() {
         return apiRegistry;
@@ -133,8 +132,7 @@ public class Factory {
     }
 
     public void startFactory() {
-        makeRegister();
-        register.makeBaseAPIRegistry();
+        makeRegister().makeBaseAPIRegistry();
         loadConfigs();
     }
 

@@ -16,6 +16,7 @@ public class ClientPlayerNPC extends NPC {
 	public static final SpriteSheet PLAYER_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/player_Chef1.png"));
 	protected int jumpTime;
 	public String playerName;
+	public boolean canMove = true;
 
 	public ClientPlayerNPC(Level level, float x, float y, String playerName) {
 		super(level, x, y, 32, 32);
@@ -27,37 +28,38 @@ public class ClientPlayerNPC extends NPC {
 	protected void updateNPC() {
 		handleMovement();
 	}
-	
-	protected void handleMovement()
-	{
-		if (jumpTime > 0) {
-			--jumpTime;
-			onGround = false;
-			if (jumpTime > 20) {
-				motionY -= 1.9f + (float) ((jumpTime - 20) / 10.0f);
+
+	protected void handleMovement() {
+		if (canMove) {
+			if (jumpTime > 0) {
+				--jumpTime;
+				onGround = false;
+				if (jumpTime > 20) {
+					motionY -= 1.9f + (float) ((jumpTime - 20) / 10.0f);
+				}
+			} else if (UserInput.isKeyBindPressed(KeyBind.JUMP) && onGround) {
+				jumpTime = 40;
 			}
-		} else if (UserInput.isKeyBindPressed(KeyBind.JUMP) && onGround) {
-			jumpTime = 40;
-		}
 
-		if (UserInput.isKeyBindPressed(KeyBind.LEFT) && wallHit != TileFace.RIGHT) {
-			motionX -= 1.2f;
-		}
+			if (UserInput.isKeyBindPressed(KeyBind.LEFT) && wallHit != TileFace.RIGHT) {
+				motionX -= 1.2f;
+			}
 
-		if (UserInput.isKeyBindPressed(KeyBind.RIGHT) && wallHit != TileFace.LEFT) {
-			motionX += 1.2f;
+			if (UserInput.isKeyBindPressed(KeyBind.RIGHT) && wallHit != TileFace.LEFT) {
+				motionX += 1.2f;
+			}
 		}
 	}
-
 
 	@Override
 	public void renderNPC(Graphics2D g) {
 		PLAYER_SPRITE.renderSpriteSheet(g, (int) (npcX), (int) (npcY - npcHeight / 2), 3.0f, 3.0f);
 		g.setColor(Color.black);
-		double xpos = (int)(npcX+motionX);
-		double ypos = (int)(npcY+motionY);
+		double xpos = (int) (npcX + motionX);
+		double ypos = (int) (npcY + motionY);
 
-		g.drawRect((int)(xpos-npcWidth/2.0f),(int)(ypos-npcHeight/2.0f),(int)(npcWidth),(int)(npcHeight));
+		g.drawRect((int) (xpos - npcWidth / 2.0f), (int) (ypos - npcHeight / 2.0f), (int) (npcWidth),
+				(int) (npcHeight));
 	}
 
 	@Override
