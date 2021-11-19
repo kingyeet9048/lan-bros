@@ -188,6 +188,14 @@ public class Client implements Runnable {
 		// player cannot already exist inside the list.
 		if (currentPlayer.contains(player)) {
 			currentPlayer.remove(player);
+			if (currentLevel != null) {
+				for (ClientPlayerNPC npc : currentLevel.playerSet) {
+					if (npc.playerName.equals(player)) {
+						currentLevel.playerSet.remove(npc);
+						break;
+					}
+				}
+			}
 			System.out.println("Player list updated: " + currentPlayer.toString());
 		}
 	}
@@ -197,7 +205,6 @@ public class Client implements Runnable {
 	 * hasnt been rendered on the GUI. The logic is still in progress.
 	 */
 	public void updatePlayers() {
-		System.out.println("Would update players here");
 		for (String player : currentPlayer) {
 			factory.getCurrentClient().addPlayerToList(player);
 		}
