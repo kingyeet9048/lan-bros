@@ -382,10 +382,6 @@ public class APIRegister {
 
                 PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
 
-                if (currentKey.equals(request.getReceiver())) {
-                    continue;
-                }
-
                 Gson gson = new Gson();
                 Map<String, String> object = new HashMap<>();
                 object.put("api", request.getApi());

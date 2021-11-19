@@ -1,6 +1,5 @@
 package networkhandler.shared.java;
 
-
 import java.util.LinkedList;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +25,7 @@ public class Factory {
     private String username;
     private ConfigurationManager configurationManager;
     private APIRegister register;
+    public boolean canMove = false;
 
     public ConcurrentHashMap<String, NetPacket> getAPIRegistry() {
         return apiRegistry;

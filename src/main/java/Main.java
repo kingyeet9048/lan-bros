@@ -7,7 +7,6 @@ import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import gui.state.java.TestState;
 import networkhandler.client.java.Client;
-import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
 
 public class Main {
@@ -15,12 +14,7 @@ public class Main {
 	private static GuiFrame frame = new GuiFrame();
 
 	public static void main(String[] args) {
-
 		factory.startFactory();
-		Server server = factory.makeServer();
-		Thread serveThread = new Thread(server);
-		serveThread.start();
-
 		frame.addActiveState(new TestState(frame, factory));
 
 		new Thread(() -> {

@@ -35,7 +35,6 @@ public class JoinGameState extends GuiState {
 
                     } else {
                         System.out.println(inputs[0].getText());
-                        Main.getNetworkFactory().getCurrentClient().updateHostStatus(inputs[0].getText());
                     }
                 }
             }
@@ -44,9 +43,9 @@ public class JoinGameState extends GuiState {
             @Override
             public void onClick(boolean pressed) {
                 frame.addActiveState(new TitleState(frame, factory));
-                frame.removeActiveState(JoinGameState.this);             
+                frame.removeActiveState(JoinGameState.this);
             }
-        }};
+        } };
     }
 
     @Override

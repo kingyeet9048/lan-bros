@@ -18,6 +18,7 @@ import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
+import io.java.UserInput;
 import networkhandler.shared.java.Factory;
 import networkhandler.shared.java.NetPacket;
 
@@ -75,9 +76,10 @@ public class Client implements Runnable {
 		while (true) {
 			try {
 				// trys to connect to the addess and port.
-				new Thread(() -> {
-					JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
-				}).start();
+				// new Thread(() -> {
+				// JOptionPane.showMessageDialog(null, "Please wait while we try to connect to
+				// the game...");
+				// }).start();
 				socket = new Socket(serverAddress, serverPort);
 				System.out.println("Connected to the game!");
 				// we are past the socket line which means we joined.
@@ -102,6 +104,7 @@ public class Client implements Runnable {
 									"Reached max number of attempts. Stopping and closing...: ");
 
 						}).start();
+						break;
 					}
 					System.err.println("Could not connect to game. Trying agin in 10 second...");
 					Thread.sleep(10000);
@@ -233,7 +236,7 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
-		// TODO
+		factory.canMove = true;
 	}
 
 	/**
@@ -289,21 +292,8 @@ public class Client implements Runnable {
 		return currentLevel;
 	}
 
-	public String getThisMachineIP() throws UnknownHostException {
+	public static String getThisMachineIP() throws UnknownHostException {
 		return InetAddress.getLocalHost().getHostAddress().toString();
-	}
-
-	public void updateHostStatus(String address) {
-		String myIP = "";
-		try {
-			myIP = getThisMachineIP();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
-		if (myIP.equals(address)) {
-			setHost(true);
-		}
 	}
 
 	public ClientPlayerNPC getThisPlayer() {
@@ -356,5 +346,10 @@ public class Client implements Runnable {
 		} else {
 			System.err.println("Currently going to kill the client if it cannot join the server...");
 		}
+	}
+
+	public void tellClientsToStart() {
+		writer.write(" /api/game/started\n");
+		writer.flush();
 	}
 }
