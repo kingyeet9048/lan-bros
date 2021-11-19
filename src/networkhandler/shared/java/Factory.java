@@ -1,415 +1,31 @@
 package networkhandler.shared.java;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.HashMap;
+
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.gson.Gson;
-
-import content.npc.java.ClientPlayerNPC;
-import content.tile.java.TileFace;
+import config.java.ConfigurationManager;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
-import io.java.KeyBind;
-import io.java.UserInput;
+
 import networkhandler.client.java.Client;
-import networkhandler.server.java.Request;
 import networkhandler.server.java.Server;
-import networkhandler.server.java.ServerWorker;
 
 public class Factory {
 
     private Server server;
     private Client client;
-    private int port = 4321;
     private int MAX_PLAYERS = 4;
     private String serverAddress;
-    private int serverPort = 4321;
+    private int serverPort;
     private boolean isHost;
     private InMultiplayerGameState joinedGameState;
     private ConcurrentHashMap<String, NetPacket> apiRegistry = new ConcurrentHashMap<>();
     private final LinkedList<String> supportAPIs = new LinkedList<String>();
     private String username;
-
-    public Factory() {
-    }
-
-    public ConcurrentHashMap<String, NetPacket> makeBaseAPIRegistry() {
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/playersync";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                client.applyPlayerSync((String) map.get("coordinates"));
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                Map<Socket, ServerWorker> clients = server.getWorkers();
-                for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
-                    Socket currentKey = entry.getKey();
-
-                    PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-
-                    if (currentKey.equals(request.getReceiver())) {
-                        continue;
-                    }
-                    Gson gson = new Gson();
-                    Map<String, String> object = new HashMap<>();
-                    object.put("api", "/api/playersync");
-                    object.put("coordinates", request.getApi());
-                    String payload = gson.toJson(object);
-                    writer.write(" " + payload + "\n");
-                    writer.flush();
-                }
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/conn/client/connection";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                client.addPlayerToList((String) map.get("username"));
-                client.updatePlayers();
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                // if the flag for game close is true, return false
-                if (!server.isGameClosed()) {
-                    Map<Socket, ServerWorker> clients = server.getWorkers();
-                    StringBuilder builder = new StringBuilder();
-                    for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
-                        Socket currentKey = entry.getKey();
-
-                        PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-                        String[] splitString = request.getApi().split("/");
-                        if (currentKey.equals(request.getReceiver())) {
-                            entry.getValue().setPlayersUsername(splitString[splitString.length - 1]);
-                            continue;
-                        }
-                        Gson gson = new Gson();
-                        Map<String, String> object = new HashMap<>();
-                        object.put("api", request.getApi());
-                        object.put("username", splitString[splitString.length - 1]);
-                        String payload = gson.toJson(object);
-
-                        System.out.println(payload);
-
-                        writer.write(" " + payload + "\n");
-                        writer.flush();
-                        builder.append(entry.getValue().getPlayersUsername() + ",");
-                    }
-                    if (clients.size() >= 2) {
-                        updateAllClientNames(builder.toString(), request);
-                    }
-                }
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/conn/client/disconnection";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                client.removePlayerFromList((String) map.get("username"));
-                client.updatePlayers();
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                Map<Socket, ServerWorker> clients = server.getWorkers();
-                for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
-                    Socket currentKey = entry.getKey();
-
-                    PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-                    // serverworker removes the connection from the list so there is no
-                    // need to do it here.
-                    Gson gson = new Gson();
-                    Map<String, String> object = new HashMap<>();
-                    object.put("api", request.getApi());
-                    object.put("username", clients.get(request.getReceiver()).getPlayersUsername());
-                    String payload = gson.toJson(object);
-
-                    System.out.println(payload);
-
-                    writer.write(" " + payload + "\n");
-                    writer.flush();
-                }
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/conn/client/listUpdate";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                String[] players = ((String) map.get("usernames")).split(",");
-                for (String player : players) {
-                    if (!player.equals("") || player != null) {
-                        client.addPlayerToList(player);
-                    }
-                }
-                client.updatePlayers();
-                System.out.println("update full list of current players");
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/game/started";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                // TODO: start game
-                System.out.println("Game would start here");
-                client.startGame();
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                startEndGame(request);
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/game/end";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                // TODO: end game
-                System.out.println("Game would end here");
-                client.endGame();
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                startEndGame(request);
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/movement";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                String player = (String) map.get("username");
-                String[] movement = ((String) map.get("movement")).split("_");
-                KeyBind bind = KeyBind.values()[Integer.parseInt(movement[0])];
-                boolean down = movement[1].equals("true");
-                UserInput.setServerKeyPressed(player, bind, down);
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                String currentAPI = request.getApi();
-                if (currentAPI.contains("_")) {
-                    String[] inputActions = currentAPI.substring(currentAPI.lastIndexOf("/") + 1).split("_");
-                    KeyBind keyBind = KeyBind.values()[Integer.parseInt(inputActions[0])];
-                    Map<Socket, ServerWorker> clients = server.getWorkers();
-                    for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
-                        Socket currentKey = entry.getKey();
-                        if (currentKey.equals(request.getReceiver())) {
-                            System.out.println("Router iterating through connection list: "
-                                    + "this socket belongs to the requester. Skipping...");
-                            continue;
-                        }
-                        PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-
-                        Gson gson = new Gson();
-                        Map<String, String> object = new HashMap<>();
-                        object.put("api", request.getApi());
-                        object.put("username", clients.get(request.getReceiver()).getPlayersUsername());
-                        object.put("movement", keyBind.ordinal() + "_" + inputActions[1]);
-                        String payload = gson.toJson(object);
-
-                        System.out.println(payload);
-
-                        writer.write(" " + payload + "\n");
-                        writer.flush();
-                    }
-                }
-            }
-
-        });
-
-        addSupportedCommand(new NetPacket() {
-
-            @Override
-            String getCommand() {
-                return "/api/setposmotion";
-            }
-
-            @Override
-            public void clientExecute(Map map) {
-                if (client.getCurrentLevel() != null) {
-                    String username = (String) map.get("username");
-                    String[] posStrings = ((String) map.get("position")).split("_");
-                    String[] motionStrings = ((String) map.get("position")).split("_");
-                    TileFace face = null;
-
-                    if (map.containsKey("wall")) {
-                        face = TileFace.values()[Integer.parseInt((String) map.get("wall"))];
-                    }
-
-                    for (ClientPlayerNPC player : client.getCurrentLevel().playerSet) {
-                        if (player.playerName.equals(username)) {
-                            player.npcX = Float.parseFloat(posStrings[0]);
-                            player.npcY = Float.parseFloat(posStrings[1]);
-                            player.motionX = Float.parseFloat(motionStrings[0]);
-                            player.motionY = Float.parseFloat(motionStrings[1]);
-                            player.wallHit = face;
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void serverExecute(Request request) throws IOException {
-                Map<Socket, ServerWorker> clients = server.getWorkers();
-                for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
-                    Socket currentKey = entry.getKey();
-
-                    PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-                    // serverworker removes the connection from the list so there is no
-                    // need to do it here.
-                    Gson gson = new Gson();
-                    Map<String, String> object = new HashMap<>();
-                    String[] parameters = request.getApi().substring(request.getApi().lastIndexOf("/") + 1).split("_");
-                    object.put("api", request.getApi());
-                    object.put("username", clients.get(request.getReceiver()).getPlayersUsername());
-                    object.put("position", parameters[0] + "_" + parameters[1]);
-                    object.put("motion", parameters[2] + "_" + parameters[3]);
-
-                    if (parameters.length == 5) {
-                        object.put("wall", parameters[4] + "");
-                    }
-
-                    String payload = gson.toJson(object);
-
-                    System.out.println(payload);
-
-                    writer.write(" " + payload + "\n");
-                    writer.flush();
-                }
-            }
-
-        });
-
-        return apiRegistry;
-    }
-
-    public void addSupportedCommand(NetPacket packet) {
-        supportAPIs.add(packet.getCommand());
-        apiRegistry.put(packet.getCommand(), packet);
-    }
-
-    /**
-     * update the requested connection socket with a list of all connected clients
-     * 
-     * @param names
-     * @param request
-     * @apiNote refer to the readme
-     * @throws IOException
-     */
-    private void updateAllClientNames(String names, Request request) throws IOException {
-        Gson gson = new Gson();
-        Map<String, String> object = new HashMap<>();
-        object.put("api", "/api/conn/client/listUpdate");
-        object.put("usernames", names);
-        String payload = gson.toJson(object);
-        PrintWriter writer = new PrintWriter(request.getReceiver().getOutputStream());
-        writer.write(" " + payload + "\n");
-        writer.flush();
-    }
-
-    /**
-     * Start or ends the game
-     * 
-     * @param request
-     * @apiNote refer to the readme
-     * @return
-     * @throws IOException
-     */
-    private boolean startEndGame(Request request) throws IOException {
-        String state = "";
-        if (request.getApi().contains("/stared")) {
-            state = "true";
-            server.setGameClosed(true);
-        } else if (request.getApi().contains("/end")) {
-            state = "false";
-            server.setGameClosed(false);
-        }
-
-        if (!state.equals("")) {
-            Map<Socket, ServerWorker> clients = server.getWorkers();
-            for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
-                Socket currentKey = entry.getKey();
-
-                PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-
-                if (currentKey.equals(request.getReceiver())) {
-                    continue;
-                }
-
-                Gson gson = new Gson();
-                Map<String, String> object = new HashMap<>();
-                object.put("api", request.getApi());
-                object.put("gameState", state);
-                String payload = gson.toJson(object);
-
-                System.out.println(payload);
-
-                writer.write(" " + payload + "\n");
-                writer.flush();
-            }
-        }
-        return true;
-    }
+    private ConfigurationManager configurationManager;
+    private APIRegister register;
 
     public ConcurrentHashMap<String, NetPacket> getAPIRegistry() {
         return apiRegistry;
@@ -423,8 +39,12 @@ public class Factory {
         return client;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public Server makeServer() {
-        server = new Server(port, MAX_PLAYERS, this);
+        server = new Server(serverPort, MAX_PLAYERS, this);
         return server;
     }
 
@@ -436,14 +56,6 @@ public class Factory {
     public InMultiplayerGameState makeGameState(GuiFrame frame, String thisPlayerName) {
         joinedGameState = new InMultiplayerGameState(frame, thisPlayerName);
         return joinedGameState;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public int getMAX_PLAYERS() {
@@ -497,6 +109,33 @@ public class Factory {
 
     public void setPlayerUsername(String username) {
         this.username = username;
+    }
+
+    public ConfigurationManager makeConfigurationManager() {
+        configurationManager = new ConfigurationManager();
+        return configurationManager;
+    }
+
+    public void loadConfigs() {
+        makeConfigurationManager();
+        configurationManager.loadConfigs();
+        setMAX_PLAYERS(configurationManager.getMAX_PLAYERS());
+        setServerPort(configurationManager.getSERVER_PORT());
+    }
+
+    public APIRegister makeRegister() {
+        register = new APIRegister(this);
+        return register;
+    }
+
+    public APIRegister getRegister() {
+        return register;
+    }
+
+    public void startFactory() {
+        makeRegister();
+        register.makeBaseAPIRegistry();
+        loadConfigs();
     }
 
 }
