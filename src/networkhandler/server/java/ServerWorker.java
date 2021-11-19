@@ -95,7 +95,7 @@ public class ServerWorker implements Runnable {
 		// we need to let the other clients know that the client is disconnecting
 		Request request = new Request(connectionDetail, "/api/conn/client/disconnection");
 		request.playerName = server.getWorkers().get(connectionDetail).getPlayersUsername();
-
+		server.getWorkers().remove(connectionDetail);
 		server.addToQueue(request);
 		try {
 			System.out.println("Connection with host terminated: " + connectionDetail.getInetAddress().getHostName());

@@ -17,10 +17,10 @@ import networkhandler.server.java.Request;
 import networkhandler.server.java.ServerWorker;
 
 public class APIRegister {
-    
+
     private Factory factory;
 
-    public APIRegister (Factory factory) {
+    public APIRegister(Factory factory) {
         this.factory = factory;
     }
 
@@ -128,17 +128,17 @@ public class APIRegister {
                     Socket currentKey = entry.getKey();
 
                     PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
-                    if (currentKey.equals(request.getReceiver())) {
-                        factory.getCurrentServer().getWorkers().remove(currentKey);
-                        continue;
-                    }
+                    // no need to remove because server worker already removed...
                     Gson gson = new Gson();
                     Map<String, String> object = new HashMap<>();
                     object.put("api", request.getApi());
                     // request player name is only set when serverworker disconnects
-                    // we neeed this because the serverworker holds the playersname for the associated socket
-                    // but when the serverworker disconnects from the client, it need to tear down/end so it sets the
-                    // requests playerName so the api can be sent out that this player has disconnected. 
+                    // we neeed this because the serverworker holds the playersname for the
+                    // associated socket
+                    // but when the serverworker disconnects from the client, it need to tear
+                    // down/end so it sets the
+                    // requests playerName so the api can be sent out that this player has
+                    // disconnected.
                     object.put("username", request.playerName);
                     String payload = gson.toJson(object);
 
