@@ -320,13 +320,18 @@ public class Client implements Runnable {
 
 					Map map = response.getMappedResponse();
 					String api = (String) map.get("api");
+					String key = factory.getPathFromSupported(api);
+					if (key == null) {
+						System.out.println("Client Does not understand the request: " + api);
 
-					NetPacket packet = factory.getAPIRegistry().getOrDefault(api, null);
-
-					if (packet == null) {
-						System.out.println("Response not recognized: " + api);
 					} else {
-						packet.clientExecute(map);
+						NetPacket packet = factory.getAPIRegistry().getOrDefault(key, null);
+
+						if (packet == null) {
+							System.out.println("Response not recognized: " + api);
+						} else {
+							packet.clientExecute(map);
+						}
 					}
 
 					System.out.printf("Response %s Processed\n", response.getRawReponse());
