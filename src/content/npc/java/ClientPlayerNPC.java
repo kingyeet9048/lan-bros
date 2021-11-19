@@ -16,7 +16,7 @@ public class ClientPlayerNPC extends NPC {
 	public static final SpriteSheet PLAYER_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/player_Chef1.png"));
 	protected int jumpTime;
 	public String playerName;
-	public boolean canMove = true;
+	public boolean canMove = false;
 
 	public ClientPlayerNPC(Level level, float x, float y, String playerName) {
 		super(level, x, y, 32, 32);

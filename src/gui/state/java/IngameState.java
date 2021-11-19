@@ -12,6 +12,7 @@ public class IngameState extends GuiState {
 
 	public IngameState(GuiFrame frame) {
 		super(frame);
+
 	}
 
 	@Override
@@ -29,7 +30,9 @@ public class IngameState extends GuiState {
 	@Override
 	public void stateLoaded() {
 		currentLevel = new Level(new File("resources/level/level0.data"));
-		currentLevel.playerSet.add(new ClientPlayerNPC(currentLevel, 128, 128, "Bob"));
+		ClientPlayerNPC playerNPC = new ClientPlayerNPC(currentLevel, 128, 128, "Bob");
+		playerNPC.canMove = true;
+		currentLevel.playerSet.add(playerNPC);
 		System.out.println("Joined singleplayer!");
 	}
 

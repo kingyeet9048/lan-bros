@@ -1,13 +1,11 @@
 package networkhandler.shared.java;
 
 import java.util.LinkedList;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 import config.java.ConfigurationManager;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
-
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 

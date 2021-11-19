@@ -31,10 +31,13 @@ public class HostGameState extends GuiState {
 
             @Override
             public void onClick(boolean pressed) {
-                if (Main.startClient("localhost")) {
-                    factory.setHost(true);
-                    factory.getCurrentClient().setHost(true);
-                    factory.getCurrentClient().tellClientsToStart();
+                if (pressed) {
+                    if (Main.startClient("localhost")) {
+                        factory.setHost(true);
+                        factory.getCurrentClient().setHost(true);
+                        factory.getCurrentClient().tellClientsToStart();
+                        factory.getCurrentClient().getThisPlayer().canMove = true;
+                    }
                 }
             }
 
