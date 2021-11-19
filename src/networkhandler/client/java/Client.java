@@ -159,19 +159,22 @@ public class Client implements Runnable {
 	}
 
 	public synchronized void applyPlayerSync(String api) {
-		String[] players = api.split("_");
+		if(currentLevel != null)
+		{
+			String[] players = api.split("_");
 
-		for (String player : players) {
-			if (player != null && player.length() > 0) {
-				String[] comps = player.substring(player.lastIndexOf("/") + 1).split(",");
-				for (ClientPlayerNPC play : currentLevel.playerSet) {
-					if (play.playerName.equals(comps[2])) {
-						play.npcX = Float.parseFloat(comps[0]);
-						play.npcY = Float.parseFloat(comps[1]);
-						System.out.println("Synced player \'" + play.playerName + "\'!");
+			for (String player : players) {
+				if (player != null && player.length() > 0) {
+					String[] comps = player.substring(player.lastIndexOf("/") + 1).split(",");
+					for (ClientPlayerNPC play : currentLevel.playerSet) {
+						if (play.playerName.equals(comps[2])) {
+							play.npcX = Float.parseFloat(comps[0]);
+							play.npcY = Float.parseFloat(comps[1]);
+							System.out.println("Synced player \'" + play.playerName + "\'!");
+						}
 					}
 				}
-			}
+			}			
 		}
 	}
 
