@@ -131,7 +131,10 @@ public abstract class NPC {
 			
 			if(packetFlag && collided == true)
 			{
-				Main.getNetworkFactory().getCurrentClient().updateClientPlayerPosition();
+				if(Main.getNetworkFactory().getCurrentClient() != null)
+				{
+					//Main.getNetworkFactory().getCurrentClient().updateClientPlayerPosition();					
+				}
 			}
 		}
 		else
