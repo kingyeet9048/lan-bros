@@ -129,7 +129,7 @@ public abstract class NPC {
 				}
 			}
 			
-			if(packetFlag)
+			if(packetFlag && collided == true)
 			{
 				Main.getNetworkFactory().getCurrentClient().updateClientPlayerPosition();
 			}
