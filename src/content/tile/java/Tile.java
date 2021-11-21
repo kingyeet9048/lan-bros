@@ -1,10 +1,10 @@
 package content.tile.java;
 
-import java.awt.Graphics2D;
-import java.util.HashMap;
-
 import content.level.java.Level;
 import content.npc.java.NPC;
+
+import java.awt.*;
+import java.util.HashMap;
 
 public abstract class Tile implements ITileEntry {
 	public static final float TILE_SIZE = 30.0f;

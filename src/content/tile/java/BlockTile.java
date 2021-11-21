@@ -1,10 +1,9 @@
 package content.tile.java;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-
 import content.level.java.Level;
 import content.npc.java.NPC;
+
+import java.awt.*;
 
 public class BlockTile extends Tile
 {

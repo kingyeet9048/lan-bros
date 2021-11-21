@@ -1,18 +1,13 @@
 package gui.state.java;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-
 import animation.java.SpriteSheet;
 import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import networkhandler.shared.java.Factory;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class UsernameState extends GuiState {
 
@@ -29,7 +24,7 @@ public class UsernameState extends GuiState {
 			public void onClick(boolean pressed) {
 				if (pressed) {
 					String username = inputs[0].getText();
-					if (isValidUsername(username)) {
+					if (isValidUsername(username.replaceAll("\\s+", ""))) {
 						factory.setPlayerUsername(username);
 						frame.addActiveState(new TitleState(frame, factory));
 						frame.removeActiveState(UsernameState.this);

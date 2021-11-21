@@ -1,10 +1,11 @@
 package io.java;
 
+import main.java.Main;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 import java.util.HashMap;
-
-import main.java.Main;
 
 public class UserInput implements KeyListener {
 	private static HashMap<KeyBind, Boolean> keyPressed = new HashMap<KeyBind, Boolean>();
@@ -19,15 +20,25 @@ public class UserInput implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		KeyBind key = KeyBind.getInputFor(e.getExtendedKeyCode());
 
-		if (key != null) {
+		if (key != null && Main.getNetworkFactory().getCurrentClient().getThisPlayer().canMove) {
 			if (!keyPressed.containsKey(key)) {
 				keyPressed.put(key, true);
 				if (Main.getNetworkFactory().getCurrentClient() != null)
 					Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);
+				if (key.keyCodes == KeyBind.PAUSE.keyCodes) {
+					if (Main.getNetworkFactory().getCurrentClient() != null) {
+						Main.pauseGame(Main.getNetworkFactory().getCurrentClient().getThisPlayerName());
+					}
+				}
 			} else if (keyPressed.get(key) != true) {
 				keyPressed.put(key, true);
 				if (Main.getNetworkFactory().getCurrentClient() != null)
 					Main.getNetworkFactory().getCurrentClient().sendMovement(key, true);
+				if (key.keyCodes == KeyBind.PAUSE.keyCodes) {
+					if (Main.getNetworkFactory().getCurrentClient() != null) {
+						Main.pauseGame(Main.getNetworkFactory().getCurrentClient().getThisPlayerName());
+					}
+				}
 			}
 		}
 	}
@@ -39,12 +50,16 @@ public class UserInput implements KeyListener {
 		if (key != null) {
 			if (!keyPressed.containsKey(key)) {
 				keyPressed.put(key, false);
-				if (Main.getNetworkFactory().getCurrentClient() != null)
-					Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);
+				if (key.keyCodes != KeyBind.PAUSE.keyCodes) {
+					if (Main.getNetworkFactory().getCurrentClient() != null)
+						Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);
+				}
 			} else if (keyPressed.get(key) != false) {
 				keyPressed.put(key, false);
-				if (Main.getNetworkFactory().getCurrentClient() != null)
-					Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);
+				if (key.keyCodes != KeyBind.PAUSE.keyCodes) {
+					if (Main.getNetworkFactory().getCurrentClient() != null)
+						Main.getNetworkFactory().getCurrentClient().sendMovement(key, false);
+				}
 			}
 		}
 	}

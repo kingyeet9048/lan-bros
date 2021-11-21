@@ -1,17 +1,17 @@
 package content.level.java;
 
-import java.awt.Graphics2D;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import content.npc.java.ClientPlayerNPC;
 import content.npc.java.NPC;
 import content.tile.java.ITileEntry;
 import content.tile.java.Tile;
 import content.tile.java.TileFace;
+
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Level 
 {
