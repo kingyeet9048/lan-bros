@@ -35,6 +35,7 @@ public class JoinGameState extends GuiState {
 
                     } else {
                         System.out.println(inputs[0].getText());
+                        this.setText("Waiting for host to start the game...");
                     }
                 }
             }

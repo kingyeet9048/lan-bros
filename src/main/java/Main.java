@@ -5,7 +5,7 @@ import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
-import gui.state.java.TestState;
+import gui.state.java.UsernameState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
@@ -17,7 +17,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		factory.startFactory();
-		frame.addActiveState(new TestState(frame, factory));
+		frame.addActiveState(new UsernameState(frame, factory));
 
 		new Thread(() -> {
 			while (frame.isVisible()) {
@@ -41,12 +41,15 @@ public class Main {
 			clientThread.start();
 			InMultiplayerGameState mpGame = factory.makeGameState(frame, currentClient.getThisPlayerName());
 			currentClient.setGUI(mpGame);
-			frame.wipeActiveStates();
-			frame.addActiveState(mpGame);
 			return true;
 		}
 
 		return false;
+	}
+
+	public static void goToMultiplayerState() {
+		frame.wipeActiveStates();
+		frame.addActiveState(factory.getJoinedGameState());
 	}
 
 	public static Factory getNetworkFactory() {

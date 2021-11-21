@@ -237,8 +237,15 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
+		Main.goToMultiplayerState();
+		for (String string : currentPlayer) {
+			if (!string.equals(thisPlayerName)) {
+				removePlayerFromList(string);
+				addPlayerToList(string);
+			}
+		}
 		thisPlayer.canMove = true;
-		System.out.println("User can now move...");
+		System.out.println("User can now move and see the screen now...");
 	}
 
 	/**

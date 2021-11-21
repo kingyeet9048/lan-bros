@@ -14,13 +14,13 @@ import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import networkhandler.shared.java.Factory;
 
-public class TestState extends GuiState {
+public class UsernameState extends GuiState {
 
 	private SpriteSheet test;
 
 	private Rectangle screenSize;
 
-	public TestState(GuiFrame frame, Factory factory) {
+	public UsernameState(GuiFrame frame, Factory factory) {
 		super(frame);
 
 		buttons = new GuiButton[] { new GuiButton("Go To Title") {
@@ -29,12 +29,13 @@ public class TestState extends GuiState {
 			public void onClick(boolean pressed) {
 				if (pressed) {
 					String username = inputs[0].getText();
-					if (!username.equals("username") && !username.equals("")) {
+					if (isValidUsername(username)) {
 						factory.setPlayerUsername(username);
 						frame.addActiveState(new TitleState(frame, factory));
-						frame.removeActiveState(TestState.this);
+						frame.removeActiveState(UsernameState.this);
 					} else {
-						JOptionPane.showMessageDialog(frame, "Enter a username that is not 'username' and not null.");
+						JOptionPane.showMessageDialog(frame,
+								"Your username cannot be 'username' or nothing. Additionally, your username has to be 10 characters or shorter and cannot have the following special cases: . , / _");
 					}
 				}
 			}
@@ -79,5 +80,13 @@ public class TestState extends GuiState {
 	public void renderPre(Graphics2D g) {
 		g.setColor(new Color(0, 0, 20, 100));
 		g.fillRect(0, 0, screenSize.width, screenSize.height);
+	}
+
+	public boolean isValidUsername(String username) {
+		if (!username.equals("username") && !username.equals("") && !username.contains("_") && !username.contains(",")
+				&& !username.contains(".") && !username.contains("/") && username.length() <= 10) {
+			return true;
+		}
+		return false;
 	}
 }
