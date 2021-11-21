@@ -1,16 +1,14 @@
 package content.npc.java;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-
-import javax.swing.ImageIcon;
-
 import animation.java.SpriteSheet;
 import content.level.java.Level;
 import content.tile.java.Tile;
 import content.tile.java.TileFace;
 import io.java.KeyBind;
 import io.java.UserInput;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class ClientPlayerNPC extends NPC {
 	public static final SpriteSheet PLAYER_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/player_Chef1.png"));

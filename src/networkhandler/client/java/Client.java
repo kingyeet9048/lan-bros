@@ -1,5 +1,15 @@
 package networkhandler.client.java;
 
+import content.level.java.Level;
+import content.npc.java.ClientPlayerNPC;
+import content.npc.java.ServerPlayerNPC;
+import gui.state.java.InMultiplayerGameState;
+import io.java.KeyBind;
+import main.java.Main;
+import networkhandler.shared.java.Factory;
+import networkhandler.shared.java.NetPacket;
+
+import javax.swing.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -10,18 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.JOptionPane;
-
-import content.level.java.Level;
-import content.npc.java.ClientPlayerNPC;
-import content.npc.java.ServerPlayerNPC;
-import gui.state.java.InMultiplayerGameState;
-import io.java.KeyBind;
-import io.java.UserInput;
-import main.java.Main;
-import networkhandler.shared.java.Factory;
-import networkhandler.shared.java.NetPacket;
 
 /**
  * Client class that handles interactions with the server and game manager
@@ -237,8 +235,15 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
+		Main.goToMultiplayerState();
+		for (String string : currentPlayer) {
+			if (!string.equals(thisPlayerName)) {
+				removePlayerFromList(string);
+				addPlayerToList(string);
+			}
+		}
 		thisPlayer.canMove = true;
-		System.out.println("User can now move...");
+		System.out.println("User can now move and see the screen now...");
 	}
 
 	/**
@@ -259,8 +264,10 @@ public class Client implements Runnable {
 		// TODO: Move player with given ENUM
 		// System.out.println("This is where a player would be moved: " + player + " " +
 		// movement);
-		writer.write(" /api/movement/" + key.ordinal() + "_" + down + "\n");
-		writer.flush();
+		if (writer != null) {
+			writer.write(" /api/movement/" + key.ordinal() + "_" + down + "\n");
+			writer.flush();
+		}
 	}
 
 	/**

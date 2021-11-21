@@ -1,14 +1,10 @@
 package gui.state.java;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
 import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
+
+import java.awt.*;
 
 /**
  * An abstract class to handle rendering a state of the game. Intended to

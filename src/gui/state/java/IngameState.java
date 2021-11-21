@@ -1,11 +1,11 @@
 package gui.state.java;
 
-import java.awt.Graphics2D;
-import java.io.File;
-
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
 import gui.components.java.GuiFrame;
+
+import java.awt.*;
+import java.io.File;
 
 public class IngameState extends GuiState {
 	public Level currentLevel;

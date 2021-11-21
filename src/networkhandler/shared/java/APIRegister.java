@@ -1,20 +1,20 @@
 package networkhandler.shared.java;
 
+import com.google.gson.Gson;
+import content.npc.java.ClientPlayerNPC;
+import content.tile.java.TileFace;
+import io.java.KeyBind;
+import io.java.UserInput;
+import main.java.Main;
+import networkhandler.server.java.Request;
+import networkhandler.server.java.ServerWorker;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.gson.Gson;
-
-import content.npc.java.ClientPlayerNPC;
-import content.tile.java.TileFace;
-import io.java.KeyBind;
-import io.java.UserInput;
-import networkhandler.server.java.Request;
-import networkhandler.server.java.ServerWorker;
 
 public class APIRegister {
 
@@ -231,6 +231,13 @@ public class APIRegister {
                 String[] movement = ((String) map.get("movement")).split("_");
                 KeyBind bind = KeyBind.values()[Integer.parseInt(movement[0])];
                 boolean down = movement[1].equals("true");
+                if (bind.keyCodes == KeyBind.PAUSE.keyCodes) {
+                    if (down) {
+                        Main.pauseGame(player);
+                    } else {
+                        Main.unPauseGame();
+                    }
+                }
                 UserInput.setServerKeyPressed(player, bind, down);
             }
 

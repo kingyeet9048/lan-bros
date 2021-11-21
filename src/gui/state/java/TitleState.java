@@ -1,13 +1,10 @@
 package gui.state.java;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
 import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import networkhandler.shared.java.Factory;
+
+import java.awt.*;
 
 public class TitleState extends GuiState {
 	/**
@@ -46,7 +43,7 @@ public class TitleState extends GuiState {
 
 			@Override
 			public void onClick(boolean pressed) {
-				frame.addActiveState(new TestState(frame, factory));
+				frame.addActiveState(new UsernameState(frame, factory));
 				frame.removeActiveState(TitleState.this);
 			}
 

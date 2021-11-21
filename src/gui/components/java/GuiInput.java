@@ -1,7 +1,7 @@
 package gui.components.java;
 
-import java.awt.Graphics;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 

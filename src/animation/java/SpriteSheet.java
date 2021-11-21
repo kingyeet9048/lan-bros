@@ -1,13 +1,9 @@
 package animation.java;
 
-import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
-
-import javax.swing.ImageIcon;
+import java.util.*;
 
 /**
  * A GUI element to create and animate a list of frames into an animation. 

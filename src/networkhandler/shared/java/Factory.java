@@ -1,13 +1,14 @@
 package networkhandler.shared.java;
 
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
-
 import config.java.ConfigurationManager;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
+import gui.state.java.PauseState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
+
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Factory {
 
@@ -23,6 +24,7 @@ public class Factory {
     private String username;
     private ConfigurationManager configurationManager;
     private APIRegister register;
+    private PauseState pauseState;
 
     public ConcurrentHashMap<String, NetPacket> getAPIRegistry() {
         return apiRegistry;
@@ -48,6 +50,17 @@ public class Factory {
     public Client makeClient() {
         client = new Client(serverAddress, serverPort, isHost, username, this);
         return client;
+    }
+
+    public PauseState makePauseState(GuiFrame frame) {
+        if (pauseState == null) {
+            pauseState = new PauseState(frame, this);
+        }
+        return pauseState;
+    }
+
+    public void setPauseState(PauseState state) {
+        pauseState = state;
     }
 
     public InMultiplayerGameState makeGameState(GuiFrame frame, String thisPlayerName) {

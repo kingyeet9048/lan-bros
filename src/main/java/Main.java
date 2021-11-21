@@ -1,11 +1,15 @@
 package main.java;
 
+import java.io.IOException;
+
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
-import gui.state.java.TestState;
+import gui.state.java.PauseState;
+import gui.state.java.TitleState;
+import gui.state.java.UsernameState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
@@ -14,10 +18,11 @@ public class Main {
 	private static Factory factory = new Factory();
 	private static GuiFrame frame = new GuiFrame();
 	private static Server server;
+	private static PauseState pauseState;
 
 	public static void main(String[] args) {
 		factory.startFactory();
-		frame.addActiveState(new TestState(frame, factory));
+		frame.addActiveState(new UsernameState(frame, factory));
 
 		new Thread(() -> {
 			while (frame.isVisible()) {
@@ -41,12 +46,15 @@ public class Main {
 			clientThread.start();
 			InMultiplayerGameState mpGame = factory.makeGameState(frame, currentClient.getThisPlayerName());
 			currentClient.setGUI(mpGame);
-			frame.wipeActiveStates();
-			frame.addActiveState(mpGame);
 			return true;
 		}
 
 		return false;
+	}
+
+	public static void goToMultiplayerState() {
+		frame.wipeActiveStates();
+		frame.addActiveState(factory.getJoinedGameState());
 	}
 
 	public static Factory getNetworkFactory() {
@@ -71,5 +79,35 @@ public class Main {
 		server = factory.makeServer();
 		Thread serveThread = new Thread(server);
 		serveThread.start();
+	}
+
+	public static void pauseGame(String player) {
+		pauseState = factory.makePauseState(frame);
+		pauseState.playerThatPaused = player;
+		frame.addActiveState(pauseState);
+		factory.getCurrentClient().getThisPlayer().canMove = false;
+		System.out.println("Game Paused...");
+	}
+
+	public static void unPauseGame() {
+		frame.removeActiveState(pauseState);
+		factory.setPauseState(new PauseState(frame, factory));
+		factory.getCurrentClient().getThisPlayer().canMove = true;
+
+	}
+
+	public static void returnToTitle() {
+		try {
+			if (factory.getCurrentClient().isHost()) {
+				factory.getCurrentServer().getServer().close();
+			}
+			factory.getCurrentClient().getSocket().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		factory.setPauseState(new PauseState(frame, factory));
+		frame.wipeActiveStates();
+		frame.addActiveState(new TitleState(frame, factory));
 	}
 }
