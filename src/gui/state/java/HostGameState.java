@@ -16,10 +16,12 @@ import networkhandler.shared.java.Factory;
 public class HostGameState extends GuiState {
 
     private Rectangle screenSize;
+    public Factory factory;
 
     public HostGameState(GuiFrame frame, Factory factory) {
         super(frame);
         Main.startServer();
+        this.factory = factory;
         inputs = new GuiInput[] { new GuiInput(factory.getCurrentServer().getIpAddress()) {
             @Override
             public void focusGained(FocusEvent e) {
@@ -70,6 +72,8 @@ public class HostGameState extends GuiState {
         this.drawCentered(g, font.deriveFont(50.0f), "LAN Bros!", screenSize.width / 2, 100);
         this.drawCentered(g, font.deriveFont(30.0f), "This is your ip address for clients to join",
                 screenSize.width / 2, 200);
+        this.drawCentered(g, font.deriveFont(20.0f),
+                "Players that have joined: " + factory.getCurrentServer().getPlayerList(), screenSize.width / 2, 225);
 
     }
 
@@ -77,8 +81,8 @@ public class HostGameState extends GuiState {
     public void stateLoaded() {
         // TODO Auto-generated method stub
         screenSize = frame.getBounds();
-        addInputWithMargin(screenSize.width / 2, 200, 15);
-        addButtonsWithMargin(screenSize.width / 2, 200 + 100, 15);
+        addInputWithMargin(screenSize.width / 2, 250, 15);
+        addButtonsWithMargin(screenSize.width / 2, 250 + 100, 15);
 
     }
 
