@@ -18,6 +18,8 @@ import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
+import io.java.UserInput;
+import main.java.Main;
 import networkhandler.shared.java.Factory;
 import networkhandler.shared.java.NetPacket;
 
@@ -42,9 +44,10 @@ public class Client implements Runnable {
 	private Queue<Response> reponseQueue;
 	private boolean isHost;
 	private PrintWriter writer;
-	private InMultiplayerGameState gui;
 	private Factory factory;
 	private Level currentLevel;
+	private ClientPlayerNPC thisPlayer;
+	private InMultiplayerGameState gui;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -53,14 +56,16 @@ public class Client implements Runnable {
 	 * @param serverAddress
 	 * @param serverPort
 	 * @param isHost
+	 * @param username
 	 */
-	public Client(String serverAddress, int serverPort, boolean isHost, Factory factory) {
+	public Client(String serverAddress, int serverPort, boolean isHost, String username, Factory factory) {
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.isHost = isHost;
 		reponseQueue = new ConcurrentLinkedQueue<>();
 		currentPlayer = new LinkedList<>();
 		this.factory = factory;
+		this.thisPlayerName = username;
 	}
 
 	/**
@@ -72,19 +77,19 @@ public class Client implements Runnable {
 		while (true) {
 			try {
 				// trys to connect to the addess and port.
-				new Thread(() -> {
-					JOptionPane.showMessageDialog(null, "Please wait while we try to connect to the game...");
-				}).start();
+				// new Thread(() -> {
+				// JOptionPane.showMessageDialog(null, "Please wait while we try to connect to
+				// the game...");
+				// }).start();
 				socket = new Socket(serverAddress, serverPort);
 				System.out.println("Connected to the game!");
 				// we are past the socket line which means we joined.
 				hasJoined = true;
 				// send an api call to let server know that client has joined
 				writer = new PrintWriter(socket.getOutputStream());
-				writer.write(" /api/conn/client/connection\n");
+				writer.write(" /api/conn/client/connection/" + thisPlayerName + "\n");
 				writer.flush();
-				addPlayerToList(socket.getInetAddress().getHostName());
-				thisPlayerName = getSocket().getInetAddress().getHostName();
+				addPlayerToList(thisPlayerName);
 				// writer.close();
 				break;
 			} catch (IOException e) {
@@ -100,6 +105,7 @@ public class Client implements Runnable {
 									"Reached max number of attempts. Stopping and closing...: ");
 
 						}).start();
+						break;
 					}
 					System.err.println("Could not connect to game. Trying agin in 10 second...");
 					Thread.sleep(10000);
@@ -133,7 +139,7 @@ public class Client implements Runnable {
 			currentPlayer.add(player);
 
 			if (currentLevel != null) {
-				currentLevel.playerSet.add(new ServerPlayerNPC(3, 3, player));
+				currentLevel.playerSet.add(new ServerPlayerNPC(currentLevel, 128, 128, player));
 			}
 
 			System.out.println("Player list updated: " + currentPlayer.toString());
@@ -152,17 +158,25 @@ public class Client implements Runnable {
 		}
 	}
 
-	public synchronized void applyPlayerSync(String api) {
-		String[] players = api.split("_");
+	public synchronized void updateClientPlayerPosition() {
+		writer.write(" /api/setposmotion/" + thisPlayer.npcX + "_" + thisPlayer.npcY + "_" + thisPlayer.motionX + "_"
+				+ thisPlayer.motionY + (thisPlayer.wallHit != null ? "_" + thisPlayer.wallHit.ordinal() : "") + "\n");
+		writer.flush();
+	}
 
-		for (String player : players) {
-			if (player != null && player.length() > 0) {
-				String[] comps = player.substring(player.lastIndexOf("/") + 1).split(",");
-				for (ClientPlayerNPC play : currentLevel.playerSet) {
-					if (play.playerName.equals(comps[2])) {
-						play.npcX = Float.parseFloat(comps[0]);
-						play.npcY = Float.parseFloat(comps[1]);
-						System.out.println("Synced player \'" + play.playerName + "\'!");
+	public synchronized void applyPlayerSync(String api) {
+		if (currentLevel != null) {
+			String[] players = api.split("_");
+
+			for (String player : players) {
+				if (player != null && player.length() > 0) {
+					String[] comps = player.substring(player.lastIndexOf("/") + 1).split(",");
+					for (ClientPlayerNPC play : currentLevel.playerSet) {
+						if (play.playerName.equals(comps[2])) {
+							play.npcX = Float.parseFloat(comps[0]);
+							play.npcY = Float.parseFloat(comps[1]);
+							System.out.println("Synced player \'" + play.playerName + "\'!");
+						}
 					}
 				}
 			}
@@ -178,6 +192,14 @@ public class Client implements Runnable {
 		// player cannot already exist inside the list.
 		if (currentPlayer.contains(player)) {
 			currentPlayer.remove(player);
+			if (currentLevel != null) {
+				for (ClientPlayerNPC npc : currentLevel.playerSet) {
+					if (npc.playerName.equals(player)) {
+						currentLevel.playerSet.remove(npc);
+						break;
+					}
+				}
+			}
 			System.out.println("Player list updated: " + currentPlayer.toString());
 		}
 	}
@@ -187,7 +209,6 @@ public class Client implements Runnable {
 	 * hasnt been rendered on the GUI. The logic is still in progress.
 	 */
 	public void updatePlayers() {
-		System.out.println("Would update players here");
 		for (String player : currentPlayer) {
 			factory.getCurrentClient().addPlayerToList(player);
 		}
@@ -216,7 +237,8 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
-		// TODO
+		thisPlayer.canMove = true;
+		System.out.println("User can now move...");
 	}
 
 	/**
@@ -259,38 +281,29 @@ public class Client implements Runnable {
 		this.socket = socket;
 	}
 
-	public void setGUI(InMultiplayerGameState gui) {
-		this.gui = gui;
-	}
-
 	public String getThisPlayerName() {
 		return thisPlayerName;
 	}
 
 	public void setCurrentLevel(Level level) {
 		currentLevel = level;
-		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, thisPlayerName));
+		currentLevel.playerSet.add(thisPlayer = new ClientPlayerNPC(currentLevel, 128, 128, thisPlayerName));
 	}
 
 	public Level getCurrentLevel() {
 		return currentLevel;
 	}
 
-	public String getThisMachineIP() throws UnknownHostException {
+	public static String getThisMachineIP() throws UnknownHostException {
 		return InetAddress.getLocalHost().getHostAddress().toString();
 	}
 
-	public void updateHostStatus(String address) {
-		String myIP = "";
-		try {
-			myIP = getThisMachineIP();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		System.out.println("IS HOST? server address=" + address + ",my ip=" + myIP);
-		if (myIP.equals(address)) {
-			setHost(true);
-		}
+	public ClientPlayerNPC getThisPlayer() {
+		return thisPlayer;
+	}
+
+	public void setGUI(InMultiplayerGameState mpGame) {
+		gui = mpGame;
 	}
 
 	@Override
@@ -337,4 +350,8 @@ public class Client implements Runnable {
 		}
 	}
 
+	public void tellClientsToStart() {
+		writer.write(" /api/game/started\n");
+		writer.flush();
+	}
 }

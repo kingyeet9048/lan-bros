@@ -1,13 +1,18 @@
 package content.tile.java;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
+import content.level.java.Level;
 import content.npc.java.NPC;
 
 public class BlockTile extends Tile
 {
-	public BlockTile(int x, int y) {
-		super(x, y);
+	public BlockTile(Level level) {
+		super(level);
+	}
+	public BlockTile(Level level, int x, int y) {
+		super(level, x,y);
 	}
 
 	@Override
@@ -41,11 +46,33 @@ public class BlockTile extends Tile
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
-	public void renderTile(Graphics2D g) {
-		// TODO Auto-generated method stub
-		
+	public Tile createTile(Level level) {
+		return new BlockTile(level);
 	}
 
+	@Override
+	public String getTileID() {
+		return "B";
+	}
+
+	public void renderTile(Graphics2D g) 
+	{
+		g.scale(Tile.TILE_SIZE, Tile.TILE_SIZE);
+		g.setColor(Color.red);
+		g.fillRect(tileX,tileY,1,1);
+		g.scale(1/Tile.TILE_SIZE,1/Tile.TILE_SIZE);
+		g.setColor(Color.black);
+		g.drawRect((int)(tileX*Tile.TILE_SIZE),(int)(tileY*Tile.TILE_SIZE),(int)Tile.TILE_SIZE, (int)Tile.TILE_SIZE);
+	}
+	@Override
+	public boolean collideWith(NPC npc) 
+	{
+		return true;
+	}
+	@Override
+	public void applyCollision(NPC npc) {
+		Tile.applyBaseCollide(this, npc);
+	}
 }

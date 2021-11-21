@@ -19,6 +19,7 @@ public class ServerWorker implements Runnable {
 	private BufferedReader reader;
 	private Server server;
 	private boolean terminateThread = false;
+	private String playersUsername;
 
 	/**
 	 * Constructor will need the socket to listen to and the instance of a server.
@@ -53,6 +54,14 @@ public class ServerWorker implements Runnable {
 		this.terminateThread = terminateThread;
 	}
 
+	public String getPlayersUsername() {
+		return playersUsername;
+	}
+
+	public void setPlayersUsername(String playersUsername) {
+		this.playersUsername = playersUsername;
+	}
+
 	@Override
 	public void run() {
 
@@ -84,8 +93,9 @@ public class ServerWorker implements Runnable {
 		}
 		// worker is terminating...
 		// we need to let the other clients know that the client is disconnecting
-		server.getWorkers().remove(connectionDetail);
 		Request request = new Request(connectionDetail, "/api/conn/client/disconnection");
+		request.playerName = server.getWorkers().get(connectionDetail).getPlayersUsername();
+		server.getWorkers().remove(connectionDetail);
 		server.addToQueue(request);
 		try {
 			System.out.println("Connection with host terminated: " + connectionDetail.getInetAddress().getHostName());

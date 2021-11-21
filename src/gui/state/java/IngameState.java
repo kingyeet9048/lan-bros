@@ -1,6 +1,7 @@
 package gui.state.java;
 
 import java.awt.Graphics2D;
+import java.io.File;
 
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
@@ -11,6 +12,7 @@ public class IngameState extends GuiState {
 
 	public IngameState(GuiFrame frame) {
 		super(frame);
+
 	}
 
 	@Override
@@ -27,10 +29,11 @@ public class IngameState extends GuiState {
 
 	@Override
 	public void stateLoaded() {
-		currentLevel = new Level();
-		currentLevel.playerSet.add(new ClientPlayerNPC(3, 3, "Bob"));
+		currentLevel = new Level(new File("resources/level/level0.data"));
+		ClientPlayerNPC playerNPC = new ClientPlayerNPC(currentLevel, 128, 128, "Bob");
+		playerNPC.canMove = true;
+		currentLevel.playerSet.add(playerNPC);
 		System.out.println("Joined singleplayer!");
-
 	}
 
 	@Override

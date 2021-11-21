@@ -12,6 +12,7 @@ public class Request {
     // instance variables
     private Socket receiver;
     private String api;
+    public String playerName;
 
     /**
      * Constructor for request. Needs socket that sent it and the api used.

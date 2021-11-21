@@ -6,6 +6,7 @@ import org.junit.experimental.categories.Category;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -28,16 +29,14 @@ public class UseCaseTest {
     @BeforeClass
     public static void setUp() {
         factory = new Factory();
-        factory.makeBaseAPIRegistry();
+        factory.startFactory();
+        factory.setPlayerUsername("thisNewUser");
         factory.setHost(true);
-        factory.setPort(4321);
-        factory.setMAX_PLAYERS(5);
         try {
             factory.setServerAddress(InetAddress.getLocalHost().getHostAddress().toString());
         } catch (UnknownHostException e) {
             fail(e.getMessage());
         }
-        factory.setServerPort(4321);
         server = factory.makeServer();
         testingThread = new Thread(server);
         testingThread.start();

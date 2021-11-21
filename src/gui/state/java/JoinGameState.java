@@ -4,13 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.util.concurrent.TimeUnit;
 
 import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import main.java.Main;
-import networkhandler.client.java.Client;
 import networkhandler.shared.java.Factory;
 
 public class JoinGameState extends GuiState {
@@ -19,7 +17,7 @@ public class JoinGameState extends GuiState {
 
     public JoinGameState(GuiFrame frame, Factory factory) {
         super(frame);
-        inputs = new GuiInput[] { new GuiInput("localhost") {
+        inputs = new GuiInput[] { new GuiInput("IP Address") {
             private static final long serialVersionUID = 1L;
         } };
         buttons = new GuiButton[] { new GuiButton("Find Host To Join") {
@@ -37,7 +35,6 @@ public class JoinGameState extends GuiState {
 
                     } else {
                         System.out.println(inputs[0].getText());
-                        Main.getNetworkFactory().getCurrentClient().updateHostStatus(inputs[0].getText());
                     }
                 }
             }
@@ -46,9 +43,9 @@ public class JoinGameState extends GuiState {
             @Override
             public void onClick(boolean pressed) {
                 frame.addActiveState(new TitleState(frame, factory));
-                frame.removeActiveState(JoinGameState.this);             
+                frame.removeActiveState(JoinGameState.this);
             }
-        }};
+        } };
     }
 
     @Override

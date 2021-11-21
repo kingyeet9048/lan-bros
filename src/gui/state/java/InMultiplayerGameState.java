@@ -1,10 +1,9 @@
 package gui.state.java;
 
 import java.awt.Graphics2D;
+import java.io.File;
 
 import content.level.java.Level;
-import content.npc.java.ClientPlayerNPC;
-import content.npc.java.ServerPlayerNPC;
 import gui.components.java.GuiFrame;
 import main.java.Main;
 
@@ -40,7 +39,7 @@ public class InMultiplayerGameState extends GuiState {
 
     @Override
     public void stateLoaded() {
-        Level level = new Level();
+    	Level level = new Level(new File("resources/level/level0.data"));
         Main.getNetworkFactory().getCurrentClient().setCurrentLevel(level);
     }
 

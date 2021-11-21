@@ -242,6 +242,14 @@ public class Server implements Runnable {
 		return true;
 	}
 
+	public String getPlayerList() {
+		String players = "";
+		for (Map.Entry<Socket, ServerWorker> entry : workers.entrySet()) {
+			players += entry.getValue().getPlayersUsername() + " ";
+		}
+		return players.trim();
+	}
+
 	@Override
 	public void run() {
 		// start a listener to accept connections

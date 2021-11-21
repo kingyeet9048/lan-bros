@@ -9,7 +9,6 @@ import gui.components.java.GuiButton;
 import gui.components.java.GuiFrame;
 import networkhandler.shared.java.Factory;
 
-
 public class TitleState extends GuiState {
 	/**
 	 * A temporary, faster reference to the size of the GuiFrame.
@@ -43,6 +42,14 @@ public class TitleState extends GuiState {
 				frame.addActiveState(new HostGameState(frame, factory));
 				frame.removeActiveState(TitleState.this);
 			}
+		}, new GuiButton("Set Username") {
+
+			@Override
+			public void onClick(boolean pressed) {
+				frame.addActiveState(new TestState(frame, factory));
+				frame.removeActiveState(TitleState.this);
+			}
+
 		}, new GuiButton("Quit") {
 			private static final long serialVersionUID = 1L;
 
