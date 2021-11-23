@@ -349,13 +349,26 @@ public class APIRegister {
                     float[] pos = {Float.parseFloat(posStrings[0]),Float.parseFloat(posStrings[1])};
                     
                     ArrayList<NPC> set = factory.getCurrentClient().getCurrentLevel().npcSet;
-                    NPC foundNPC = set.get(index);
-                    
-                    if(foundNPC.npcX == pos[0] && foundNPC.npcY == pos[1])
+                    boolean flag = false;
+                    if(set.size() > index)
                     {
-                    	foundNPC.setLife(health);
+                        NPC foundNPC = set.get(index);
+                        
+                        if(foundNPC.npcX == pos[0] && foundNPC.npcY == pos[1])
+                        {
+                        	foundNPC.setLife(health);
+                        }                    	
+                        else
+                        {
+                        	flag = true;
+                        }
                     }
                     else
+                    {
+                    	flag = true;
+                    }
+                    
+                    if(flag)
                     {
                     	for (NPC npc : set) {
                         	if(npc.npcX == pos[0] && npc.npcY == pos[1]) 
@@ -410,18 +423,32 @@ public class APIRegister {
                     float[] pos = {Float.parseFloat(posStrings[0]),Float.parseFloat(posStrings[1])};
                     
                     ArrayList<NPC> set = factory.getCurrentClient().getCurrentLevel().npcSet;
-                    NPC foundNPC = set.get(index);
                     
-                    if(foundNPC.npcX == pos[0] && foundNPC.npcY == pos[1])
+                    boolean flag = false;
+                    if(set.size() > index)
                     {
-                    	factory.getCurrentClient().getCurrentLevel().queueForRemoval(foundNPC);
+                        NPC foundNPC = set.get(index);
+                        
+                        if(foundNPC.npcX == pos[0] && foundNPC.npcY == pos[1])
+                        {
+                        	factory.getCurrentClient().getCurrentLevel().queueForRemoval(foundNPC);
+                        }                    	
+                        else
+                        {
+                        	flag = true;
+                        }
                     }
                     else
+                    {
+                    	flag = true;
+                    }
+                    
+                    if(flag)
                     {
                     	for (NPC npc : set) {
                         	if(npc.npcX == pos[0] && npc.npcY == pos[1]) 
                         	{
-                        		factory.getCurrentClient().getCurrentLevel().queueForRemoval(npc);
+                            	factory.getCurrentClient().getCurrentLevel().queueForRemoval(npc);
                         	}
                         }   
                     }
