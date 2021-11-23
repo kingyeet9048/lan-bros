@@ -46,7 +46,7 @@ public class TitleState extends GuiState {
 
 			@Override
 			public void onClick(boolean pressed) {
-				frame.addActiveState(new TestState(frame, factory));
+				frame.addActiveState(new SetUserNameState(frame, factory));
 				frame.removeActiveState(TitleState.this);
 			}
 

@@ -4,7 +4,9 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 
 import content.level.java.Level;
+import content.npc.java.ClientPlayerNPC;
 import content.npc.java.NPC;
+import main.java.Main;
 
 public abstract class Tile implements ITileEntry {
 	public static final float TILE_SIZE = 30.0f;
@@ -26,9 +28,10 @@ public abstract class Tile implements ITileEntry {
 
 	/**
 	 * When an NPC collides with this tile, this is called.
+	 * @param face the face collided on
 	 */
-	public abstract void onCollide(NPC npc);
-
+	public abstract void onCollide(NPC npc, TileFace face);
+	
 	/**
 	 * Updates the tile.
 	 */
@@ -63,7 +66,6 @@ public abstract class Tile implements ITileEntry {
 		TILE_REGISTRY.put(tileClass, entry);
 		System.out.println("Registered class \'" + tileClass.toString() + "\' to entry \'" + entry.getTileID() + "\'!");
 	}
-
 	public static Tile fromClass(Level level, Class<? extends Tile> tileClass) {
 		if (TILE_REGISTRY.containsKey(tileClass)) {
 			return TILE_REGISTRY.get(tileClass).createTile(level);
@@ -97,30 +99,40 @@ public abstract class Tile implements ITileEntry {
 		float ypos = (npc.npcY) / TILE_SIZE - tile.tileY;
 		int[] heightMap = tile.level.getHeightMap();
 
-		if (xpos < 0.9 && xpos > 0.65 && tile.shouldCollideFromSide(TileFace.RIGHT)) {
-			System.out.println("RIGHT XPOS=" + xpos + " was VALID (YPOS=" + ypos);
 
-			if (npc.motionX < 0) {
+		if(xpos < 0.9 && xpos > 0.65 && tile.shouldCollideFromSide(TileFace.RIGHT))
+		{
+			if(npc.motionX < 0)
+			{
+				npc.onCollide(tile, TileFace.RIGHT);
+				tile.onCollide(npc, TileFace.RIGHT);
+
 				npc.motionX = 0;
 				npc.wallHit = TileFace.RIGHT;
+				
+				if(xpos > 0.7)
+					npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE/2.0f + npc.npcWidth/2.0f;
+				
+				if(ypos > 1)
+				{
 
-				if (xpos > 0.7)
-					npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE / 2.0f + npc.npcWidth / 2.0f;
-
-				if (ypos > 1) {
-					int height = heightMap[Math.max(tile.tileX - 1, 0)];
-
-					if (height - tile.tileY < 1 && height - tile.tileY > 0) {
+					int height = heightMap[Math.max(tile.tileX-1, 0)];
+					
+					if(height - tile.tileY < 1 && height - tile.tileY > 0)
+					{
 						npc.npcY = height * TILE_SIZE - npc.npcHeight;
 						npc.onGround = true;
 					}
 				}
 			}
-		} else if (xpos > 0.1 && xpos < 0.35 && tile.shouldCollideFromSide(TileFace.LEFT)) {
-			System.out.println(" LEFTXPOS=" + xpos + " was VALID (YPOS=" + ypos);
-
-			if (npc.motionX > 0) {
-				// npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE/2.0f - npc.npcWidth/2.0f;
+		}
+		else if(xpos > 0.1 && xpos < 0.35 && tile.shouldCollideFromSide(TileFace.LEFT))
+		{
+			if(npc.motionX > 0)
+			{
+				npc.onCollide(tile, TileFace.LEFT);
+				tile.onCollide(npc, TileFace.LEFT);
+				//npc.npcX = tile.tileX * TILE_SIZE + TILE_SIZE/2.0f - npc.npcWidth/2.0f;
 				npc.motionX = 0;
 				npc.wallHit = TileFace.LEFT;
 
@@ -138,11 +150,14 @@ public abstract class Tile implements ITileEntry {
 				}
 			}
 		}
+	
+		if(ypos < -0.5 && ypos < 0 && tile.shouldCollideFromSide(TileFace.TOP))
+		{
+			npc.onCollide(tile, TileFace.TOP);
+			tile.onCollide(npc, TileFace.TOP);
 
-		if (ypos < -0.5 && ypos < 0 && tile.shouldCollideFromSide(TileFace.TOP)) {
-			System.out.println("YPOS=" + ypos + " was VALID");
-
-			if (npc.motionY > 0) {
+			if(npc.motionY > 0)
+			{
 				npc.npcY = tile.tileY * TILE_SIZE - npc.npcHeight;
 				npc.motionY = 0;
 			}

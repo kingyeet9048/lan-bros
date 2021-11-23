@@ -14,13 +14,13 @@ import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import networkhandler.shared.java.Factory;
 
-public class TestState extends GuiState {
+public class SetUserNameState extends GuiState {
 
 	private SpriteSheet test;
 
 	private Rectangle screenSize;
 
-	public TestState(GuiFrame frame, Factory factory) {
+	public SetUserNameState(GuiFrame frame, Factory factory) {
 		super(frame);
 
 		buttons = new GuiButton[] { new GuiButton("Go To Title") {
@@ -32,7 +32,7 @@ public class TestState extends GuiState {
 					if (!username.equals("username") && !username.equals("")) {
 						factory.setPlayerUsername(username);
 						frame.addActiveState(new TitleState(frame, factory));
-						frame.removeActiveState(TestState.this);
+						frame.removeActiveState(SetUserNameState.this);
 					} else {
 						JOptionPane.showMessageDialog(frame, "Enter a username that is not 'username' and not null.");
 					}

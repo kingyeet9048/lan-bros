@@ -38,7 +38,6 @@ public class HostGameState extends GuiState {
                         factory.setHost(true);
                         factory.getCurrentClient().setHost(true);
                         factory.getCurrentClient().tellClientsToStart();
-                        factory.getCurrentClient().getThisPlayer().canMove = true;
                     }
                 }
             }

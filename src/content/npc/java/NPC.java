@@ -1,14 +1,20 @@
 package content.npc.java;
 
 import java.awt.Graphics2D;
+import java.util.HashMap;
 
 import content.level.java.Level;
+import content.tile.java.ITileEntry;
 import content.tile.java.Tile;
 import content.tile.java.TileFace;
 import gui.components.java.GuiFrame;
 import main.java.Main;
 
-public abstract class NPC {
+public abstract class NPC implements ITileEntry 
+{
+	private static final HashMap<Class<?extends NPC>, ITileEntry> NPC_REGISTRY = new HashMap<Class<?extends NPC>, ITileEntry>();
+	private static final int DMG_COOLDOWN = 20;
+	
 	public float npcX, npcY, motionX, motionY, npcWidth, npcHeight;
 	public TileFace wallHit = null;
 	public boolean onGround;
@@ -17,6 +23,7 @@ public abstract class NPC {
 	protected Level level;
 	private final int[][][] tileNeighborOffsets = { { { -1, 0 }, { 1, 0 } }, { { 0, -1 }, { 0, 1 } } };
 	private final double[] tileFloorOffsets = { 1.5, 2 };
+	protected int lifeMax = 10, life = 10, dmgCooldown = 0;
 
 	public NPC(Level level, float x, float y, float width, float height) {
 		this.level = level;
@@ -25,8 +32,13 @@ public abstract class NPC {
 		npcWidth = width;
 		npcHeight = height;
 	}
-
-	public void update() {
+	
+	public void update()
+	{
+		if(life <= 0) {
+			return;
+		}
+		
 		++lifeTime;
 
 		// Apply motion
@@ -56,7 +68,12 @@ public abstract class NPC {
 				motionY += 1.1f;
 			}
 		}
-
+		
+		if(dmgCooldown > 0)
+		{
+			--dmgCooldown;
+		}
+		
 		updateTileCollision();
 		updateNPC();
 	}
@@ -114,12 +131,99 @@ public abstract class NPC {
 			onGround = false;
 		}
 	}
-
+	
+	protected void setMaxLife(int health)
+	{
+		lifeMax = life = health;
+	}
+	
+	public int getMaxLife()
+	{
+		return lifeMax;
+	}
+	
+	public int getLife()
+	{
+		return life;
+	}
+	
+	public void setLife(int health)
+	{
+		life = health;
+	}
+	
+	public void damageNPC(int amount)
+	{
+		if(dmgCooldown <= 0)
+		{
+			setLife(getLife()-amount);
+			dmgCooldown = DMG_COOLDOWN;
+			int ind = level.npcSet.indexOf(this);
+			
+			if(ind == -1)
+			{
+				ind = level.playerSet.indexOf(this);
+			}
+			
+			if(Main.getNetworkFactory().getCurrentClient() != null)
+				Main.getNetworkFactory().getCurrentClient().sendLife(this, ind, life);
+			
+			if (life <= 0)
+			{
+				onKill();
+			}			
+		}
+	}
+	
+	protected synchronized void onKill()
+	{
+		onNPCKill();
+		int ind = level.npcSet.indexOf(this);
+		
+		if(ind == -1)
+		{
+			ind = level.playerSet.indexOf(this);
+		}
+		
+		if(Main.getNetworkFactory().getCurrentClient() != null)
+		{
+			Main.getNetworkFactory().getCurrentClient().sendRemoval(this, ind);			
+		}
+		else
+		{
+			level.queueForRemoval(this);
+		}
+	}
+	
+	protected abstract void onNPCKill();
+	
 	protected abstract void updateNPC();
 
 	public abstract void renderNPC(Graphics2D g);
 
-	public abstract void onCollide(Tile tile);
-
+	
+	public abstract void onCollide(Tile tile, TileFace face);
+	
 	public abstract void onCollide(NPC npc);
+	
+	
+	public static Tile fromID(Level level, String id)
+	{
+		for(ITileEntry entry : NPC_REGISTRY.values())
+		{
+			if(entry.getTileID().equals(id))
+			{
+				System.out.println("Created tile \'"+entry.getTileID()+"\'!");
+				return entry.createTile(level);
+			}
+		}
+		
+		System.out.println("Did not create tile \'"+id+"\'");
+		return null;
+	}
+	
+	static {
+		NPC_REGISTRY.put(ClientPlayerNPC.class, new ClientPlayerNPC(null, 0, 0, null));
+		NPC_REGISTRY.put(SpikeBallNPC.class, new SpikeBallNPC(null, 0, 0));
+	}
 }

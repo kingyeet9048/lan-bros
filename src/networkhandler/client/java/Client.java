@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
+import content.npc.java.NPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.state.java.InMultiplayerGameState;
 import io.java.KeyBind;
@@ -48,6 +49,7 @@ public class Client implements Runnable {
 	private Level currentLevel;
 	private ClientPlayerNPC thisPlayer;
 	private InMultiplayerGameState gui;
+	private boolean canMove = false;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -237,8 +239,12 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
-		thisPlayer.canMove = true;
+		canMove = true;
 		System.out.println("User can now move...");
+	}
+	
+	public boolean canClientMove() {
+		return canMove;
 	}
 
 	/**
@@ -287,7 +293,7 @@ public class Client implements Runnable {
 
 	public void setCurrentLevel(Level level) {
 		currentLevel = level;
-		currentLevel.playerSet.add(thisPlayer = new ClientPlayerNPC(currentLevel, 128, 128, thisPlayerName));
+		//currentLevel.playerSet.add(thisPlayer = new ClientPlayerNPC(currentLevel, 128, 128, thisPlayerName));
 	}
 
 	public Level getCurrentLevel() {
@@ -300,6 +306,11 @@ public class Client implements Runnable {
 
 	public ClientPlayerNPC getThisPlayer() {
 		return thisPlayer;
+	}
+	
+	public void setThisPlayer(ClientPlayerNPC player) 
+	{
+		thisPlayer = player;
 	}
 
 	public void setGUI(InMultiplayerGameState mpGame) {
@@ -352,6 +363,18 @@ public class Client implements Runnable {
 
 	public void tellClientsToStart() {
 		writer.write(" /api/game/started\n");
+		writer.flush();
+	}
+
+	public void sendRemoval(NPC npc, int ind) 
+	{
+		writer.write(" /api/cleanup/npcremove/"+ind+"_"+npc.npcX+"_"+npc.npcY+"\n");
+		writer.flush();
+	}
+	
+	public void sendLife(NPC npc, int ind, int life) 
+	{
+		writer.write(" /api/healthsync/"+ind+"_"+npc.npcX+"_"+npc.npcY+"_"+life+"\n");
 		writer.flush();
 	}
 }

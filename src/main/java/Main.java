@@ -5,7 +5,7 @@ import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
-import gui.state.java.TestState;
+import gui.state.java.SetUserNameState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
@@ -17,7 +17,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		factory.startFactory();
-		frame.addActiveState(new TestState(frame, factory));
+		frame.addActiveState(new SetUserNameState(frame, factory));
 
 		new Thread(() -> {
 			while (frame.isVisible()) {
