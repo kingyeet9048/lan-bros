@@ -12,6 +12,7 @@ public class ConfigurationManager {
     private final String fileName = "resources/.env-settings";
     private int SERVER_PORT;
     private int MAX_PLAYERS;
+    private int GAME_COUNTDOWN;
 
     public void loadConfigs() {
         try {
@@ -28,6 +29,9 @@ public class ConfigurationManager {
                 } else if (splitLine[0].equals("MAX_PLAYERS")) {
                     MAX_PLAYERS = Integer.parseInt(splitLine[1]);
                     System.out.println(currentLine + " " + MAX_PLAYERS);
+                } else if (splitLine[0].equals("GAME_COUNTDOWN")) {
+                    GAME_COUNTDOWN = Integer.parseInt(splitLine[1]);
+                    System.out.println(currentLine + " " + GAME_COUNTDOWN);
                 }
                 currentLine = reader.readLine();
             }
@@ -52,5 +56,13 @@ public class ConfigurationManager {
 
     public void setMAX_PLAYERS(int mAX_PLAYERS) {
         MAX_PLAYERS = mAX_PLAYERS;
+    }
+
+    public int getGAME_COUNTDOWN() {
+        return GAME_COUNTDOWN;
+    }
+
+    public void setGAME_COUNTDOWN(int gAME_COUNTDOWN) {
+        GAME_COUNTDOWN = gAME_COUNTDOWN;
     }
 }
