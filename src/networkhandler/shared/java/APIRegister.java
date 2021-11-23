@@ -15,6 +15,7 @@ import content.npc.java.NPC;
 import content.tile.java.TileFace;
 import io.java.KeyBind;
 import io.java.UserInput;
+import main.java.Main;
 import networkhandler.server.java.Request;
 import networkhandler.server.java.ServerWorker;
 

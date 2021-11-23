@@ -218,12 +218,4 @@ public class Level
 	public int[] getHeightMap() {
 		return heightMap;
 	}
-
-	public Tile[][] getTileMap() {
-		return tileMap;
-	}
-	
-	public int[] getHeightMap() {
-		return heightMap;
-	}
 }

@@ -396,4 +396,9 @@ public class Client implements Runnable {
 		writer.write(" /api/healthsync/"+ind+"_"+npc.npcX+"_"+npc.npcY+"_"+life+"\n");
 		writer.flush();
 	}
+
+	public void setCanClientMove(boolean move) 
+	{
+		canMove = move;
+	}
 }

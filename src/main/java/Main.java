@@ -7,7 +7,9 @@ import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
+import gui.state.java.PauseState;
 import gui.state.java.SetUserNameState;
+import gui.state.java.TitleState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
@@ -16,6 +18,7 @@ public class Main {
 	private static Factory factory = new Factory();
 	private static GuiFrame frame = new GuiFrame();
 	private static Server server;
+	private static PauseState pauseState;
 
 	public static void main(String[] args) {
 		factory.startFactory();
@@ -82,14 +85,14 @@ public class Main {
 		pauseState = factory.makePauseState(frame);
 		pauseState.playerThatPaused = player;
 		frame.addActiveState(pauseState);
-		factory.getCurrentClient().getThisPlayer().canMove = false;
+		factory.getCurrentClient().setCanClientMove(false);
 		System.out.println("Game Paused...");
 	}
 
 	public static void unPauseGame() {
 		frame.removeActiveState(pauseState);
 		factory.setPauseState(new PauseState(frame, factory));
-		factory.getCurrentClient().getThisPlayer().canMove = true;
+		factory.getCurrentClient().setCanClientMove(true);
 
 	}
 
@@ -106,11 +109,5 @@ public class Main {
 		factory.setPauseState(new PauseState(frame, factory));
 		frame.wipeActiveStates();
 		frame.addActiveState(new TitleState(frame, factory));
-	}
-
-	public static void startServer() {
-		server = factory.makeServer();
-		Thread serveThread = new Thread(server);
-		serveThread.start();
 	}
 }
