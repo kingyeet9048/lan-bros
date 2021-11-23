@@ -16,16 +16,20 @@ import networkhandler.shared.java.Factory;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class HostGameState extends GuiState {
 
     private Rectangle screenSize;
     public Factory factory;
+    private boolean isGameStarted = false;
+    private int currentTimer;
 
     public HostGameState(GuiFrame frame, Factory factory) {
         super(frame);
         Main.startServer();
         this.factory = factory;
+        currentTimer = factory.getGAME_COUNTDOWN();
         inputs = new GuiInput[] { new GuiInput(factory.getCurrentServer().getIpAddress()) {
             @Override
             public void focusGained(FocusEvent e) {
@@ -39,9 +43,23 @@ public class HostGameState extends GuiState {
             public void onClick(boolean pressed) {
                 if (pressed) {
                     if (Main.startClient("localhost")) {
-                        factory.setHost(true);
-                        factory.getCurrentClient().setHost(true);
-                        factory.getCurrentClient().tellClientsToStart();
+                        isGameStarted = true;
+                        new Thread(() -> {
+                            while (true) {
+                                try {
+                                    TimeUnit.SECONDS.sleep(1);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                if (currentTimer == 0) {
+                                    break;
+                                }
+                                currentTimer--;
+                            }
+                            factory.setHost(true);
+                            factory.getCurrentClient().setHost(true);
+                            factory.getCurrentClient().tellClientsToStart();
+                        }).start();
                     }
                 }
             }
@@ -77,6 +95,7 @@ public class HostGameState extends GuiState {
                 screenSize.width / 2, 200);
         this.drawCentered(g, font.deriveFont(20.0f),
                 "Players that have joined: " + factory.getCurrentServer().getPlayerList(), screenSize.width / 2, 225);
+                this.drawCentered(g, font.deriveFont(20.0f),isGameStarted ? "Starting game in " + currentTimer: "", screenSize.width / 2, 246);
 
     }
 

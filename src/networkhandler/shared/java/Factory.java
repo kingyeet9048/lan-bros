@@ -30,6 +30,7 @@ public class Factory {
     private Server server;
     private Client client;
     private int MAX_PLAYERS = 4;
+    private int GAME_COUNTDOWN;
     private String serverAddress;
     private int serverPort;
     private boolean isHost;
@@ -111,6 +112,14 @@ public class Factory {
         this.serverPort = serverPort;
     }
 
+    public int getGAME_COUNTDOWN() {
+        return GAME_COUNTDOWN;
+    }
+
+    public void setGAME_COUNTDOWN(int gAME_COUNTDOWN) {
+        GAME_COUNTDOWN = gAME_COUNTDOWN;
+    }
+
     public boolean isHost() {
         return isHost;
     }
@@ -146,6 +155,7 @@ public class Factory {
         configurationManager.loadConfigs();
         setMAX_PLAYERS(configurationManager.getMAX_PLAYERS());
         setServerPort(configurationManager.getSERVER_PORT());
+        setGAME_COUNTDOWN(configurationManager.getGAME_COUNTDOWN());
     }
 
     public APIRegister makeRegister() {
