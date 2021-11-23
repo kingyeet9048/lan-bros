@@ -1,20 +1,23 @@
 package networkhandler.shared.java;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.google.gson.Gson;
+
 import content.npc.java.ClientPlayerNPC;
+import content.npc.java.NPC;
 import content.tile.java.TileFace;
 import io.java.KeyBind;
 import io.java.UserInput;
 import main.java.Main;
 import networkhandler.server.java.Request;
 import networkhandler.server.java.ServerWorker;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class APIRegister {
 
@@ -326,6 +329,155 @@ public class APIRegister {
                         object.put("wall", parameters[4] + "");
                     }
 
+                    String payload = gson.toJson(object);
+
+                    System.out.println(payload);
+
+                    writer.write(" " + payload + "\n");
+                    writer.flush();
+                }
+            }
+
+        });
+        
+        addSupportedCommand(new NetPacket() {
+
+            @Override
+            String getCommand() {
+                return "/api/healthsync";
+            }
+
+            @Override
+            public void clientExecute(Map map) {
+            	if(factory.getCurrentClient().getCurrentLevel() != null)
+            	{
+                    int index = Integer.parseInt((String) map.get("index"));
+                    String[] posStrings = ((String) map.get("position")).split("_");
+                    int health = Integer.parseInt((String)map.get("life"));
+                    float[] pos = {Float.parseFloat(posStrings[0]),Float.parseFloat(posStrings[1])};
+                    
+                    ArrayList<NPC> set = factory.getCurrentClient().getCurrentLevel().npcSet;
+                    boolean flag = false;
+                    if(set.size() > index)
+                    {
+                        NPC foundNPC = set.get(index);
+                        
+                        if(foundNPC.npcX == pos[0] && foundNPC.npcY == pos[1])
+                        {
+                        	foundNPC.setLife(health);
+                        }                    	
+                        else
+                        {
+                        	flag = true;
+                        }
+                    }
+                    else
+                    {
+                    	flag = true;
+                    }
+                    
+                    if(flag)
+                    {
+                    	for (NPC npc : set) {
+                        	if(npc.npcX == pos[0] && npc.npcY == pos[1]) 
+                        	{
+                            	npc.setLife(health);
+                        	}
+                        }   
+                    }
+            	}
+            }
+
+            @Override
+            public void serverExecute(Request request) throws IOException {
+                Map<Socket, ServerWorker> clients = factory.getCurrentServer().getWorkers();
+                for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
+                    Socket currentKey = entry.getKey();
+
+                    PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
+                    // serverworker removes the connection from the list so there is no
+                    // need to do it here.
+                    Gson gson = new Gson();
+                    Map<String, String> object = new HashMap<>();
+                    String[] parameters = request.getApi().substring(request.getApi().lastIndexOf("/")+1).split("_");
+                    object.put("api", request.getApi());
+                    object.put("index", parameters[0]);
+                    object.put("position", parameters[1] + "_" + parameters[2]);
+                    object.put("life", parameters[3]);
+                    String payload = gson.toJson(object);
+
+                    System.out.println(payload);
+
+                    writer.write(" " + payload + "\n");
+                    writer.flush();
+                }
+            }
+
+        });
+        
+        addSupportedCommand(new NetPacket() {
+
+            @Override
+            String getCommand() {
+                return "/api/cleanup/npcremove";
+            }
+
+            @Override
+            public void clientExecute(Map map) {
+            	if(factory.getCurrentClient().getCurrentLevel() != null)
+            	{
+                    int index = Integer.parseInt((String) map.get("index"));
+                    String[] posStrings = ((String) map.get("position")).split("_");
+                    float[] pos = {Float.parseFloat(posStrings[0]),Float.parseFloat(posStrings[1])};
+                    
+                    ArrayList<NPC> set = factory.getCurrentClient().getCurrentLevel().npcSet;
+                    
+                    boolean flag = false;
+                    if(set.size() > index)
+                    {
+                        NPC foundNPC = set.get(index);
+                        
+                        if(foundNPC.npcX == pos[0] && foundNPC.npcY == pos[1])
+                        {
+                        	factory.getCurrentClient().getCurrentLevel().queueForRemoval(foundNPC);
+                        }                    	
+                        else
+                        {
+                        	flag = true;
+                        }
+                    }
+                    else
+                    {
+                    	flag = true;
+                    }
+                    
+                    if(flag)
+                    {
+                    	for (NPC npc : set) {
+                        	if(npc.npcX == pos[0] && npc.npcY == pos[1]) 
+                        	{
+                            	factory.getCurrentClient().getCurrentLevel().queueForRemoval(npc);
+                        	}
+                        }   
+                    }
+            	}
+            }
+
+            @Override
+            public void serverExecute(Request request) throws IOException {
+                Map<Socket, ServerWorker> clients = factory.getCurrentServer().getWorkers();
+                for (Map.Entry<Socket, ServerWorker> entry : clients.entrySet()) {
+                    Socket currentKey = entry.getKey();
+
+                    PrintWriter writer = new PrintWriter(currentKey.getOutputStream());
+                    // serverworker removes the connection from the list so there is no
+                    // need to do it here.
+                    Gson gson = new Gson();
+                    Map<String, String> object = new HashMap<>();
+                    String[] parameters = request.getApi().substring(request.getApi().lastIndexOf("/")+1).split("_");
+                    object.put("api", request.getApi().substring(0,request.getApi().lastIndexOf("/")+1));
+                    object.put("index", parameters[0]);
+                    object.put("position", parameters[1] + "_" + parameters[2]);
                     String payload = gson.toJson(object);
 
                     System.out.println(payload);

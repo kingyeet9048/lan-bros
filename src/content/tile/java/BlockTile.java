@@ -1,5 +1,11 @@
 package content.tile.java;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
+import javax.swing.ImageIcon;
+
+import animation.java.SpriteSheet;
 import content.level.java.Level;
 import content.npc.java.NPC;
 
@@ -7,6 +13,12 @@ import java.awt.*;
 
 public class BlockTile extends Tile
 {
+	public static final SpriteSheet TILE_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/tile.png"))
+			.addFrame("top", 10000, 0, 10, 10, 10)
+			.addFrame("dirt", 10000, 0, 0, 10, 10)
+			.addAnimation("top", "top")
+			.addAnimation("dirt", "dirt");
+
 	public BlockTile(Level level) {
 		super(level);
 	}
@@ -15,29 +27,8 @@ public class BlockTile extends Tile
 	}
 
 	@Override
-	public void onCollide(NPC npc) 
+	public void onCollide(NPC npc, TileFace face) 
 	{
-		boolean left = npc.npcX < tileX + 16;
-		boolean top = npc.npcY < tileY + 16;
-		
-		if(top)
-		{
-			npc.npcY = tileY;
-			npc.motionY = 0;
-		}
-		else
-		{
-			if(left)
-			{
-				npc.npcX = tileX-32;
-				npc.motionX = npc.motionX > 0 ? 0 : npc.motionX;
-			}
-			else
-			{				
-				npc.npcX = tileX+32;
-				npc.motionX = npc.motionX < 0 ? 0 : npc.motionX;
-			}
-		}
 	}
 
 	@Override
@@ -58,13 +49,10 @@ public class BlockTile extends Tile
 
 	public void renderTile(Graphics2D g) 
 	{
-		g.scale(Tile.TILE_SIZE, Tile.TILE_SIZE);
-		g.setColor(Color.red);
-		g.fillRect(tileX,tileY,1,1);
-		g.scale(1/Tile.TILE_SIZE,1/Tile.TILE_SIZE);
-		g.setColor(Color.black);
-		g.drawRect((int)(tileX*Tile.TILE_SIZE),(int)(tileY*Tile.TILE_SIZE),(int)Tile.TILE_SIZE, (int)Tile.TILE_SIZE);
+		TILE_SPRITE.setCurrentAnimation(tileY == level.getHeightMap()[tileX] ? "top" : "dirt");
+		TILE_SPRITE.renderSpriteSheet(g, (int) (tileX * TILE_SIZE + TILE_SIZE/2), (int) (tileY * TILE_SIZE + TILE_SIZE/2), 3.0f, 3.0f);
 	}
+	
 	@Override
 	public boolean collideWith(NPC npc) 
 	{

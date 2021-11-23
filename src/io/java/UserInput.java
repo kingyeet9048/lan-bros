@@ -21,7 +21,7 @@ public class UserInput implements KeyListener {
 		KeyBind key = KeyBind.getInputFor(e.getExtendedKeyCode());
 
 		if (key != null && (Main.getNetworkFactory().getCurrentClient() == null
-				|| Main.getNetworkFactory().getCurrentClient().getThisPlayer().canMove)) {
+				|| Main.getNetworkFactory().getCurrentClient().canClientMove())) {
 			if (!keyPressed.containsKey(key)) {
 				keyPressed.put(key, true);
 				if (Main.getNetworkFactory().getCurrentClient() != null)

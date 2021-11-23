@@ -21,6 +21,19 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.JOptionPane;
+
+import content.level.java.Level;
+import content.npc.java.ClientPlayerNPC;
+import content.npc.java.NPC;
+import content.npc.java.ServerPlayerNPC;
+import gui.state.java.InMultiplayerGameState;
+import io.java.KeyBind;
+import io.java.UserInput;
+import main.java.Main;
+import networkhandler.shared.java.Factory;
+import networkhandler.shared.java.NetPacket;
+
 /**
  * Client class that handles interactions with the server and game manager
  * controller. Current Capabilities: Connect to server with a timeout Disconnect
@@ -46,6 +59,7 @@ public class Client implements Runnable {
 	private Level currentLevel;
 	private ClientPlayerNPC thisPlayer;
 	private InMultiplayerGameState gui;
+	private boolean canMove = false;
 
 	/**
 	 * Constuctor needs to know the address to connect to, the port to connect to,
@@ -235,6 +249,8 @@ public class Client implements Runnable {
 	 * gameGUI tools
 	 */
 	public void startGame() {
+		canMove = true;
+		System.out.println("User can now move...");
 		Main.goToMultiplayerState();
 		for (String string : currentPlayer) {
 			if (!string.equals(thisPlayerName)) {
@@ -242,8 +258,10 @@ public class Client implements Runnable {
 				addPlayerToList(string);
 			}
 		}
-		thisPlayer.canMove = true;
-		System.out.println("User can now move and see the screen now...");
+	}
+	
+	public boolean canClientMove() {
+		return canMove;
 	}
 
 	/**
@@ -294,7 +312,7 @@ public class Client implements Runnable {
 
 	public void setCurrentLevel(Level level) {
 		currentLevel = level;
-		currentLevel.playerSet.add(thisPlayer = new ClientPlayerNPC(currentLevel, 128, 128, thisPlayerName));
+		//currentLevel.playerSet.add(thisPlayer = new ClientPlayerNPC(currentLevel, 128, 128, thisPlayerName));
 	}
 
 	public Level getCurrentLevel() {
@@ -307,6 +325,11 @@ public class Client implements Runnable {
 
 	public ClientPlayerNPC getThisPlayer() {
 		return thisPlayer;
+	}
+	
+	public void setThisPlayer(ClientPlayerNPC player) 
+	{
+		thisPlayer = player;
 	}
 
 	public void setGUI(InMultiplayerGameState mpGame) {
@@ -360,5 +383,22 @@ public class Client implements Runnable {
 	public void tellClientsToStart() {
 		writer.write(" /api/game/started\n");
 		writer.flush();
+	}
+
+	public void sendRemoval(NPC npc, int ind) 
+	{
+		writer.write(" /api/cleanup/npcremove/"+ind+"_"+npc.npcX+"_"+npc.npcY+"\n");
+		writer.flush();
+	}
+	
+	public void sendLife(NPC npc, int ind, int life) 
+	{
+		writer.write(" /api/healthsync/"+ind+"_"+npc.npcX+"_"+npc.npcY+"_"+life+"\n");
+		writer.flush();
+	}
+
+	public void setCanClientMove(boolean move) 
+	{
+		canMove = move;
 	}
 }

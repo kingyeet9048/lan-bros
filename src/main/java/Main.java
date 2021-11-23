@@ -8,8 +8,8 @@ import content.npc.java.ServerPlayerNPC;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import gui.state.java.PauseState;
+import gui.state.java.SetUserNameState;
 import gui.state.java.TitleState;
-import gui.state.java.UsernameState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
@@ -22,7 +22,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		factory.startFactory();
-		frame.addActiveState(new UsernameState(frame, factory));
+		frame.addActiveState(new SetUserNameState(frame, factory));
 
 		new Thread(() -> {
 			while (frame.isVisible()) {
@@ -85,14 +85,14 @@ public class Main {
 		pauseState = factory.makePauseState(frame);
 		pauseState.playerThatPaused = player;
 		frame.addActiveState(pauseState);
-		factory.getCurrentClient().getThisPlayer().canMove = false;
+		factory.getCurrentClient().setCanClientMove(false);
 		System.out.println("Game Paused...");
 	}
 
 	public static void unPauseGame() {
 		frame.removeActiveState(pauseState);
 		factory.setPauseState(new PauseState(frame, factory));
-		factory.getCurrentClient().getThisPlayer().canMove = true;
+		factory.getCurrentClient().setCanClientMove(true);
 
 	}
 
