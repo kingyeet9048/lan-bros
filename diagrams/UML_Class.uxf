@@ -1,0 +1,53 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>540</x><y>30</y><w>220</w><h>220</h></coordinates><panel_attributes>&lt;&lt;entity&gt;&gt;
+Main
+--
+-gui: GuiFrame
+-server: Server
+-factory: Factory
+--
++startClient(address: String): boolean
++startServer(): void
++getNetworkFactory(): Factory
++addNewPlayer(player: String): void
++main(args: String[]): void
+--
+Responsibilities
+-- Start of the program
+-- Holds most important objects.</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>700</y><w>130</w><h>180</h></coordinates><panel_attributes>&lt;&lt;Stereotype&gt;&gt;
+Package::FatClass
+{Some Properties}
+--
+-id: Long {composite}
+_-ClassAttribute: Long_
+--
+#Operation(i: int): int
+/+AbstractOperation()/
+--
+Responsibilities
+-- Resp1
+-- Resp2</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>520</x><y>310</y><w>270</w><h>360</h></coordinates><panel_attributes>&lt;&lt;entity&gt;&gt;
+GuiFrame
+extends JFrame
+--
++animation_interval: final int
++screen_width: final int
++screen_height: final int
+#animation_timer: Timer
+#activePanel: JPanel
+#activeStates: LinkedList&lt;GuiState&gt;
+#frameClosed: boolean
+
+--
++GuiFrame(): void
++renderStates(g: Graphics2D, post: boolean)
++addActiveState(state: GuiState): boolean
++removeActiveState(state: GuiState): boolean
++wipeActiveState(): void
++ getActivePanel():JPanel
++isClosed(): boolean
+--
+Responsibilities
+-- Manage the state of the game
+-- Control active game state
+-- soure of interacting with the user</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>650</x><y>250</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element></diagram>

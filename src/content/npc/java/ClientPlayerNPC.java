@@ -18,7 +18,6 @@ public class ClientPlayerNPC extends NPC {
 	public static final SpriteSheet PLAYER_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/player_Chef1.png"));
 	protected int jumpTime;
 	public String playerName;
-	
 	public ClientPlayerNPC(Level level, float x, float y, String playerName) {
 		super(level, x, y, 32, 32);
 		jumpTime = 0;
@@ -60,7 +59,7 @@ public class ClientPlayerNPC extends NPC {
 
 			if (UserInput.isKeyBindPressed(KeyBind.RIGHT) && wallHit != TileFace.LEFT) {
 				motionX += 1.2f;
-			}			
+			}
 		}
 	}
 
@@ -116,7 +115,6 @@ public class ClientPlayerNPC extends NPC {
 
 	@Override
 	protected void onNPCKill() {
-		
 	}
 
 }

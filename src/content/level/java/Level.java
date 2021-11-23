@@ -200,6 +200,23 @@ public class Level
 					tile.renderTile(g);
 			}
 		}
+		
+		for(Tile[] row : tileMap)
+		{
+			for(Tile tile : row)
+			{
+				if(tile != null)
+					tile.renderTile(g);
+			}
+		}
+	}
+
+	public Tile[][] getTileMap() {
+		return tileMap;
+	}
+	
+	public int[] getHeightMap() {
+		return heightMap;
 	}
 
 	public Tile[][] getTileMap() {

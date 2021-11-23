@@ -1,5 +1,8 @@
 package networkhandler.server.java;
 
+import networkhandler.shared.java.Factory;
+import networkhandler.shared.java.NetPacket;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -9,9 +12,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-
-import networkhandler.shared.java.Factory;
-import networkhandler.shared.java.NetPacket;
 
 /**
  * Server class to make sure all clients are up to date on the current game.

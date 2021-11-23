@@ -233,6 +233,13 @@ public class APIRegister {
                 String[] movement = ((String) map.get("movement")).split("_");
                 KeyBind bind = KeyBind.values()[Integer.parseInt(movement[0])];
                 boolean down = movement[1].equals("true");
+                if (bind.keyCodes == KeyBind.PAUSE.keyCodes) {
+                    if (down) {
+                        Main.pauseGame(player);
+                    } else {
+                        Main.unPauseGame();
+                    }
+                }
                 UserInput.setServerKeyPressed(player, bind, down);
             }
 

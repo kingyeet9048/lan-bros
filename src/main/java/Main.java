@@ -1,5 +1,7 @@
 package main.java;
 
+import java.io.IOException;
+
 import content.level.java.Level;
 import content.npc.java.ClientPlayerNPC;
 import content.npc.java.ServerPlayerNPC;
@@ -41,12 +43,15 @@ public class Main {
 			clientThread.start();
 			InMultiplayerGameState mpGame = factory.makeGameState(frame, currentClient.getThisPlayerName());
 			currentClient.setGUI(mpGame);
-			frame.wipeActiveStates();
-			frame.addActiveState(mpGame);
 			return true;
 		}
 
 		return false;
+	}
+
+	public static void goToMultiplayerState() {
+		frame.wipeActiveStates();
+		frame.addActiveState(factory.getJoinedGameState());
 	}
 
 	public static Factory getNetworkFactory() {
@@ -65,6 +70,42 @@ public class Main {
 		if (!playerLoaded) {
 			level.playerSet.add(new ServerPlayerNPC(level, 3, 3, playerName));
 		}
+	}
+
+	public static void startServer() {
+		server = factory.makeServer();
+		Thread serveThread = new Thread(server);
+		serveThread.start();
+	}
+
+	public static void pauseGame(String player) {
+		pauseState = factory.makePauseState(frame);
+		pauseState.playerThatPaused = player;
+		frame.addActiveState(pauseState);
+		factory.getCurrentClient().getThisPlayer().canMove = false;
+		System.out.println("Game Paused...");
+	}
+
+	public static void unPauseGame() {
+		frame.removeActiveState(pauseState);
+		factory.setPauseState(new PauseState(frame, factory));
+		factory.getCurrentClient().getThisPlayer().canMove = true;
+
+	}
+
+	public static void returnToTitle() {
+		try {
+			if (factory.getCurrentClient().isHost()) {
+				factory.getCurrentServer().getServer().close();
+			}
+			factory.getCurrentClient().getSocket().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		factory.setPauseState(new PauseState(frame, factory));
+		frame.wipeActiveStates();
+		frame.addActiveState(new TitleState(frame, factory));
 	}
 
 	public static void startServer() {

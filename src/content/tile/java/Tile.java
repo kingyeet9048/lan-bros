@@ -31,8 +31,8 @@ public abstract class Tile implements ITileEntry {
 	 * @param face the face collided on
 	 */
 	public abstract void onCollide(NPC npc, TileFace face);
-	
-	/**
+
+  /**
 	 * Updates the tile.
 	 */
 	public abstract void updateTile();
@@ -66,7 +66,8 @@ public abstract class Tile implements ITileEntry {
 		TILE_REGISTRY.put(tileClass, entry);
 		System.out.println("Registered class \'" + tileClass.toString() + "\' to entry \'" + entry.getTileID() + "\'!");
 	}
-	public static Tile fromClass(Level level, Class<? extends Tile> tileClass) {
+
+  public static Tile fromClass(Level level, Class<? extends Tile> tileClass) {
 		if (TILE_REGISTRY.containsKey(tileClass)) {
 			return TILE_REGISTRY.get(tileClass).createTile(level);
 		}
@@ -98,7 +99,6 @@ public abstract class Tile implements ITileEntry {
 		float xpos = (npc.npcX + npc.motionX) / TILE_SIZE - tile.tileX;
 		float ypos = (npc.npcY) / TILE_SIZE - tile.tileY;
 		int[] heightMap = tile.level.getHeightMap();
-
 
 		if(xpos < 0.9 && xpos > 0.65 && tile.shouldCollideFromSide(TileFace.RIGHT))
 		{
@@ -150,7 +150,6 @@ public abstract class Tile implements ITileEntry {
 				}
 			}
 		}
-	
 		if(ypos < -0.5 && ypos < 0 && tile.shouldCollideFromSide(TileFace.TOP))
 		{
 			npc.onCollide(tile, TileFace.TOP);

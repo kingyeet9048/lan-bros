@@ -203,7 +203,6 @@ public abstract class NPC implements ITileEntry
 
 	
 	public abstract void onCollide(Tile tile, TileFace face);
-	
 	public abstract void onCollide(NPC npc);
 	
 	

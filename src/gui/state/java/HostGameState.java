@@ -13,6 +13,10 @@ import gui.components.java.GuiInput;
 import main.java.Main;
 import networkhandler.shared.java.Factory;
 
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.io.IOException;
+
 public class HostGameState extends GuiState {
 
     private Rectangle screenSize;

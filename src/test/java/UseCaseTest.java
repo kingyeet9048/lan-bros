@@ -1,8 +1,5 @@
 package test.java;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
 import networkhandler.shared.java.Factory;
@@ -14,8 +11,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @Category(UseCaseTest.class)
 public class UseCaseTest {
