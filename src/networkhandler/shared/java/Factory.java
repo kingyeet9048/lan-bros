@@ -1,29 +1,15 @@
 package networkhandler.shared.java;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.gson.Gson;
 
-import config.java.ConfigurationManager;
-import content.npc.java.ClientPlayerNPC;
-import content.npc.java.NPC;
-import content.tile.java.TileFace;
 import config.java.ConfigurationManager;
 import gui.components.java.GuiFrame;
 import gui.state.java.InMultiplayerGameState;
 import gui.state.java.PauseState;
 import networkhandler.client.java.Client;
 import networkhandler.server.java.Server;
-
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Factory {
 

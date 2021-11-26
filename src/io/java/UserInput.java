@@ -4,7 +4,6 @@ import main.java.Main;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class UserInput implements KeyListener {

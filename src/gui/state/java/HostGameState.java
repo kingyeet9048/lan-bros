@@ -12,10 +12,6 @@ import gui.components.java.GuiFrame;
 import gui.components.java.GuiInput;
 import main.java.Main;
 import networkhandler.shared.java.Factory;
-
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class HostGameState extends GuiState {
@@ -31,7 +27,12 @@ public class HostGameState extends GuiState {
         this.factory = factory;
         currentTimer = factory.getGAME_COUNTDOWN();
         inputs = new GuiInput[] { new GuiInput(factory.getCurrentServer().getIpAddress()) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void focusGained(FocusEvent e) {
 
             }
@@ -39,7 +40,12 @@ public class HostGameState extends GuiState {
         inputs[0].setEditable(false);
         buttons = new GuiButton[] { new GuiButton("Start Game") {
 
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void onClick(boolean pressed) {
                 if (pressed) {
                     if (Main.startClient("localhost")) {
@@ -66,7 +72,12 @@ public class HostGameState extends GuiState {
 
         }, new GuiButton("Go Back to Title") {
 
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void onClick(boolean pressed) {
                 try {
                     factory.getCurrentServer().getServer().close();

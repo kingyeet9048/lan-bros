@@ -25,6 +25,11 @@ public class SetUserNameState extends GuiState {
 
 		buttons = new GuiButton[] { new GuiButton("Go To Title") {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onClick(boolean pressed) {
 				if (pressed) {
@@ -42,6 +47,11 @@ public class SetUserNameState extends GuiState {
 		}, };
 
 		inputs = new GuiInput[] { new GuiInput("username") {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 		}, };
 
 		test = new SpriteSheet(new ImageIcon("resources/gfx/test.png")).addFrame("wink0", 15, 0, 0, 8, 8)

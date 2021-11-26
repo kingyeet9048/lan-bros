@@ -13,6 +13,7 @@ import java.util.Map;
 public class Response {
 
     // instance variables
+	@SuppressWarnings("rawtypes")
     private Map mappedResponse;
     private String rawReponse;
 
@@ -34,6 +35,7 @@ public class Response {
      * 
      * @return
      */
+	@SuppressWarnings("rawtypes")
     public Map getMappedResponse() {
         return mappedResponse;
     }
@@ -43,6 +45,7 @@ public class Response {
      * 
      * @param mappedResponse
      */
+	@SuppressWarnings("rawtypes")
     public void setMappedResponse(Map mappedResponse) {
         this.mappedResponse = mappedResponse;
     }
