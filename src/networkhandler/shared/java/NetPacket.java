@@ -9,6 +9,7 @@ public abstract class NetPacket {
 
     abstract String getCommand();
 
+	@SuppressWarnings("rawtypes")
     public abstract void clientExecute(Map map);
 
     public abstract void serverExecute(Request request) throws IOException;

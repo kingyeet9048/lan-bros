@@ -4,9 +4,7 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 
 import content.level.java.Level;
-import content.npc.java.ClientPlayerNPC;
 import content.npc.java.NPC;
-import main.java.Main;
 
 public abstract class Tile implements ITileEntry {
 	public static final float TILE_SIZE = 30.0f;

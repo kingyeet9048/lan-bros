@@ -11,8 +11,6 @@ import gui.components.java.GuiInput;
 import main.java.Main;
 import networkhandler.shared.java.Factory;
 
-import java.awt.*;
-
 public class JoinGameState extends GuiState {
 
     private Rectangle screenSize;
@@ -43,7 +41,12 @@ public class JoinGameState extends GuiState {
             }
         }, new GuiButton("Go Back to Title") {
 
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void onClick(boolean pressed) {
                 frame.addActiveState(new TitleState(frame, factory));
                 frame.removeActiveState(JoinGameState.this);

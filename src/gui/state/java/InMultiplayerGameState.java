@@ -7,9 +7,6 @@ import content.level.java.Level;
 import gui.components.java.GuiFrame;
 import main.java.Main;
 
-import java.awt.*;
-import java.io.File;
-
 public class InMultiplayerGameState extends GuiState {
 
     public String thisPlayerName;

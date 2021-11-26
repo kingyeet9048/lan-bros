@@ -9,7 +9,6 @@ import main.java.Main;
 import networkhandler.shared.java.Factory;
 import networkhandler.shared.java.NetPacket;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -23,16 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JOptionPane;
 
-import content.level.java.Level;
-import content.npc.java.ClientPlayerNPC;
 import content.npc.java.NPC;
-import content.npc.java.ServerPlayerNPC;
-import gui.state.java.InMultiplayerGameState;
-import io.java.KeyBind;
-import io.java.UserInput;
-import main.java.Main;
-import networkhandler.shared.java.Factory;
-import networkhandler.shared.java.NetPacket;
 
 /**
  * Client class that handles interactions with the server and game manager
@@ -58,6 +48,7 @@ public class Client implements Runnable {
 	private Factory factory;
 	private Level currentLevel;
 	private ClientPlayerNPC thisPlayer;
+	@SuppressWarnings("unused")
 	private InMultiplayerGameState gui;
 	private boolean canMove = false;
 
@@ -355,6 +346,7 @@ public class Client implements Runnable {
 					// poll it and process it through the router
 					Response response = reponseQueue.poll();
 
+					@SuppressWarnings("rawtypes")
 					Map map = response.getMappedResponse();
 					String api = (String) map.get("api");
 					String key = factory.getPathFromSupported(api);

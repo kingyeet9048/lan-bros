@@ -41,6 +41,11 @@ public class TitleState extends GuiState {
 			}
 		}, new GuiButton("Set Username") {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onClick(boolean pressed) {
 				frame.addActiveState(new SetUserNameState(frame, factory));

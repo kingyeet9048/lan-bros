@@ -36,6 +36,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 factory.getCurrentClient().applyPlayerSync((String) map.get("coordinates"));
             }
@@ -71,6 +72,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 factory.getCurrentClient().addPlayerToList((String) map.get("username"));
                 factory.getCurrentClient().updatePlayers();
@@ -119,6 +121,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 factory.getCurrentClient().removePlayerFromList((String) map.get("username"));
                 factory.getCurrentClient().updatePlayers();
@@ -162,6 +165,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 String[] players = ((String) map.get("usernames")).split(",");
                 for (String player : players) {
@@ -187,6 +191,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 // TODO: start game
                 System.out.println("Game would start here");
@@ -208,6 +213,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 // TODO: end game
                 System.out.println("Game would end here");
@@ -229,6 +235,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 String player = (String) map.get("username");
                 String[] movement = ((String) map.get("movement")).split("_");
@@ -285,6 +292,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
                 if (factory.getCurrentClient().getCurrentLevel() != null) {
                     String username = (String) map.get("username");
@@ -348,6 +356,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
             	if(factory.getCurrentClient().getCurrentLevel() != null)
             	{
@@ -423,6 +432,7 @@ public class APIRegister {
             }
 
             @Override
+			@SuppressWarnings("rawtypes")
             public void clientExecute(Map map) {
             	if(factory.getCurrentClient().getCurrentLevel() != null)
             	{

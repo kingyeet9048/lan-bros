@@ -53,6 +53,7 @@ public class Server implements Runnable {
 		try {
 			server = new ServerSocket(port);
 			workers = new ConcurrentHashMap<>();
+			@SuppressWarnings("static-access")
 			String[] hostInfo = server.getInetAddress().getLocalHost().toString().split("/");
 			ipAddress = hostInfo[1];
 			hostName = hostInfo[0];
