@@ -9,6 +9,8 @@ import animation.java.SpriteSheet;
 import content.level.java.Level;
 import content.npc.java.NPC;
 
+import java.awt.*;
+
 public class BlockTile extends Tile
 {
 	public static final SpriteSheet TILE_SPRITE = new SpriteSheet(new ImageIcon("resources/gfx/tile.png"))

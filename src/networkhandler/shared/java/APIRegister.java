@@ -15,6 +15,7 @@ import content.npc.java.NPC;
 import content.tile.java.TileFace;
 import io.java.KeyBind;
 import io.java.UserInput;
+import main.java.Main;
 import networkhandler.server.java.Request;
 import networkhandler.server.java.ServerWorker;
 
@@ -233,6 +234,13 @@ public class APIRegister {
                 String[] movement = ((String) map.get("movement")).split("_");
                 KeyBind bind = KeyBind.values()[Integer.parseInt(movement[0])];
                 boolean down = movement[1].equals("true");
+                if (bind.keyCodes == KeyBind.PAUSE.keyCodes) {
+                    if (down) {
+                        Main.pauseGame(player);
+                    } else {
+                        Main.unPauseGame();
+                    }
+                }
                 UserInput.setServerKeyPressed(player, bind, down);
             }
 

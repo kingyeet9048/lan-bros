@@ -1,9 +1,9 @@
 package networkhandler.shared.java;
 
+import networkhandler.server.java.Request;
+
 import java.io.IOException;
 import java.util.Map;
-
-import networkhandler.server.java.Request;
 
 public abstract class NetPacket {
 

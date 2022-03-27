@@ -1,8 +1,8 @@
 package networkhandler.client.java;
 
-import java.util.Map;
-
 import com.google.gson.Gson;
+
+import java.util.Map;
 
 /**
  * Response class to keep an instance of a reponse given from the server. Hold

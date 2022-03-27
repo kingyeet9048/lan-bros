@@ -11,6 +11,8 @@ import gui.components.java.GuiInput;
 import main.java.Main;
 import networkhandler.shared.java.Factory;
 
+import java.awt.*;
+
 public class JoinGameState extends GuiState {
 
     private Rectangle screenSize;
@@ -35,6 +37,7 @@ public class JoinGameState extends GuiState {
 
                     } else {
                         System.out.println(inputs[0].getText());
+                        this.setText("Waiting for host to start the game...");
                     }
                 }
             }
